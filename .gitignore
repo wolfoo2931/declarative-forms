@@ -1,0 +1,8 @@
+node_modules/*
+coverage/*
+assets/declarativ-forms.packaged.js
+.errorShots/*
+npm-debug.log
+npm-debug.log.*
+assets/declarativ-forms.packaged.min.js
+.DS_Store

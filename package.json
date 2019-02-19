@@ -1,0 +1,46 @@
+{
+  "name": "declarativ-forms",
+  "version": "0.1.0",
+  "description": "",
+  "main": "src/declarativ_forms.js",
+  "scripts": {
+    "package": "./node_modules/browserify/bin/cmd.js src/declarativ_forms.js -o assets/declarativ_forms.js.packaged.js",
+    "package:min": "./node_modules/browserify/bin/cmd.js src/declarativ_forms.js -o assets/declarativ_forms.js.packaged.js | sed '1s/^/var /' | node_modules/google-closure-compiler/cli.js  > assets/declarativ_forms.packaged.min.js",
+    "package:watch": "./node_modules/watchify/bin/cmd.js src/declarativ_forms.js -o assets/declarativ_forms.packaged.js -v",
+    "test:browser": "./node_modules/.bin/wdio wdio.conf.js",
+    "test": "./node_modules/karma/bin/karma start",
+    "webdriver:start": "webdriver-manager update && webdriver-manager start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:wolfoo2931/declarativ-forms.git"
+  },
+  "keywords": [
+    "modal",
+    "forms"
+  ],
+  "author": "Oliver Wolf",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wolfoo2931/declarativ-forms/issues"
+  },
+  "homepage": "https://github.com/wolfoo2931/declarativ-forms#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@wdio/cli": "5.4.17",
+    "@wdio/jasmine-framework": "^5.4.14",
+    "@wdio/local-runner": "5.4.17",
+    "@wdio/spec-reporter": "^5.4.15",
+    "browserify": "^16.2.3",
+    "google-closure-compiler": "^20180610.0.2",
+    "jasmine-core": "^3.3.0",
+    "karma": "^4.0.0",
+    "karma-browserify": "^6.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.2",
+    "karma-jasmine": "^2.0.1",
+    "karma-spec-reporter": "0.0.32",
+    "watchify": "^3.11.0",
+    "webdriverio": "^5.4.17"
+  }
+}
