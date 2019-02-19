@@ -2,11 +2,11 @@
   "name": "declarativ-forms",
   "version": "0.1.0",
   "description": "",
-  "main": "src/declarativ_forms.js",
+  "main": "src/declarativ_form.js",
   "scripts": {
-    "package": "./node_modules/browserify/bin/cmd.js src/declarativ_forms.js -o assets/declarativ_forms.js.packaged.js",
-    "package:min": "./node_modules/browserify/bin/cmd.js src/declarativ_forms.js -o assets/declarativ_forms.js.packaged.js | sed '1s/^/var /' | node_modules/google-closure-compiler/cli.js  > assets/declarativ_forms.packaged.min.js",
-    "package:watch": "./node_modules/watchify/bin/cmd.js src/declarativ_forms.js -o assets/declarativ_forms.packaged.js -v",
+    "package": "./node_modules/browserify/bin/cmd.js src/declarativ_form.js -o assets/declarativ_form.js.packaged.js",
+    "package:min": "./node_modules/browserify/bin/cmd.js src/declarativ_form.js -o assets/declarativ_form.js.packaged.js | sed '1s/^/var /' | node_modules/google-closure-compiler/cli.js  > assets/declarativ_form.packaged.min.js",
+    "package:watch": "./node_modules/watchify/bin/cmd.js src/declarativ_form.js -o assets/declarativ_form.packaged.js -v",
     "test:browser": "./node_modules/.bin/wdio wdio.conf.js",
     "test": "./node_modules/karma/bin/karma start",
     "webdriver:start": "webdriver-manager update && webdriver-manager start"
