@@ -15,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'assets/declarativ_forms.packaged.js',
+      'assets/declarativ_form.packaged.js',
       'spec/src/*.js'
     ],
 
@@ -29,7 +29,7 @@ module.exports = function(config) {
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       'spec/src/**/*.js': [ 'browserify' ],
-      'assets/declarativ_forms.packaged.js': ['coverage']
+      'assets/declarativ_form.packaged.js': ['coverage']
     },
 
 
