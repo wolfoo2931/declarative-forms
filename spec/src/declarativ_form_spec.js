@@ -7,7 +7,7 @@ describe('DeclarativForms Object', () => {
 
             describe('array Entry', () => {
                 it('will be present in the form to be filled in by the user', () => {
-                    form = new DeclarativForm({fields: [ { name: 'fieldOne' } ]})
+                    var form = new DeclarativForm({fields: [ { name: 'fieldOne' } ]})
                     expect(form.getHTML()).toMatch(/<input name=('|")fieldOne('|")>/)
 
                     form = new DeclarativForm({fields: [ { name: 'fieldOne' }, { name: 'secondOne' } ]})
@@ -17,7 +17,7 @@ describe('DeclarativForms Object', () => {
 
                 describe('name Field', () => {
                     it('specifies the name of the form field and will be used to identify the field value', () => {
-                        form = new DeclarativForm({fields: [ { name: 'fieldOne' } ]})
+                        var form = new DeclarativForm({fields: [ { name: 'fieldOne' } ]})
                         expect(form.getValues()).toEqual({fieldOne: ''})
 
                         form = new DeclarativForm({fields: [ { name: 'fieldOne' }, { name: 'secondOne' } ]})

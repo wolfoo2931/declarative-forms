@@ -1,1 +1,0 @@
-console.error("Error: Cannot find module '/Users/owolf/Dropbox/declarativ-forms/src/declarativ_forms.js' from '/Users/owolf/Dropbox/declarativ-forms'");
