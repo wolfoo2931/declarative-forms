@@ -24,6 +24,13 @@ describe('DeclarativForms Object', () => {
                         expect(form.getValues()).toEqual({fieldOne: '', secondOne: ''})
                     })
                 })
+
+                describe('displayName Field', () => {
+                    it('specifies the label caption for this filed', () => {
+                        var form = new DeclarativForm({fields: [ { name: 'fieldOne', displayName: 'Field One' } ]})
+                        expect(form.getHTML()).toMatch(/<label for=('|")fieldOne('|")>Field One<\/label>/)
+                    })
+                })
             })
         })
     })
