@@ -8,9 +8,19 @@ function DeclarativForm(attrs) {
     this.dom.appendChild(this.formElement)
 
     this.fields.forEach(function(field) {
-        var fieldElement = document.createElement('input')
+        var fieldElement = document.createElement('input'),
+            label
+
         field.domElement = fieldElement
         fieldElement.name = field.name
+
+        if(field.displayName) {
+            label = document.createElement('label')
+            label.innerHTML = field.displayName
+            label.setAttribute('for', field.name)
+            self.dom.children[0].appendChild(label)
+        }
+
         self.dom.children[0].appendChild(fieldElement)
     })
 }
