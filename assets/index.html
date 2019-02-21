@@ -2,9 +2,36 @@
     <head>
         <script type="text/javascript" src="./declarativ_form.packaged.js"></script>
         <link href="./default.css" rel="stylesheet">
+
+        <style>
+            #form-container {
+                margin: auto;
+                width: 500px;
+            }
+        </style>
     </head>
 
     <body>
-        Hello World
+        <div id="form-container"></div>
     </body>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function(event) {
+            var DeclarativForm = require('/src/declarativ_form.js')
+
+            var container = document.getElementById('form-container')
+
+            attr = {
+                fields: [
+                    { name: 'language' }
+                ]
+            }
+
+            var form = new DeclarativForm(attr)
+
+            container.innerHTML = form.getHTML()
+        });
+
+    </script>
 </html>
