@@ -136,9 +136,7 @@ class DlSelect extends HTMLElement {
     unfocus() {
         this.classList.remove('focused')
         this.optionsWrapper.style.display = 'none'
-        if(!this.getValue()) {
-            this.inputField.value = ''
-        }
+        this.inputField.value = this.getValue() || ''
     }
 }
 

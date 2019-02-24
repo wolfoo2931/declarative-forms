@@ -66,7 +66,7 @@ describe('DlSelect', () => {
             expect(await dlOptions.isDisplayed()).toEqual(false)
         })
 
-        it('empties the input field when no option has been selected', async () => {
+        it('empties the input field when no option has been selected and no valid option has been choosen yet', async () => {
             var dlOptions = await $('dl-option'),
                 inputField = await $(inputFieldSelector),
                 body = await $('body')
@@ -77,6 +77,24 @@ describe('DlSelect', () => {
 
             await body.click()
             expect(await inputField.getValue()).toEqual('')
+        })
+
+        it('resets the input field when input text has been changed to an invalid value but a valid value has been chossen before', async () => {
+            var dlOptions = await $('dl-option'),
+                inputField = await $(inputFieldSelector),
+                body = await $('body')
+
+            await inputField.click()
+            expect(await dlOptions.isDisplayed()).toEqual(true)
+
+            await dlOptions.click()
+            expect(await inputField.getValue()).toEqual('JavaScript')
+
+            await inputField.click()
+            await browser.keys('notAvailableOption')
+
+            await body.click()
+            expect(await inputField.getValue()).toEqual('JavaScript')
         })
     })
 })
