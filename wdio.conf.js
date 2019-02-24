@@ -16,7 +16,7 @@ exports.config = {
     coloredLogs: true,
     bail: 0,
     screenshotPath: './.errorShots/',
-    baseUrl: 'file:///' + __dirname + '/assets/',
+    baseUrl: 'file:///' + __dirname + '/spec/fixtures/',
     waitforTimeout: 100000,
     connectionRetryTimeout: 90000,
     connectionRetryCount: 3,
