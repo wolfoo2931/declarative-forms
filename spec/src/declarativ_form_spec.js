@@ -31,6 +31,30 @@ describe('DeclarativForms Object', () => {
                         expect(form.getHTML()).toMatch(/<label for=('|")fieldOne('|")>Field One<\/label>/)
                     })
                 })
+
+                describe('allowedValues Field', () => {
+                    describe('when it is an array', () => {
+                        it('provides a select box with all array items as options', () => {
+
+                            var formDef = {
+                                fields: [
+                                    {
+                                        name: 'proglang',
+                                        displayName: 'Programming Language',
+                                        allowedValues: ['javascript', 'java', 'python']
+                                    }
+                                ]
+                            }
+
+                            var form = new DeclarativForm(formDef)
+
+                            expect(form.getHTML()).toMatch(/javascript/)
+                            expect(form.getHTML()).toMatch(/java/)
+                            expect(form.getHTML()).toMatch(/python/)
+                        })
+                    })
+
+                })
             })
         })
     })
