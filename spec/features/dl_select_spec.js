@@ -109,6 +109,29 @@ describe('DlSelect', () => {
             await body.click()
             expect(await inputField.getValue()).toEqual('JavaScript')
         })
+
+        it('resets the filter when it focused after an option has already been choosen', async () => {
+            var dlOptions = await $('dl-option'),
+                inputField = await $(inputFieldSelector),
+                body = await $('body'),
+                filteredDlOptions = []
+
+            await inputField.click()
+            await browser.keys('javascript')
+            dlOptions = await $('dl-option')
+            await dlOptions.click()
+            await inputField.click()
+
+            dlOptions = await $$('dl-option')
+
+            for(let i=0; i<dlOptions.length; i++) {
+                if(await dlOptions[i].isDisplayed()) {
+                    filteredDlOptions.push(dlOptions[i])
+                }
+            }
+
+            expect(filteredDlOptions.length).toEqual(4)
+        })
     })
 
     describe('when an option gets clicked', () => {

@@ -162,6 +162,7 @@ class DlSelect extends HTMLElement {
         this.inputField.placeholder = this.getValue() || 'Select ...'
         this.inputField.value = ''
         this.optionsWrapper.style.display = 'inline-block'
+        this.filterOptions(this.inputField.value)
     }
 
     unfocus() {
