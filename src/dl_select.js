@@ -1,4 +1,5 @@
-var style = document.createElement('style')
+var style = document.createElement('style'),
+    xmlns = 'http://www.w3.org/2000/svg'
 
 style.textContent = `
     dl-select {
@@ -92,17 +93,15 @@ window.addEventListener('load', () => {
 class DlSelect extends HTMLElement {
     constructor() {
         super()
+        this.optionsWrapper = document.createElement('div')
+        this.inputWrapper = document.createElement('span')
+        this.noMatchesHint = document.createElement('span')
+        this.inputField = document.createElement('input')
+        this.arrow = document.createElementNS(xmlns, 'svg')
     }
 
     connectedCallback() {
-        var xmlns = 'http://www.w3.org/2000/svg',
-            self = this;
-
-        this.optionsWrapper = document.createElement('div'),
-        this.inputWrapper = document.createElement('span'),
-        this.noMatchesHint = document.createElement('span'),
-        this.inputField = document.createElement('input'),
-        this.arrow = document.createElementNS(xmlns, 'svg')
+        var self = this
 
         this.inputWrapper.classList.add('input-wrapper')
         this.optionsWrapper.classList.add('options-wrapper')
@@ -129,6 +128,7 @@ class DlSelect extends HTMLElement {
             self.inputWrapper.appendChild(self.arrow)
             self.appendChild(self.inputWrapper)
             self.appendChild(self.optionsWrapper)
+            self.inputField.value = self.getValue()
         })
     }
 
@@ -150,11 +150,11 @@ class DlSelect extends HTMLElement {
 
     setValue(value) {
       this.inputField.value = value
-      this.value = value
+      this.setAttribute('value', value)
     }
 
     getValue() {
-        return this.value;
+        return this.getAttribute('value')
     }
 
     focus() {

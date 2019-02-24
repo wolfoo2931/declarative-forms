@@ -31,6 +31,14 @@ function DeclarativForm(attrs) {
         }
 
         self.dom.children[0].appendChild(fieldElement)
+
+        if(field.defaultValue) {
+            if(fieldElement.setValue) {
+                fieldElement.setValue(field.defaultValue)
+            } else {
+                fieldElement.value = field.defaultValue
+            }
+        }
     })
 }
 
