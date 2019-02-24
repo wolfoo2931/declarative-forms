@@ -35,7 +35,6 @@ describe('DeclarativForms Object', () => {
                 describe('allowedValues Field', () => {
                     describe('when it is an array', () => {
                         it('provides a select box with all array items as options', () => {
-
                             var formDef = {
                                 fields: [
                                     {
@@ -54,6 +53,24 @@ describe('DeclarativForms Object', () => {
                         })
                     })
 
+                })
+
+                describe('defaultValue Field', () => {
+                    it('represents the default value of the field', () => {
+                        var formDef = {
+                            fields: [
+                                {
+                                    name: 'proglang',
+                                    displayName: 'Programming Language',
+                                    allowedValues: ['javascript', 'java', 'python'],
+                                    defaultValue: 'python'
+                                }
+                            ]
+                        }
+
+                        var form = new DeclarativForm(formDef)
+                        expect(form.getValues()).toEqual({proglang: 'python'})
+                    })
                 })
             })
         })
