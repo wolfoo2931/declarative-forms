@@ -50,7 +50,8 @@ describe('DlSelect', () => {
           var dlOptions = await $$('dl-option'),
               filteredDlOptions = [],
               inputField = await $(inputFieldSelector),
-              body = await $('body')
+              body = await $('body'),
+              noMatchesHint = await $('.noMatchesHint')
 
               expect(dlOptions.length).toEqual(4)
 
@@ -66,6 +67,31 @@ describe('DlSelect', () => {
               }
 
               expect(filteredDlOptions.length).toEqual(2)
+              expect(await noMatchesHint.isDisplayed()).toEqual(false)
+        })
+
+        it('display a hint that no option matches when no options matches the input', async () => {
+            var dlOptions = await $$('dl-option'),
+                filteredDlOptions = [],
+                inputField = await $(inputFieldSelector),
+                body = await $('body'),
+                noMatchesHint = await $('.noMatchesHint')
+
+                expect(dlOptions.length).toEqual(4)
+
+                await inputField.click()
+                await inputField.keys('nothingMatchesThis')
+
+                dlOptions = await $$('dl-option')
+
+                for(let i=0; i<dlOptions.length; i++) {
+                    if(await dlOptions[i].isDisplayed()) {
+                        filteredDlOptions.push(dlOptions[i])
+                    }
+                }
+
+                expect(filteredDlOptions.length).toEqual(0)
+                expect(await noMatchesHint.isDisplayed()).toEqual(true)
         })
 
         it('resets the value to the last valid choosen option when focused lost', async () => {

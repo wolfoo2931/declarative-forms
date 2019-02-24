@@ -38,6 +38,13 @@ style.textContent = `
         border-right: 1px solid #bbb;
     }
 
+    dl-select .options-wrapper .noMatchesHint {
+        border-left: 1px solid #bbb;
+        border-right: 1px solid #bbb;
+        padding: 5px;
+        font-style: italic;
+    }
+
     dl-select .options-wrapper {
         border-top: 1px solid #bbb;
         border-bottom: 1px solid #bbb;
@@ -93,6 +100,7 @@ class DlSelect extends HTMLElement {
 
         this.optionsWrapper = document.createElement('div'),
         this.inputWrapper = document.createElement('span'),
+        this.noMatchesHint = document.createElement('span'),
         this.inputField = document.createElement('input'),
         this.arrow = document.createElementNS(xmlns, 'svg')
 
@@ -100,12 +108,16 @@ class DlSelect extends HTMLElement {
         this.optionsWrapper.classList.add('options-wrapper')
         this.optionsWrapper.style.display = 'none'
         this.inputField.placeholder = 'Select ...'
+        this.noMatchesHint.classList.add('noMatchesHint')
+        this.noMatchesHint.innerHTML = 'No Matches'
+        this.noMatchesHint.style.display = 'none'
         this.inputField.onfocus = () => { self.focus() }
         this.inputField.onblur = (e) => { self.unfocus() }
         this.inputField.oninput = () => { self.filterOptions(this.inputField.value) }
         this.arrow.onclick = () => { self.inputField.focus() }
-
         this.arrow.innerHTML = '<path d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"></path>'
+
+        this.optionsWrapper.appendChild(this.noMatchesHint)
 
         window.addEventListener('load', () => {
             while(self.firstElementChild) {
@@ -121,15 +133,19 @@ class DlSelect extends HTMLElement {
     }
 
     filterOptions(str) {
+        var hasMatched = false;
         str = str.toLowerCase()
 
         Array.prototype.forEach.call(this.optionsWrapper.children, (opt) => {
             if(str === '' || opt.innerText.toLowerCase().includes(str)) {
                 opt.style.display = 'block'
+                hasMatched = true
             } else {
                 opt.style.display = 'none'
             }
         })
+
+        this.noMatchesHint.style.display = hasMatched ? 'none' : 'block'
     }
 
     setValue(value) {
