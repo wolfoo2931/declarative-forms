@@ -7,14 +7,24 @@
 
         <style>
             #form-container {
+                font-family: Rubik;
                 margin: auto;
                 width: 500px;
+            }
+
+            #form-container label {
+                display: block;
+                margin-bottom: 5px;
+                margin-left: 3px;
+                font-size: 0.9em;
+                color: #888;
             }
         </style>
     </head>
 
     <body>
         <div id="form-container"></div>
+
     </body>
 
     <script>
@@ -28,7 +38,8 @@
                 fields: [
                     {
                       name: 'language',
-                      displayName: 'Programming Language'
+                      displayName: 'Syntax Highlighting for',
+                      allowedValues: ["XML", "HTML", "MathML", "SVG", "CSS", "clike", "JavaScript"]
                     }
                 ]
             }

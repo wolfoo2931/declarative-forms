@@ -7,8 +7,18 @@ function DeclarativForm(attrs) {
     this.dom.appendChild(this.formElement)
 
     this.fields.forEach(function(field) {
-        var fieldElement = document.createElement('input'),
-            label
+        var fieldElement, label
+
+        if(field.allowedValues) {
+            fieldElement = document.createElement('dl-select')
+            field.allowedValues.forEach((val) => {
+                let optEl = document.createElement('dl-option')
+                optEl.innerHTML = val
+                fieldElement.appendChild(optEl)
+            })
+        } else {
+            fieldElement = document.createElement('input')
+        }
 
         field.domElement = fieldElement
         fieldElement.name = field.name
