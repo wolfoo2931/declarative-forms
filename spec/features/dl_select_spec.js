@@ -31,6 +31,58 @@ describe('DlSelect', () => {
         expect(await inputField.getValue()).toEqual('java')
     })
 
+    describe('when keyboard is used to select option', () => {
+        it('allows to select options via key up/down and enter', async () => {
+            var dlOptions = await $('dl-option'),
+                inputField = await $(inputFieldSelector)
+
+            await inputField.click()
+            await browser.keys('ArrowDown')
+            await browser.keys('ArrowDown')
+            await browser.keys('ArrowDown')
+            await browser.keys('Enter')
+            expect(await inputField.getValue()).toEqual('C++')
+            expect(await dlOptions.isDisplayed()).toEqual(false)
+
+            await inputField.click()
+            await browser.keys('ArrowUp')
+            await browser.keys('Enter')
+            expect(await inputField.getValue()).toEqual('Java')
+            expect(await dlOptions.isDisplayed()).toEqual(false)
+        })
+
+        describe('when options are filtered', () => {
+            it('allows to select options via key down and enter', async () => {
+                var dlOptions = await $('dl-option'),
+                    inputField = await $(inputFieldSelector)
+
+                await inputField.click()
+                await browser.keys('java')
+
+                await browser.keys('ArrowDown')
+                await browser.keys('ArrowDown')
+                await browser.keys('Enter')
+                expect(await inputField.getValue()).toEqual('Java')
+                expect(await dlOptions.isDisplayed()).toEqual(false)
+            })
+
+            it('allows to select options via key up and enter', async () => {
+                var dlOptions = await $('dl-option'),
+                    inputField = await $(inputFieldSelector)
+
+                await inputField.click()
+                await browser.keys('java')
+
+                await browser.keys('ArrowDown')
+                await browser.keys('ArrowDown')
+                await browser.keys('ArrowUp')
+                await browser.keys('Enter')
+                expect(await inputField.getValue()).toEqual('JavaScript')
+                expect(await dlOptions.isDisplayed()).toEqual(false)
+            })
+        })
+    })
+
     describe('when typing', () => {
         it('empties the existing text so I only see the text I entered', async () => {
             var dlOptions = await $('dl-option'),

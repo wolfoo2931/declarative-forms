@@ -84,6 +84,10 @@ style.textContent = `
     dl-select .options-wrapper dl-option:hover {
         background-color: rgba(193, 234, 254, 0.3);
     }
+
+    dl-select .options-wrapper dl-option.focused {
+        background-color: rgba(193, 234, 254, 0.3);
+    }
 `
 
 window.addEventListener('load', () => {
@@ -121,6 +125,7 @@ class DlSelect extends HTMLElement {
         window.addEventListener('load', () => {
             while(self.firstElementChild) {
                 self.firstElementChild.onmousedown = function() { self.setValue(this.innerText) }
+                self.firstElementChild.onmouseover = function() { self.clearFocusedOption() }
                 self.optionsWrapper.appendChild(self.firstElementChild)
             }
 
@@ -130,6 +135,63 @@ class DlSelect extends HTMLElement {
             self.appendChild(self.optionsWrapper)
             self.inputField.value = self.getValue()
         })
+
+        this.addEventListener("keydown", (e) => {
+            var option = self.focusedOption()
+            if(e.key === 'ArrowDown') {
+                self.focusOption(self.nextVisibleOptionAfter(option))
+            } else if(e.key === 'ArrowUp') {
+                self.focusOption(self.previousVisibleOptionAfter(option))
+            } else if(e.key === 'Enter') {
+                self.setValue(option.innerText)
+                self.unfocus()
+                e.preventDefault()
+            }
+        })
+    }
+
+    clearFocusedOption() {
+        this._focusedOption = null
+        Array.prototype.forEach.call(this.optionsWrapper.children, (opt) => {
+            opt.classList.remove('focused')
+        })
+    }
+
+    focusedOption() {
+        return this._focusedOption
+    }
+
+    focusOption(option) {
+        option = option || this.nextVisibleOptionAfter(option)
+
+        this.clearFocusedOption()
+
+        this._focusedOption = option
+        if(option) {
+            option.classList.add('focused')
+        }
+    }
+
+    nextVisibleOptionAfter(option) {
+        option = option || this.optionsWrapper.children[0]
+        while(option) {
+            if(option.nextSibling && option.nextSibling.style.display !== 'none') {
+                return option.nextSibling
+            }
+
+            option = option.nextSibling
+        }
+    }
+
+    previousVisibleOptionAfter(option) {
+        option = option || this.optionsWrapper.children[0]
+        while(option) {
+            if(option.previousSibling && option.previousSibling.style.display !== 'none') {
+                return option.previousSibling
+            }
+
+            option = option.previousSibling
+        }
     }
 
     filterOptions(str) {
@@ -169,6 +231,7 @@ class DlSelect extends HTMLElement {
         this.classList.remove('focused')
         this.optionsWrapper.style.display = 'none'
         this.inputField.value = this.getValue() || ''
+        this.inputField.blur()
     }
 }
 
