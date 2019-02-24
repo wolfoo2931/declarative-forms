@@ -32,6 +32,7 @@ style.textContent = `
         width: 100%;
         max-height: 230px;
         overflow: scroll;
+        box-shadow: 1px 1px rgba(0,0,0, 0.04);
     }
 
     dl-select .options-wrapper dl-option {
