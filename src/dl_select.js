@@ -29,6 +29,8 @@ style.textContent = `
         font-size: 0.9em;
         background-color: #fff;
         width: 100%;
+        max-height: 230px;
+        overflow: scroll;
     }
 
     dl-select .options-wrapper dl-option {
@@ -36,16 +38,10 @@ style.textContent = `
         border-right: 1px solid #bbb;
     }
 
-    dl-select .options-wrapper dl-option:first-child {
+    dl-select .options-wrapper {
         border-top: 1px solid #bbb;
-        border-top-left-radius: 4px;
-        border-top-right-radius: 4px;
-    }
-
-    dl-select .options-wrapper dl-option:last-child {
         border-bottom: 1px solid #bbb;
-        border-bottom-left-radius: 4px;
-        border-bottom-right-radius: 4px;
+        border-radius: 4px;
     }
 
     dl-select .input-wrapper input {
