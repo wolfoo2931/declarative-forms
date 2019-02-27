@@ -2,7 +2,7 @@ function DeclarativForm(attrs) {
     var self = this;
     this.fields = attrs.fields
     this.dom = document.createElement('div')
-    this.dom.classList.add('declarativ-form')
+    this.dom.classList.add('dl-form')
     this.formElement = document.createElement('form')
     this.dom.appendChild(this.formElement)
 
@@ -47,6 +47,13 @@ DeclarativForm.prototype = {
         return this.dom.outerHTML;
     },
 
+    openInModal: function() {
+        this.modalEl = this.modalEl || this.createModalElement()
+
+        this.modalEl.querySelector('.modal-content').appendChild(this.dom)
+        this.modalEl.style.display = 'block'
+    },
+
     getValues: function() {
         var result  = {}
 
@@ -55,6 +62,29 @@ DeclarativForm.prototype = {
         })
 
         return result
+    },
+
+    createModalElement: function() {
+        var modalWrapper = document.createElement('div'),
+            modal = document.createElement('div'),
+            modalContent = document.createElement('div'),
+            lowBar = document.createElement('div'),
+            okBtn = document.createElement('div')
+
+        modalWrapper.classList.add('dl-modal')
+        modalWrapper.style.display = 'none'
+        modal.classList.add('modal')
+        modalContent.classList.add('modal-content')
+        lowBar.classList.add('low-bar')
+        okBtn.classList.add('btn')
+        okBtn.innerHTML = 'OK'
+        lowBar.appendChild(okBtn)
+
+        modalWrapper.appendChild(modal)
+        modal.appendChild(modalContent)
+        modal.appendChild(lowBar)
+        document.body.appendChild(modalWrapper)
+        return modalWrapper
     }
 }
 
