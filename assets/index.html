@@ -6,28 +6,83 @@
         <link href="https://fonts.googleapis.com/css?family=Rubik:300" rel="stylesheet">
 
         <style>
-            #form-container {
+            body {
+                padding: 0px;
+                margin: 0px;
+            }
+
+            .dl-modal  {
+                position: absolute;
+                display: block;
+                margin: 0px;
+                padding: 0px;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.1);
+            }
+
+            .dl-modal .modal {
+                display: block;
+                padding: 50px 50px 10px 50px;
+                width: 500px;
+                margin: 0px auto;
+                margin-top: 50px;
+                border-radius: 4px;
+                background-color: #fff;
+                box-shadow: 0px 0px 23px -2px rgba(0,0,0,0.06);
+            }
+
+            .dl-modal .low-bar {
+                margin: 0px;
+                margin: 0px -50px -10px -50px;
+                height: 45px;
+                background-color: #f8f8f8;
+                border-bottom-left-radius: 4px;
+                border-bottom-right-radius: 4px;
+            }
+
+            .dl-modal .btn {
+                float: right;
+                padding: 5px 10px 5px 10px;
+                margin-top: 7px;
+                margin-right: 7px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
                 font-family: Rubik;
-                margin: auto;
+                color: #999;
+                background-color: transparent;
+                border-color: #999;
+                cursor: pointer;
+            }
+
+            .dl-modal .btn:hover {
+                color: #000;
+                border-color: #000;
+            }
+
+            .dl-form {
+                font-family: Rubik;
                 width: 500px;
             }
 
-            #form-container label {
+            .dl-form label {
                 display: block;
                 margin-bottom: 5px;
                 margin-left: 3px;
                 font-size: 0.9em;
                 color: #888;
             }
+
         </style>
     </head>
 
     <body>
-        <div id="form-container"></div>
 
     </body>
 
     <script>
+
+        var form;
 
         document.addEventListener("DOMContentLoaded", function(event) {
             var DeclarativForm = require('/src/declarativ_form.js')
@@ -45,9 +100,8 @@
                 ]
             }
 
-            var form = new DeclarativForm(attr)
-
-            container.innerHTML = form.getHTML()
+            form = new DeclarativForm(attr)
+            form.openInModal()
         });
 
     </script>
