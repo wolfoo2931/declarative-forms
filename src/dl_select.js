@@ -10,12 +10,12 @@ style.textContent = `
 
     dl-select .input-wrapper {
         display: inline-block;
-        border: 1px solid #ddd;
+        border: 2px solid #ddd;
         border-radius: 4px;
     }
 
     dl-select.focused .input-wrapper {
-        border: 1px solid #bbb;
+        border: 2px solid #bbb;
     }
 
     dl-select.focused .input-wrapper svg {
@@ -80,14 +80,15 @@ style.textContent = `
     dl-select .options-wrapper dl-option {
         display: block;
         padding: 5px;
+        color: #545454;
     }
 
     dl-select .options-wrapper dl-option:hover {
-        background-color: rgba(193, 234, 254, 0.3);
+        background-color: rgba(224, 240, 227, 0.4);
     }
 
     dl-select .options-wrapper dl-option.focused {
-        background-color: rgba(193, 234, 254, 0.3);
+        background-color: rgba(224, 240, 227, 0.4);
     }
 `
 
