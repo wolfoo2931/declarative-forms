@@ -1,4 +1,4 @@
-require './dl_select'
+var dl = require('./dl_select');
 
 function DeclarativForm(attrs) {
     var self = this;
