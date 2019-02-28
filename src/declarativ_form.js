@@ -1,3 +1,5 @@
+require './dl_select'
+
 function DeclarativForm(attrs) {
     var self = this;
     this.fields = attrs.fields
