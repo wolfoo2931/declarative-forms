@@ -54,6 +54,13 @@ DeclarativForm.prototype = {
         this.modalEl.style.display = 'block'
     },
 
+    closeModalIfOpen: function() {
+        if(this.modalEl) {
+            this.modalEl.remove()
+            this.modalEl = null
+        }
+    },
+
     getValues: function() {
         var result  = {}
 
@@ -78,6 +85,7 @@ DeclarativForm.prototype = {
         lowBar.classList.add('low-bar')
         okBtn.classList.add('btn')
         okBtn.innerHTML = 'OK'
+        okBtn.onclick = () => { this.closeModalIfOpen() }
         lowBar.appendChild(okBtn)
 
         modalWrapper.appendChild(modal)
