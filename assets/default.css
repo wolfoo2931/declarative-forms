@@ -5,6 +5,8 @@ body {
 
 .dl-modal  {
     position: absolute;
+    top: 0px;
+    left: 0px;
     display: block;
     margin: 0px;
     padding: 0px;
