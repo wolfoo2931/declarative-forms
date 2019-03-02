@@ -42,6 +42,30 @@ describe('DeclarativForm', () => {
             expect(await modalEl.isDisplayed()).toEqual(false)
         })
 
+        describe('when the modal is already open', () => {
+            it('does not add a second modal HTML element to the DOM', async () => {
+                var modals
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef)
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                okbtn = await $('.dl-modal .btn')
+                await okbtn.click()
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef)
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                modals = await $$('.dl-modal')
+                expect(await modals.length).toEqual(1)
+            })
+        })
+
         describe('when it is initilized in an even handler', () => {
             it('redners the dl-select box', async () => {
                 var modalEl, btn, notSelectedOption
