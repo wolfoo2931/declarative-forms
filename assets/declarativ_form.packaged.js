@@ -278,6 +278,7 @@ function DeclarativForm(attrs) {
 
         field.domElement = fieldElement
         fieldElement.name = field.name
+        fieldElement.setAttribute('name', field.name)
 
         if(field.displayName) {
             label = document.createElement('label')
