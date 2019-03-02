@@ -41,5 +41,35 @@ describe('DeclarativForm', () => {
             modalEl = await $('.dl-modal')
             expect(await modalEl.isDisplayed()).toEqual(false)
         })
+
+        describe('when it is initilized in an even handler', () => {
+            it('redners the dl-select box', async () => {
+                var modalEl, btn, notSelectedOption
+
+                await browser.executeAsync((formDef, done) => {
+                    var  btn = document.createElement('div')
+                    btn.innerHTML = 'click me'
+                    btn.classList.add('open-btn')
+                    document.body.appendChild(btn)
+
+                    btn.onclick = function() {
+                        var form = new DeclarativForm(formDef)
+                        form.openInModal()
+                    }
+
+                    done()
+                }, formDef)
+
+                modalEl = await $('.dl-modal')
+                expect(await modalEl.isExisting()).toEqual(false)
+                btn = await $('.open-btn')
+                await btn.click()
+                modalEl = await $('.dl-modal')
+                expect(await modalEl.isExisting()).toEqual(true)
+                expect(await modalEl.isDisplayed()).toEqual(true)
+                notSelectedOption = await $('dl-option=javascript')
+                expect(await notSelectedOption.isDisplayed()).toEqual(false)
+            })
+        })
     })
 })
