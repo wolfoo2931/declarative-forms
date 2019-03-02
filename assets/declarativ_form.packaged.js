@@ -125,19 +125,11 @@ class DlSelect extends HTMLElement {
 
         this.optionsWrapper.appendChild(this.noMatchesHint)
 
-        window.addEventListener('load', () => {
-            while(self.firstElementChild) {
-                self.firstElementChild.onmousedown = function() { self.setValue(this.innerText) }
-                self.firstElementChild.onmouseover = function() { self.clearFocusedOption() }
-                self.optionsWrapper.appendChild(self.firstElementChild)
-            }
-
-            self.inputWrapper.appendChild(self.inputField)
-            self.inputWrapper.appendChild(self.arrow)
-            self.appendChild(self.inputWrapper)
-            self.appendChild(self.optionsWrapper)
-            self.inputField.value = self.getValue()
-        })
+        if (document.readyState !== 'loading') {
+            this.loadOptions()
+        } else {
+            window.addEventListener('load', () => {self.loadOptions()})
+        }
 
         this.addEventListener("keydown", (e) => {
             var option = self.focusedOption()
@@ -151,6 +143,21 @@ class DlSelect extends HTMLElement {
                 e.preventDefault()
             }
         })
+    }
+
+    loadOptions() {
+        var self = this
+        while(self.firstElementChild) {
+            self.firstElementChild.onmousedown = function() { self.setValue(this.innerText) }
+            self.firstElementChild.onmouseover = function() { self.clearFocusedOption() }
+            self.optionsWrapper.appendChild(self.firstElementChild)
+        }
+
+        self.inputWrapper.appendChild(self.inputField)
+        self.inputWrapper.appendChild(self.arrow)
+        self.appendChild(self.inputWrapper)
+        self.appendChild(self.optionsWrapper)
+        self.inputField.value = self.getValue()
     }
 
     clearFocusedOption() {
