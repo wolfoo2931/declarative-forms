@@ -15,11 +15,11 @@ style.textContent = `
         border-radius: 4px;
     }
 
-    dl-select.focused .input-wrapper {
+    dl-select.dl-focused .input-wrapper {
         border: 2px solid #bbb;
     }
 
-    dl-select.focused .input-wrapper svg {
+    dl-select.dl-focused .input-wrapper svg {
         border-left: 1px solid #bbb;
         fill: #bbb;
     }
@@ -88,7 +88,7 @@ style.textContent = `
         background-color: rgba(224, 240, 227, 0.4);
     }
 
-    dl-select .options-wrapper dl-option.focused {
+    dl-select .options-wrapper dl-option.dl-focused {
         background-color: rgba(224, 240, 227, 0.4);
     }
 `
@@ -167,7 +167,7 @@ class DlSelect extends HTMLElement {
     clearFocusedOption() {
         this._focusedOption = null
         Array.prototype.forEach.call(this.optionsWrapper.children, (opt) => {
-            opt.classList.remove('focused')
+            opt.classList.remove('dl-focused')
         })
     }
 
@@ -182,7 +182,7 @@ class DlSelect extends HTMLElement {
 
         this._focusedOption = option
         if(option) {
-            option.classList.add('focused')
+            option.classList.add('dl-focused')
         }
     }
 
@@ -234,7 +234,7 @@ class DlSelect extends HTMLElement {
     }
 
     focus() {
-        this.classList.add('focused')
+        this.classList.add('dl-focused')
         this.inputField.placeholder = this.getValue() || 'Select ...'
         this.inputField.value = ''
         this.optionsWrapper.style.display = 'inline-block'
@@ -242,7 +242,7 @@ class DlSelect extends HTMLElement {
     }
 
     unfocus() {
-        this.classList.remove('focused')
+        this.classList.remove('dl-focused')
         this.optionsWrapper.style.display = 'none'
         this.inputField.value = this.getValue() || ''
         this.inputField.blur()
