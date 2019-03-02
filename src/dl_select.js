@@ -109,6 +109,8 @@ class DlSelect extends HTMLElement {
     connectedCallback() {
         var self = this
 
+        if(this.isInitialized) { return }
+
         this.inputWrapper.classList.add('input-wrapper')
         this.optionsWrapper.classList.add('options-wrapper')
         this.optionsWrapper.style.display = 'none'
@@ -142,6 +144,8 @@ class DlSelect extends HTMLElement {
                 e.preventDefault()
             }
         })
+
+        this.isInitialized = true;
     }
 
     loadOptions() {
