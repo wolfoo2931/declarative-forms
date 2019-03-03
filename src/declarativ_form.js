@@ -1,12 +1,13 @@
 var dl = require('./dl_select');
 
-function DeclarativForm(attrs) {
+function DeclarativForm(attrs, onChangeCallback) {
     var self = this;
     this.fields = attrs.fields
     this.dom = document.createElement('div')
     this.dom.classList.add('dl-form')
     this.formElement = document.createElement('form')
     this.dom.appendChild(this.formElement)
+    this.onChangeCallback = onChangeCallback
 
     this.fields.forEach(function(field) {
         var fieldElement, label
@@ -61,6 +62,10 @@ DeclarativForm.prototype = {
         if(this.modalEl) {
             this.modalEl.remove()
             this.modalEl = null
+        }
+
+        if(this.onChangeCallback) {
+            this.onChangeCallback(this.getValues())
         }
     },
 

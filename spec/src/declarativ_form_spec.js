@@ -2,6 +2,19 @@ var DeclarativForm = require('./../../src/declarativ_form.js');
 
 describe('DeclarativForms Object', () => {
     describe('constructor Function', () => {
+        describe('onChangeCallback Attribute', () => {
+            it('gets executed when the modal gets closed', (done) => {
+                  var callback = function(formData) {
+                      expect(formData).toEqual({fieldOne: ''})
+                      done()
+                  }
+
+                  var form = new DeclarativForm({fields: [ { name: 'fieldOne' } ]}, callback)
+                  form.openInModal()
+                  form.closeModalIfOpen()
+            })
+        })
+
         describe('fields Attribute', () => {
             it('is an array')
 
