@@ -136,12 +136,17 @@ class DlSelect extends HTMLElement {
             var option = self.focusedOption()
             if(e.key === 'ArrowDown') {
                 self.focusOption(self.nextVisibleOptionAfter(option))
+                e.preventDefault()
+                e.stopPropagation()
             } else if(e.key === 'ArrowUp') {
                 self.focusOption(self.previousVisibleOptionAfter(option))
+                e.preventDefault()
+                e.stopPropagation()
             } else if(e.key === 'Enter') {
                 self.setValue(option.innerText)
                 self.unfocus()
                 e.preventDefault()
+                e.stopPropagation()
             }
         })
 
