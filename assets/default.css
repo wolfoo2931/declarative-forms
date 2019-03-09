@@ -17,7 +17,7 @@ body {
 
 .dl-modal .modal {
     display: block;
-    padding: 50px 50px 10px 50px;
+    padding: 30px 50px 10px 50px;
     width: 500px;
     margin: 0px auto;
     margin-top: 50px;
@@ -65,4 +65,5 @@ body {
     font-size: 0.9em;
     color: #58565c;
     font-weight: #500;
+    margin-top: 25px;
 }
