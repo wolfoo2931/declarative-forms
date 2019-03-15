@@ -252,4 +252,28 @@ describe('DlSelect', () => {
             expect(await inputField.getValue()).toEqual('JavaScript')
         })
     })
+
+    describe('when each option has a value attribute', () => {
+        beforeEach(async () => {
+            await browser.url('dl_select_with_value_in_options.html')
+        })
+
+        it('returns the options value not the captions', async () => {
+            var dlOptions = await $('dl-option'),
+                inputField = await $(inputFieldSelector),
+                dlSelectValue
+
+            await inputField.click()
+            expect(await dlOptions.isDisplayed()).toEqual(true)
+
+            await dlOptions.click()
+
+            dlSelectValue = await browser.execute(function() {
+                return document.querySelector('dl-select').getValue()
+            })
+
+            expect(await inputField.getValue()).toEqual('English')
+            expect(dlSelectValue).toEqual('en')
+        })
+    })
 })
