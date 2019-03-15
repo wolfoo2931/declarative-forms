@@ -231,13 +231,15 @@ class DlSelect extends HTMLElement {
     }
 
     setValue(val) {
-        var option = this.querySelector('dl-option[value='+val+']')
-        if(option) {
-            this.setOption(option)
-        }
+        var option = this.querySelector('dl-option[value='+val+']') ||
+                     Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
+
+        this.setOption(option)
     }
 
     setOption(optionEl) {
+        if(!optionEl) { return false }
+
         this.selectedOptionEl = optionEl
         this.inputField.value = optionEl.innerText
         this.setAttribute('value', optionEl.getAttribute('value') || optionEl.innerText)
