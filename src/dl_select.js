@@ -143,7 +143,7 @@ class DlSelect extends HTMLElement {
                 e.preventDefault()
                 e.stopPropagation()
             } else if(e.key === 'Enter') {
-                self.setValue(option.innerText)
+                self.setOption(option)
                 self.unfocus()
                 e.preventDefault()
                 e.stopPropagation()
@@ -156,7 +156,7 @@ class DlSelect extends HTMLElement {
     loadOptions() {
         var self = this
         while(self.firstElementChild) {
-            self.firstElementChild.onmousedown = function() { self.setValue(this.innerText) }
+            self.firstElementChild.onmousedown = function() { self.setOption(this) }
             self.firstElementChild.onmouseover = function() { self.clearFocusedOption() }
             self.optionsWrapper.appendChild(self.firstElementChild)
         }
@@ -228,9 +228,26 @@ class DlSelect extends HTMLElement {
         this.noMatchesHint.style.display = hasMatched ? 'none' : 'block'
     }
 
-    setValue(value) {
-      this.inputField.value = value
-      this.setAttribute('value', value)
+    setOption(optionEl) {
+        this.selectedOptionEl = optionEl
+        this.inputField.value = optionEl.innerText
+        this.setAttribute('value', optionEl.getAttribute('value') || optionEl.innerText)
+    }
+
+    getDisplayedText() {
+        if(this.selectedOptionEl) {
+            return this.selectedOptionEl.innerText
+        } else {
+            return ''
+        }
+    }
+
+    getPlaceholderText() {
+        if(this.selectedOptionEl) {
+            return this.selectedOptionEl.innerText
+        } else {
+            return 'Select ...'
+        }
     }
 
     getValue() {
@@ -239,7 +256,7 @@ class DlSelect extends HTMLElement {
 
     focus() {
         this.classList.add('dl-focused')
-        this.inputField.placeholder = this.getValue() || 'Select ...'
+        this.inputField.placeholder = this.getPlaceholderText()
         this.inputField.value = ''
         this.optionsWrapper.style.display = 'inline-block'
         this.filterOptions(this.inputField.value)
@@ -248,7 +265,7 @@ class DlSelect extends HTMLElement {
     unfocus() {
         this.classList.remove('dl-focused')
         this.optionsWrapper.style.display = 'none'
-        this.inputField.value = this.getValue() || ''
+        this.inputField.value = this.getDisplayedText()
         this.inputField.blur()
     }
 }
