@@ -66,6 +66,26 @@ describe('DeclarativForms Object', () => {
                         })
                     })
 
+                    describe('when it is a to dimensional array', () => {
+                        it('provides a select box with option elements that have differnt value attribute', () => {
+                            var formDef = {
+                                fields: [
+                                    {
+                                        name: 'lang',
+                                        displayName: 'Language',
+                                        allowedValues: [['en', 'English'], ['de', 'German'], ['fr', 'French']],
+                                        defaultValue: 'fr'
+                                    }
+                                ]
+                            }
+
+                            var form = new DeclarativForm(formDef)
+
+                            expect(form.getHTML()).toMatch(/<dl-select name="lang" value="fr">/)
+                            expect(form.getHTML()).toMatch(/<dl-option value="en">English<\/dl-option>/)
+                        })
+                    })
+
                 })
 
                 describe('defaultValue Field', () => {
