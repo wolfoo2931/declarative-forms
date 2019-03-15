@@ -16,7 +16,13 @@ function DeclarativForm(attrs, onChangeCallback) {
             fieldElement = document.createElement('dl-select')
             field.allowedValues.forEach((val) => {
                 let optEl = document.createElement('dl-option')
-                optEl.innerHTML = val
+                if(Array.isArray(val)) {
+                    optEl.setAttribute('value', val[0])
+                    optEl.innerHTML = val[1]
+                } else {
+                    optEl.innerHTML = val
+                }
+
                 fieldElement.appendChild(optEl)
             })
         } else {

@@ -229,6 +229,13 @@ class DlSelect extends HTMLElement {
         this.noMatchesHint.style.display = hasMatched ? 'none' : 'block'
     }
 
+    setValue(val) {
+        var option = this.querySelector('dl-option[value='+val+']')
+        if(option) {
+            this.setOption(option)
+        }
+    }
+
     setOption(optionEl) {
         this.selectedOptionEl = optionEl
         this.inputField.value = optionEl.innerText
