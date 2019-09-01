@@ -166,7 +166,7 @@ class DlSelect extends HTMLElement {
         self.inputWrapper.appendChild(self.arrow)
         self.appendChild(self.inputWrapper)
         self.appendChild(self.optionsWrapper)
-        self.inputField.value = self.getValue()
+        self.setValue(self.getValue())
     }
 
     clearFocusedOption() {

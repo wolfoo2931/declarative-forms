@@ -9,6 +9,17 @@ var formDef = {
     ]
 }
 
+var formDefWithDisplayValue = {
+    fields: [
+        {
+            name: 'proglang',
+            displayName: 'Programming Language',
+            allowedValues: [["af","Afrikaans"],["sq","Albanian"],["ar-dz","Arabic (Algeria)"],["ar-bh","Arabic (Bahrain)"]],
+            defaultValue: 'ar-dz'
+        }
+    ]
+}
+
 describe('DeclarativForm', () => {
     describe('openInModal Function', () => {
         beforeEach(async () => {
@@ -40,6 +51,17 @@ describe('DeclarativForm', () => {
             await okbtn.click()
             modalEl = await $('.dl-modal')
             expect(await modalEl.isDisplayed()).toEqual(false)
+        })
+
+        it('shows the display values in the select box (not the internal values)', async () => {
+            await browser.executeAsync((formDef, done) => {
+                var form = new DeclarativForm(formDef)
+                form.openInModal()
+                done()
+            }, formDefWithDisplayValue)
+
+            var input = await $('.dl-modal input')
+            expect(await input.getValue()).toEqual('Arabic (Algeria)')
         })
 
         describe('when the modal is already open', () => {
