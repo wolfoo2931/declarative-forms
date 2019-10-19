@@ -12,10 +12,13 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
     this.fields.forEach(function(field) {
         var fieldElement, label
+        var allowedValues = (field.allowedValues instanceof Function) ?
+              field.allowedValues() :
+              field.allowedValues
 
-        if(field.allowedValues) {
+        if(allowedValues) {
             fieldElement = document.createElement('dl-select')
-            field.allowedValues.forEach((val) => {
+            allowedValues.forEach((val) => {
                 let optEl = document.createElement('dl-option')
                 if(Array.isArray(val)) {
                     optEl.setAttribute('value', val[0])
