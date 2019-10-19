@@ -1,6 +1,6 @@
 var dl = require('./dl_select');
 
-function DeclarativForm(attrs, onChangeCallback) {
+function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     var self = this;
     this.fields = attrs.fields
     this.dom = document.createElement('div')
@@ -8,6 +8,7 @@ function DeclarativForm(attrs, onChangeCallback) {
     this.formElement = document.createElement('form')
     this.dom.appendChild(this.formElement)
     this.onChangeCallback = onChangeCallback
+    this.onCancelCallback = onCancelCallback
 
     this.fields.forEach(function(field) {
         var fieldElement, label
@@ -58,10 +59,31 @@ DeclarativForm.prototype = {
     },
 
     openInModal: function() {
+        var self = this;
         this.modalEl = this.modalEl || this.createModalElement()
+
+        var escHandler = function(e) {
+            if(e.key === 'Escape') {
+                self.cancelModalIfCancelable()
+            }
+        }
+
+        document.body.removeEventListener('keydown', escHandler, true)
+        document.body.addEventListener('keydown', escHandler, true)
 
         this.modalEl.querySelector('.modal-content').appendChild(this.dom)
         this.modalEl.style.display = 'block'
+    },
+
+    cancelModalIfCancelable: function() {
+        if(this.onChangeCallback) {
+            if(this.modalEl) {
+                this.modalEl.remove()
+                this.modalEl = null
+            }
+
+            this.onCancelCallback()
+        }
     },
 
     closeModalIfOpen: function() {
@@ -93,7 +115,9 @@ DeclarativForm.prototype = {
             modal = document.createElement('div'),
             modalContent = document.createElement('div'),
             lowBar = document.createElement('div'),
-            okBtn = document.createElement('div')
+            upBar  = document.createElement('div'),
+            okBtn = document.createElement('div'),
+            cancelBtn = document.createElement('div')
 
         modalWrapper.classList.add('dl-modal')
         modalWrapper.style.display = 'none'
@@ -105,7 +129,15 @@ DeclarativForm.prototype = {
         okBtn.onclick = () => { this.closeModalIfOpen() }
         lowBar.appendChild(okBtn)
 
+        if(this.onChangeCallback) {
+            upBar.classList.add('up-bar')
+            cancelBtn.classList.add('cancelBtn')
+            cancelBtn.onclick = () => { this.cancelModalIfCancelable() }
+            upBar.appendChild(cancelBtn)
+        }
+
         modalWrapper.appendChild(modal)
+        modal.appendChild(upBar)
         modal.appendChild(modalContent)
         modal.appendChild(lowBar)
         document.body.appendChild(modalWrapper)

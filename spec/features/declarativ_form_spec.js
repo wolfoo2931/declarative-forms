@@ -64,6 +64,72 @@ describe('DeclarativForm', () => {
             expect(await input.getValue()).toEqual('Arabic (Algeria)')
         })
 
+        describe('when no cancelCallback is provided', () => {
+            it('opens a modal which can NOT be closed by pressing the x sign', async () => {
+                var cancelBtn, modalEl
+
+                formDef.cancelable = true
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef)
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                cancelBtn = await $('.dl-modal .cancelBtn')
+                modalEl = await $('.dl-modal')
+
+                expect(await cancelBtn.isDisplayed()).toEqual(false)
+                expect(await modalEl.isDisplayed()).toEqual(true)
+            })
+
+            it('opens a modal which can NOT be closed by pressing esc', async () => {
+                var cancelBtn, modalEl
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef)
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                await browser.keys('Escape')
+                modalEl = await $('.dl-modal')
+
+                expect(await modalEl.isDisplayed()).toEqual(true)
+            })
+        })
+
+        describe('when a cancelCallback is provided', () => {
+            it('opens a modal which can be closed by pressing the x sign', async () => {
+                var cancelBtn, modalEl
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef, () => {}, () => {})
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                cancelBtn = await $('.dl-modal .cancelBtn')
+                await cancelBtn.click()
+                modalEl = await $('.dl-modal')
+                expect(await modalEl.isDisplayed()).toEqual(false)
+            })
+
+            it('opens a modal which can be closed by pressing esc', async () => {
+                var okbtn, modalEl
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef, () => {}, () => {})
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                await browser.keys('Escape')
+                modalEl = await $('.dl-modal')
+                expect(await modalEl.isDisplayed()).toEqual(false)
+            })
+        })
+
         describe('when the modal is already open', () => {
             it('does not add a second modal HTML element to the DOM', async () => {
                 var modals
