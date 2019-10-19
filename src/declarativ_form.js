@@ -79,7 +79,7 @@ DeclarativForm.prototype = {
     },
 
     cancelModalIfCancelable: function() {
-        if(this.onChangeCallback) {
+        if(this.onCancelCallback) {
             if(this.modalEl) {
                 this.modalEl.remove()
                 this.modalEl = null
@@ -132,7 +132,7 @@ DeclarativForm.prototype = {
         okBtn.onclick = () => { this.closeModalIfOpen() }
         lowBar.appendChild(okBtn)
 
-        if(this.onChangeCallback) {
+        if(this.onCancelCallback) {
             upBar.classList.add('up-bar')
             cancelBtn.classList.add('cancelBtn')
             cancelBtn.onclick = () => { this.cancelModalIfCancelable() }
