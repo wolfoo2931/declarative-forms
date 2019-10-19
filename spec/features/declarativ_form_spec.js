@@ -68,10 +68,8 @@ describe('DeclarativForm', () => {
             it('opens a modal which can NOT be closed by pressing the x sign', async () => {
                 var cancelBtn, modalEl
 
-                formDef.cancelable = true
-
                 await browser.executeAsync((formDef, done) => {
-                    var form = new DeclarativForm(formDef)
+                    var form = new DeclarativForm(formDef, () => {})
                     form.openInModal()
                     done()
                 }, formDef)
@@ -95,6 +93,38 @@ describe('DeclarativForm', () => {
                 await browser.keys('Escape')
                 modalEl = await $('.dl-modal')
 
+                expect(await modalEl.isDisplayed()).toEqual(true)
+            })
+
+            it('works when it is executed a couple of times with different params', async () => {
+                var cancelBtn, modalEl
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef, () => {}, () => {})
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                cancelBtn = await $('.dl-modal .cancelBtn')
+                modalEl = await $('.dl-modal')
+
+                expect(await cancelBtn.isDisplayed()).toEqual(true)
+                expect(await modalEl.isDisplayed()).toEqual(true)
+
+                cancelBtn = await $('.dl-modal .cancelBtn')
+                await cancelBtn.click()
+
+                //Now open anther modal
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef, () => {})
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                cancelBtn = await $('.dl-modal .cancelBtn')
+                modalEl = await $('.dl-modal')
+
+                expect(await cancelBtn.isDisplayed()).toEqual(false)
                 expect(await modalEl.isDisplayed()).toEqual(true)
             })
         })
