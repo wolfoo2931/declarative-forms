@@ -10,6 +10,14 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.onChangeCallback = onChangeCallback
     this.onCancelCallback = onCancelCallback
 
+    document.addEventListener("keydown", (e) => {
+        if(e.key === 'Enter') {
+            self.closeModalIfOpen()
+            e.preventDefault()
+            e.stopPropagation()
+        }
+    })
+
     this.fields.forEach(function(field) {
         var fieldElement, label
         var allowedValues = (field.allowedValues instanceof Function) ?

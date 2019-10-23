@@ -65,6 +65,50 @@ describe('DeclarativForm', () => {
         })
 
         describe('when no cancelCallback is provided', () => {
+            it('opens a modal which can be confirmed by pressing Enter key', async () => {
+                var modalEl, wasConfirmed
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef, () => {
+                        window.confirmed = true
+                    })
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                modalEl = await $('.dl-modal')
+
+                expect(await modalEl.isDisplayed()).toEqual(true)
+
+                await browser.keys('Enter')
+
+                expect(await modalEl.isDisplayed()).toEqual(false)
+                expect(await browser.executeAsync(d => d(window.confirmed))).toEqual(true)
+            })
+
+            it('opens a modal which cannot be confirmed by pressing enter when the focus is within a filed', async () => {
+                var modalEl, wasConfirmed, input
+
+                await browser.executeAsync((formDef, done) => {
+                    var form = new DeclarativForm(formDef, () => {
+                        window.confirmed = true
+                    })
+                    form.openInModal()
+                    done()
+                }, formDef)
+
+                modalEl = await $('.dl-modal')
+                expect(await modalEl.isDisplayed()).toEqual(true)
+
+                input = await $('.dl-modal input')
+                input.click()
+
+                await browser.keys('Enter')
+
+                expect(await modalEl.isDisplayed()).toEqual(true)
+                expect(await browser.executeAsync(d => d(window.confirmed))).toBeFalsy()
+            })
+
             it('opens a modal which can NOT be closed by pressing the x sign', async () => {
                 var cancelBtn, modalEl
 
