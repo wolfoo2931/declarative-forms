@@ -302,6 +302,10 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
               field.allowedValues() :
               field.allowedValues
 
+        var message = (field.message instanceof Function) ?
+              field.message() :
+              field.message
+
         if(allowedValues) {
             fieldElement = document.createElement('dl-select')
             allowedValues.forEach((val) => {
@@ -315,6 +319,10 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
                 fieldElement.appendChild(optEl)
             })
+        } else if (field.message) {
+            fieldElement = document.createElement('p')
+            fieldElement.classList.add('message')
+            fieldElement.innerHTML = field.message
         } else {
             fieldElement = document.createElement('input')
         }
