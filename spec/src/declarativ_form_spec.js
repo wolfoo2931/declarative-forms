@@ -45,6 +45,42 @@ describe('DeclarativForms Object', () => {
                     })
                 })
 
+                describe('message Field', () => {
+                    it('represents a message displayed in the dialog', () => {
+                        var formDef = {
+                            fields: [
+                                {
+                                    name: 'info',
+                                    displayName: 'a Info Message',
+                                    message: "this is the info that should be displayed in the box"
+                                }
+                            ]
+                        }
+
+                        var form = new DeclarativForm(formDef)
+
+                        expect(form.getHTML()).toMatch(/this is the info that should be displayed in the box/)
+                        expect(form.getHTML()).toMatch(/a Info Message/)
+                    })
+
+                    it('can be a function returning the message', () => {
+                        var formDef = {
+                            fields: [
+                                {
+                                    name: 'info',
+                                    displayName: 'a Info Message',
+                                    message: function() {return "this is the info that should be displayed in the box"}
+                                }
+                            ]
+                        }
+
+                        var form = new DeclarativForm(formDef)
+
+                        expect(form.getHTML()).toMatch(/this is the info that should be displayed in the box/)
+                        expect(form.getHTML()).toMatch(/a Info Message/)
+                    })
+                })
+
                 describe('allowedValues Field', () => {
                     describe('when it is an array', () => {
                         it('provides a select box with all array items as options', () => {
