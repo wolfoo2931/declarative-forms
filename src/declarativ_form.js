@@ -10,13 +10,19 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.onChangeCallback = onChangeCallback
     this.onCancelCallback = onCancelCallback
 
-    document.addEventListener("keydown", (e) => {
+    this.escHandler = function(e) {
+        if(e.key === 'Escape') {
+            self.cancelModalIfCancelable()
+        }
+    }
+
+    this.enterHandler = function(e) {
         if(e.key === 'Enter') {
             self.closeModalIfOpen()
             e.preventDefault()
             e.stopPropagation()
         }
-    })
+    }
 
     this.fields.forEach(function(field) {
         var fieldElement, label
@@ -81,14 +87,11 @@ DeclarativForm.prototype = {
         var self = this;
         this.modalEl = this.modalEl || this.createModalElement()
 
-        var escHandler = function(e) {
-            if(e.key === 'Escape') {
-                self.cancelModalIfCancelable()
-            }
-        }
+        document.removeEventListener('keydown', this.enterHandler)
+        document.body.removeEventListener('keydown', this.escHandler, true)
 
-        document.body.removeEventListener('keydown', escHandler, true)
-        document.body.addEventListener('keydown', escHandler, true)
+        document.addEventListener("keydown", this.enterHandler)
+        document.body.addEventListener('keydown', this.escHandler, true)
 
         this.modalEl.querySelector('.modal-content').appendChild(this.dom)
         this.modalEl.style.display = 'block'
@@ -102,6 +105,9 @@ DeclarativForm.prototype = {
             }
 
             this.onCancelCallback()
+
+            document.removeEventListener('keydown', this.enterHandler)
+            document.body.removeEventListener('keydown', this.escHandler, true)
         }
     },
 
@@ -114,6 +120,9 @@ DeclarativForm.prototype = {
         if(this.onChangeCallback) {
             this.onChangeCallback(this.getValues())
         }
+
+        document.removeEventListener('keydown', this.enterHandler)
+        document.body.removeEventListener('keydown', this.escHandler, true)
     },
 
     getValues: function() {
