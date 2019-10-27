@@ -68,6 +68,15 @@ body {
     margin-top: 25px;
 }
 
+.dl-form form > input {
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    width: 233px;
+    padding: 6px;
+    font-size: 0.9em;
+    font-weight: 300;
+    font-family: 'Rubik', sans-serif;
+}
 
 .dl-modal .up-bar {
     margin: 0px;
