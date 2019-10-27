@@ -129,7 +129,7 @@ DeclarativForm.prototype = {
         var result  = {}
 
         this.fields.forEach(function(field) {
-            result[field.name] = field.domElement.getAttribute('value')
+            result[field.name] = field.domElement.getAttribute('value') || field.domElement.value
             if(!result[field.name]) {
                 result[field.name] = ''
             }
