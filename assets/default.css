@@ -69,6 +69,7 @@ body {
 }
 
 .dl-form form > input {
+    outline-width: 0;
     border: 2px solid #ddd;
     border-radius: 4px;
     width: 233px;
@@ -76,6 +77,10 @@ body {
     font-size: 0.9em;
     font-weight: 300;
     font-family: 'Rubik', sans-serif;
+}
+
+.dl-form form > input:focus {
+    border: 2px solid #bbb;
 }
 
 .dl-modal .up-bar {
