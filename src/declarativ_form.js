@@ -71,6 +71,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         if(field.defaultValue) {
             if(fieldElement.setValue) {
                 fieldElement.setValue(field.defaultValue)
+            } else if (fieldElement.tagName === 'INPUT') {
+                fieldElement.value = field.defaultValue
             } else {
                 fieldElement.setAttribute('value', field.defaultValue)
             }
