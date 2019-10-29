@@ -357,6 +357,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         if(field.defaultValue) {
             if(fieldElement.setValue) {
                 fieldElement.setValue(field.defaultValue)
+            } else if (fieldElement.tagName === 'INPUT') {
+                fieldElement.value = field.defaultValue
             } else {
                 fieldElement.setAttribute('value', field.defaultValue)
             }
@@ -415,7 +417,7 @@ DeclarativForm.prototype = {
         var result  = {}
 
         this.fields.forEach(function(field) {
-            result[field.name] = field.domElement.getAttribute('value')
+            result[field.name] = field.domElement.getAttribute('value') || field.domElement.value
             if(!result[field.name]) {
                 result[field.name] = ''
             }
