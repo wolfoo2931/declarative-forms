@@ -74,6 +74,7 @@ body {
     border-radius: 4px;
     width: 233px;
     max-width: 233px;
+    min-width: 233px;
     padding: 6px;
     font-size: 0.9em;
     font-weight: 300;
