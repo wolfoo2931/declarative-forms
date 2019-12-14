@@ -17,8 +17,8 @@ body {
 
 .dl-modal .modal {
     display: block;
-    padding: 30px 50px 10px 50px;
-    width: 500px;
+    padding: 30px 10px 10px 10px;
+    width: 400px;
     margin: 0px auto;
     margin-top: 50px;
     border-radius: 4px;
@@ -28,7 +28,7 @@ body {
 
 .dl-modal .low-bar {
     margin: 0px;
-    margin: 0px -50px -10px -50px;
+    margin: 0px -10px -10px -10px;
     height: 45px;
     background-color: #f8f8f8;
     border-bottom-left-radius: 4px;
@@ -38,8 +38,8 @@ body {
 .dl-modal .btn {
     float: right;
     padding: 5px 10px 5px 10px;
-    margin-top: 7px;
-    margin-right: 7px;
+    margin-top: 6px;
+    margin-right: 10px;
     border: 2px solid #1ea6a3;
     border-radius: 4px;
     font-family: Rubik;
@@ -72,9 +72,9 @@ body {
     outline-width: 0;
     border: 2px solid #ddd;
     border-radius: 4px;
-    width: 233px;
-    max-width: 233px;
-    min-width: 233px;
+    width: 400px;
+    max-width: 400px;
+    min-width: 400px;
     padding: 6px;
     font-size: 0.9em;
     font-weight: 300;
@@ -91,7 +91,7 @@ body {
 
 .dl-modal .up-bar {
     margin: 0px;
-    margin: -20px -38px -10px -50px;
+    margin: -20px -0px -10px -50px;
 }
 
 .cancelBtn {
