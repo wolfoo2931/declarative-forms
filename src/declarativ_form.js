@@ -10,6 +10,12 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.onChangeCallback = onChangeCallback
     this.onCancelCallback = onCancelCallback
 
+    if(attrs.classNames) {
+        attrs.classNames.forEach(function(name) {
+            self.formElement.classList.add(name)
+        })
+    }
+
     this.escHandler = function(e) {
         if(e.key === 'Escape') {
             self.cancelModalIfCancelable()

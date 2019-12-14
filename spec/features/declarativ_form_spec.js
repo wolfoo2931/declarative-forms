@@ -31,6 +31,32 @@ describe('DeclarativForm', () => {
         describe('attr Argument', () => {
            it('is an object');
 
+           describe('classNames Key', () => {
+              it('represents class names which will be added to the form DOM element', async () => {
+                  var formDef = {
+                      classNames: ['className1', 'className2'],
+                      fields: [
+                          {
+                              name: 'note',
+                              displayName: 'Your Note',
+                              largetext: true,
+                              allowNewlines: true,
+                              defaultValue: 'A longer text'
+                          }
+                      ]
+                  }
+
+                  await browser.executeAsync((formDef, done) => {
+                      var form = new DeclarativForm(formDef);
+                      form.openInModal()
+                      done()
+                  }, formDef)
+
+                  var form = await $('form')
+                  expect(await form.getAttribute('class')).toMatch('className1 className2')
+              })
+           })
+
            describe('fields Key', () => {
               it('is an array of objects');
 
