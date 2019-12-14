@@ -55,7 +55,7 @@ style.textContent = `
     }
 
     dl-select .input-wrapper input {
-        width: 200px;
+        width: 367px;
         outline-width: 0;
         margin-top: 2px;
         padding: 6px;
