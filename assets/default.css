@@ -81,6 +81,10 @@ body {
     font-family: 'Rubik', sans-serif;
 }
 
+.dl-form form > textarea {
+    min-height: 200px;
+}
+
 .dl-form form > input:focus {
     border: 2px solid #bbb;
 }
