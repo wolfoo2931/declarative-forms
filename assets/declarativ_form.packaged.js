@@ -304,9 +304,16 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
     this.enterHandler = function(e) {
         if(e.key === 'Enter') {
-            self.closeModalIfOpen()
-            e.preventDefault()
-            e.stopPropagation()
+            var field = self.fields.find(function(f) { return f.name === e.target.name})
+
+            if(!field || !field.largetext) {
+                self.closeModalIfOpen()
+                e.preventDefault()
+                e.stopPropagation()
+            } else if(!field.allowNewlines) {
+                e.preventDefault()
+                e.stopPropagation()
+            }
         }
     }
 
@@ -337,6 +344,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement = document.createElement('p')
             fieldElement.classList.add('message')
             fieldElement.innerHTML = field.message
+        } else if (field.largetext) {
+            fieldElement = document.createElement('textarea')
         } else {
             fieldElement = document.createElement('input')
         }
@@ -357,7 +366,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         if(field.defaultValue) {
             if(fieldElement.setValue) {
                 fieldElement.setValue(field.defaultValue)
-            } else if (fieldElement.tagName === 'INPUT') {
+            } else if (fieldElement.tagName === 'INPUT' || fieldElement.tagName === 'TEXTAREA') {
                 fieldElement.value = field.defaultValue
             } else {
                 fieldElement.setAttribute('value', field.defaultValue)
@@ -418,6 +427,7 @@ DeclarativForm.prototype = {
 
         this.fields.forEach(function(field) {
             result[field.name] = field.domElement.getAttribute('value') || field.domElement.value
+
             if(!result[field.name]) {
                 result[field.name] = ''
             }

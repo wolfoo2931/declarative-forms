@@ -19,11 +19,25 @@
             attr = {
                 fields: [
                     {
+                        name: 'note2',
+                        displayName: 'Your Note',
+                        largetext: true,
+                        allowNewlines: false,
+                        defaultValue: 'A longer text'
+                    },
+                    {
                       name: 'language',
                       displayName: 'Syntax Highlighting for',
                       message: 'this is the message',
                       allowedValues: ["XML", "HTML", "MathML", "SVG", "CSS", "clike", "JavaScript"],
                       defaultValue: 'JavaScript'
+                    },
+                    {
+                        name: 'note',
+                        displayName: 'Your Note',
+                        largetext: true,
+                        allowNewlines: true,
+                        defaultValue: 'A longer text'
                     }
                 ]
             }

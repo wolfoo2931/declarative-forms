@@ -21,11 +21,142 @@ var formDefWithDisplayValue = {
 }
 
 describe('DeclarativForm', () => {
-    describe('openInModal Function', () => {
-        beforeEach(async () => {
-            await browser.url('declarativ_form_modal.html')
-            await browser.keys('\uE000')
+
+    beforeEach(async () => {
+        await browser.url('declarativ_form_modal.html')
+        await browser.keys('\uE000')
+    })
+
+    describe('constructor Function', () => {
+        describe('attr Argument', () => {
+           it('is an object');
+
+           describe('fields Key', () => {
+              it('is an array of objects');
+
+              describe('field object', () => {
+                  describe('largetext Key', () => {
+                      it('will cause the form to display this field as textarea', async () => {
+                          var formDef = {
+                              fields: [
+                                  {
+                                      name: 'note',
+                                      displayName: 'Your Note',
+                                      largetext: true,
+                                      allowNewlines: true,
+                                      defaultValue: 'A longer text'
+                                  }
+                              ]
+                          }
+
+                          await browser.executeAsync((formDef, done) => {
+                              var form = new DeclarativForm(formDef, (formData) => {
+                                  window.formData = formData;
+                              });
+                              form.openInModal()
+                              done()
+                          }, formDef)
+
+                          var textarea = await $('textarea')
+                          await textarea.click()
+
+                          await browser.keys('new text')
+                          await browser.keys('Enter')
+                          await browser.keys('with new line')
+
+                          okbtn = await $('.dl-modal .btn')
+                          await okbtn.click()
+
+                          var formData = await browser.execute(() => {
+                              return window.formData
+                          })
+
+                          expect(formData).toEqual({ note: 'A longer textnew text\nwith new line' })
+                      })
+                  })
+
+                  describe('allowNewlines Key', () => {
+                      describe('when largetext is set to true and allowNewlines to false', () => {
+                          it('does not insert newlines when pressing enter in a textfield', async () => {
+                              var formDef = {
+                                  fields: [
+                                      {
+                                          name: 'note',
+                                          displayName: 'Your Note',
+                                          largetext: true,
+                                          allowNewlines: false,
+                                          defaultValue: 'A longer text'
+                                      }
+                                  ]
+                              }
+
+                              await browser.executeAsync((formDef, done) => {
+                                  var form = new DeclarativForm(formDef, (formData) => {
+                                      window.formData = formData;
+                                  });
+                                  form.openInModal()
+                                  done()
+                              }, formDef)
+
+                              var textarea = await $('textarea')
+                              await textarea.click()
+
+                              await browser.keys('new text')
+                              await browser.keys('Enter')
+                              await browser.keys('without new line')
+
+                              okbtn = await $('.dl-modal .btn')
+                              await okbtn.click()
+
+                              var formData = await browser.execute(() => {
+                                  return window.formData
+                              })
+
+                              expect(formData).toEqual({ note: 'A longer textnew textwithout new line' })
+                          })
+                      })
+
+                      describe('when largetext is set to false and allowNewlines to true', () => {
+                          it('closes the dialog when enter is pressed and does not insert a newline', async () => {
+
+                              var formDef = {
+                                  fields: [
+                                      {
+                                          name: 'proglang',
+                                          displayName: 'Programming Language',
+                                          defaultValue: 'python'
+                                      }
+                                  ]
+                              }
+
+                              await browser.executeAsync((formDef, done) => {
+                                  var form = new DeclarativForm(formDef, (formData) => {
+                                      window.formData = formData;
+                                  });
+                                  form.openInModal()
+                                  done()
+                              }, formDef)
+
+                              var inputfield = await $('input')
+                              await inputfield.click()
+
+                              await browser.keys('new text')
+                              await browser.keys('Enter')
+
+                              var formData = await browser.execute(() => {
+                                  return window.formData
+                              })
+
+                              expect(formData).toEqual({ proglang: 'pythonnew text' })
+                          })
+                      })
+                  })
+              })
+           })
         })
+    })
+
+    describe('openInModal Function', () => {
 
         it('opens a modal', async () => {
             await browser.executeAsync((formDef, done) => {
