@@ -60,6 +60,7 @@ body {
 
 .dl-form label {
     display: block;
+    width: 400px;
     margin-bottom: 7px;
     margin-left: 2px;
     font-size: 0.9em;
