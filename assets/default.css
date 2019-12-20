@@ -90,6 +90,16 @@ body {
     border: 2px solid #bbb;
 }
 
+.dl-form form > p {
+    border: none;
+    max-width: 360px;
+    min-width: 360px;
+    padding: 6px;
+    padding-top: 20px;
+    line-height: 150%;
+    font-family: 'Rubik', sans-serif;
+}
+
 .dl-modal .up-bar {
     margin: 0px;
     margin: -20px -0px -10px -50px;
