@@ -9,6 +9,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.dom.appendChild(this.formElement)
     this.onChangeCallback = onChangeCallback
     this.onCancelCallback = onCancelCallback
+    this.buttons = attrs.buttons
 
     if(attrs.classNames) {
         attrs.classNames.forEach(function(name) {
@@ -205,14 +206,16 @@ DeclarativForm.prototype = {
         }
     },
 
-    closeModalIfOpen: function() {
+    closeModalIfOpen: function(callaback) {
+        callaback = callaback || this.onChangeCallback
+
         if(this.modalEl) {
             this.modalEl.remove()
             this.modalEl = null
         }
 
-        if(this.onChangeCallback) {
-            this.onChangeCallback(this.getValues())
+        if(callaback) {
+            callaback(this.getValues())
         }
 
         document.removeEventListener('keydown', this.enterHandler)
@@ -244,7 +247,8 @@ DeclarativForm.prototype = {
             upBar  = document.createElement('div'),
             okBtn = document.createElement('div'),
             cancelBtn = document.createElement('div'),
-            tabWrapper = document.createElement('div')
+            tabWrapper = document.createElement('div'),
+            tmpBtn
 
         modalWrapper.classList.add('dl-modal')
         modalWrapper.style.display = 'none'
@@ -255,7 +259,23 @@ DeclarativForm.prototype = {
         okBtn.classList.add('btn')
         okBtn.innerHTML = 'OK'
         okBtn.onclick = () => { this.closeModalIfOpen() }
-        lowBar.appendChild(okBtn)
+
+        if(this.buttons) {
+            Object.keys(this.buttons).forEach((btn => {
+                tmpBtn = document.createElement('div')
+                tmpBtn.classList.add('btn')
+                tmpBtn.innerHTML = btn
+                tmpBtn.onclick = () => { this.closeModalIfOpen(this.buttons[btn]) }
+
+                lowBar.appendChild(tmpBtn)
+            }))
+        } else {
+            lowBar.appendChild(okBtn)
+        }
+
+
+
+
 
         if(this.onCancelCallback) {
             upBar.classList.add('up-bar')
