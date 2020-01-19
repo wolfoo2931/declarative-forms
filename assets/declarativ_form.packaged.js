@@ -243,6 +243,10 @@ class DlSelect extends HTMLElement {
         this.selectedOptionEl = optionEl
         this.inputField.value = optionEl.innerText
         this.setAttribute('value', optionEl.getAttribute('value') || optionEl.innerText)
+
+        var evt = document.createEvent("HTMLEvents")
+        evt.initEvent("change", false, true)
+        this.dispatchEvent(evt)
     }
 
     getDisplayedText() {
@@ -324,14 +328,19 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     }
 
     this.fields.forEach(function(field) {
-        var fieldElement, label
-        var allowedValues = (field.allowedValues instanceof Function) ?
-              field.allowedValues() :
-              field.allowedValues
+        var fieldWrapper = document.createElement('div'),
+            fieldElement, label, allowedValues, message
 
-        var message = (field.message instanceof Function) ?
-              field.message() :
-              field.message
+        allowedValues = (field.allowedValues instanceof Function) ?
+            field.allowedValues() :
+            field.allowedValues
+
+        message = (field.message instanceof Function) ?
+            field.message() :
+            field.message
+
+        fieldWrapper.id = 'dl-form-field-wrapper-for-' + field.name
+        fieldWrapper.classList.add('dl-form-field-wrapper')
 
         if(allowedValues) {
             fieldElement = document.createElement('dl-select')
@@ -342,6 +351,10 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                     optEl.innerHTML = val[1]
                 } else {
                     optEl.innerHTML = val
+                }
+
+                fieldElement.onchange = function() {
+                    self.updateForm();
                 }
 
                 fieldElement.appendChild(optEl)
@@ -364,10 +377,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             label = document.createElement('label')
             label.innerHTML = field.displayName
             label.setAttribute('for', field.name)
-            self.dom.children[0].appendChild(label)
+            fieldWrapper.appendChild(label)
         }
 
-        self.dom.children[0].appendChild(fieldElement)
+        fieldWrapper.appendChild(fieldElement)
+        self.dom.children[0].appendChild(fieldWrapper)
 
         if(field.defaultValue) {
             if(fieldElement.setValue) {
@@ -382,6 +396,23 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 }
 
 DeclarativForm.prototype = {
+
+    updateForm: function() {
+        var formData = this.getValues();
+
+        this.fields.forEach(function(field) {
+            if(!field.domElement) {
+                return;
+            }
+
+            if(field.isActive && !field.isActive(formData)) {
+                field.domElement.parentElement.classList.add('inactive')
+            } else if(field.isActive && field.isActive(formData)) {
+                field.domElement.parentElement.classList.remove('inactive')
+            }
+        });
+    },
+
     getHTML: function() {
         return this.dom.outerHTML;
     },
@@ -431,7 +462,10 @@ DeclarativForm.prototype = {
     getValues: function() {
         var result  = {}
 
-        this.fields.forEach(function(field) {
+        this.fields.filter(function(field) {
+            return field.domElement && !field.domElement.parentElement.classList.contains('inactive')
+        }).forEach(function(field) {
+            if(!field.domElement) { return }
             result[field.name] = field.domElement.getAttribute('value') || field.domElement.value
 
             if(!result[field.name]) {

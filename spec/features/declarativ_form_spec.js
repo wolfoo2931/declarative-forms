@@ -61,6 +61,205 @@ describe('DeclarativForm', () => {
               it('is an array of objects');
 
               describe('field object', () => {
+
+                  describe('isActive Key', () => {
+                      it('must be a function')
+
+                      it('will cause the form to not display the field when the function returns false', async () => {
+                          await browser.executeAsync((done) => {
+                              var formDef = {
+                                  fields: [
+                                      {
+                                          name: 'withNote',
+                                          displayName: 'When this is set to "Yes", you can write a note in addion',
+                                          message: 'this is the message',
+                                          allowedValues: ["Yes", "No"],
+                                          defaultValue: 'No'
+                                      },
+                                      {
+                                          name: 'note',
+                                          displayName: 'Your Note',
+                                          defaultValue: 'A text',
+                                          isActive: function (formData) {
+                                              return formData.withNote === 'Yes'
+                                          }
+                                      }
+                                  ]
+                              }
+
+                              var form = new DeclarativForm(formDef, (formData) => {
+                                  window.formData = formData;
+                              });
+                              form.openInModal()
+                              done()
+                          })
+
+                          var noteField = await $('input[name=note]')
+
+                          expect(await noteField.isDisplayed()).toEqual(false)
+                      })
+
+                      it('will cause the form to display the field when the function returns true', async () => {
+                          await browser.executeAsync((done) => {
+                              var formDef = {
+                                  fields: [
+                                      {
+                                          name: 'withNote',
+                                          displayName: 'When this is set to "Yes", you can write a note in addion',
+                                          message: 'this is the message',
+                                          allowedValues: ["Yes", "No"],
+                                          defaultValue: 'Yes'
+                                      },
+                                      {
+                                          name: 'note',
+                                          displayName: 'Your Note',
+                                          defaultValue: 'A text',
+                                          isActive: function (formData) {
+                                              return formData.withNote === 'Yes'
+                                          }
+                                      }
+                                  ]
+                              }
+
+                              var form = new DeclarativForm(formDef, (formData) => {
+                                  window.formData = formData;
+                              });
+                              form.openInModal()
+                              done()
+                          })
+
+                          var noteField = await $('input[name=note]')
+                          expect(await noteField.isDisplayed()).toEqual(true)
+                      })
+
+                      it('will check whether the field should be displayed every time the form gets updates', async () => {
+                          await browser.executeAsync((done) => {
+                              var formDef = {
+                                  fields: [
+                                      {
+                                          name: 'withNote',
+                                          displayName: 'When this is set to "Yes", you can write a note in addion',
+                                          message: 'this is the message',
+                                          allowedValues: ["Yes", "No"],
+                                          defaultValue: 'Yes'
+                                      },
+                                      {
+                                          name: 'note',
+                                          displayName: 'Your Note',
+                                          defaultValue: 'A text',
+                                          isActive: function (formData) {
+                                              return formData.withNote === 'Yes'
+                                          }
+                                      }
+                                  ]
+                              }
+
+                              var form = new DeclarativForm(formDef, (formData) => {
+                                  window.formData = formData;
+                              });
+                              form.openInModal()
+                              done()
+                          })
+
+                          var noteField = await $('input[name=note]')
+                          expect(await noteField.isDisplayed()).toEqual(true)
+
+                          var inputField = await $('dl-select input')
+                          await inputField.click()
+                          await browser.keys('ArrowDown')
+                          await browser.keys('ArrowDown')
+                          await browser.keys('Enter')
+
+                          noteField = await $('input[name=note]')
+                          expect(await noteField.isDisplayed()).toEqual(false)
+
+                          inputField = await $('dl-select input')
+                          await inputField.click()
+                          await browser.keys('ArrowDown')
+                          await browser.keys('Enter')
+
+                          expect(await noteField.isDisplayed()).toEqual(true)
+                      })
+
+                      it('will not include the field in the formData when the field is disabled', async () => {
+                          await browser.executeAsync((done) => {
+                              var formDef = {
+                                  fields: [
+                                      {
+                                          name: 'withNote',
+                                          displayName: 'When this is set to "Yes", you can write a note in addion',
+                                          message: 'this is the message',
+                                          allowedValues: ["Yes", "No"],
+                                          defaultValue: 'No'
+                                      },
+                                      {
+                                          name: 'note',
+                                          displayName: 'Your Note',
+                                          defaultValue: 'A text',
+                                          isActive: function (formData) {
+                                              return formData.withNote === 'Yes'
+                                          }
+                                      }
+                                  ]
+                              }
+
+                              var form = new DeclarativForm(formDef, (formData) => {
+                                  window.formData = formData;
+                              });
+                              form.openInModal()
+                              done()
+                          })
+
+                          okbtn = await $('.dl-modal .btn')
+                          await okbtn.click()
+
+                          var formData = await browser.execute(() => {
+                              return window.formData
+                          })
+
+                          expect(formData).toEqual({ withNote: 'No' })
+                      })
+
+                      it('will include the field in the formData when the field is disabled', async () => {
+                          await browser.executeAsync((done) => {
+                              var formDef = {
+                                  fields: [
+                                      {
+                                          name: 'withNote',
+                                          displayName: 'When this is set to "Yes", you can write a note in addion',
+                                          message: 'this is the message',
+                                          allowedValues: ["Yes", "No"],
+                                          defaultValue: 'Yes'
+                                      },
+                                      {
+                                          name: 'note',
+                                          displayName: 'Your Note',
+                                          defaultValue: 'A text',
+                                          isActive: function (formData) {
+                                              return formData.withNote === 'Yes'
+                                          }
+                                      }
+                                  ]
+                              }
+
+                              var form = new DeclarativForm(formDef, (formData) => {
+                                  window.formData = formData;
+                              });
+                              form.openInModal()
+                              done()
+                          })
+
+                          okbtn = await $('.dl-modal .btn')
+                          await okbtn.click()
+
+                          var formData = await browser.execute(() => {
+                              return window.formData
+                          })
+
+                          expect(formData).toEqual({ withNote: 'Yes', note: 'A text' })
+                      })
+                  })
+
                   describe('largetext Key', () => {
                       it('will cause the form to display this field as textarea', async () => {
                           var formDef = {
