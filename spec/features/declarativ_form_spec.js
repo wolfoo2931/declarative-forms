@@ -62,6 +62,66 @@ describe('DeclarativForm', () => {
 
               describe('field object', () => {
 
+                  describe('tab Key', () => {
+                      it('can be used to group fields', async () => {
+                          var formDef = {
+                              fields: [
+                                  {
+                                      name: 'setting',
+                                      displayName: 'Your Setting',
+                                      defaultValue: 'A longer text',
+                                      tab: 'General Settings'
+                                  },
+                                  {
+                                      name: 'setting2',
+                                      displayName: 'Your Setting number two',
+                                      defaultValue: 'A longer text',
+                                      tab: 'General Settings'
+                                  },
+                                  {
+                                      name: 'note',
+                                      displayName: 'Your Note',
+                                      defaultValue: 'A longer text',
+                                      tab: 'Details'
+                                  }
+                              ]
+                          }
+
+                          await browser.executeAsync((formDef, done) => {
+                              var form = new DeclarativForm(formDef, (formData) => {
+                                  window.formData = formData;
+                              });
+                              form.openInModal()
+                              done()
+                          }, formDef)
+
+                          var settingsField = await $('input[name=setting]'),
+                              settings2Field = await $('input[name=setting2]'),
+                              noteField = await $('input[name=note]'),
+                              settingsTabBtn = await $('.dl-tab-btn.GeneralSettings'),
+                              detailsTabBtn = await $('.dl-tab-btn.Details'),
+                              allTabBts = await $$('.dl-tab-btn')
+
+                          expect(allTabBts.length).toEqual(2)
+
+                          expect(await settingsField.isDisplayed()).toEqual(true)
+                          expect(await settings2Field.isDisplayed()).toEqual(true)
+                          expect(await noteField.isDisplayed()).toEqual(false)
+
+                          await detailsTabBtn.click()
+
+                          expect(await settingsField.isDisplayed()).toEqual(false)
+                          expect(await settings2Field.isDisplayed()).toEqual(false)
+                          expect(await noteField.isDisplayed()).toEqual(true)
+
+                          await settingsTabBtn.click()
+
+                          expect(await settingsField.isDisplayed()).toEqual(true)
+                          expect(await settings2Field.isDisplayed()).toEqual(true)
+                          expect(await noteField.isDisplayed()).toEqual(false)
+                      })
+                  })
+
                   describe('isActive Key', () => {
                       it('must be a function')
 

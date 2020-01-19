@@ -52,6 +52,10 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         fieldWrapper.id = 'dl-form-field-wrapper-for-' + field.name
         fieldWrapper.classList.add('dl-form-field-wrapper')
 
+        if(field.tab) {
+            fieldWrapper.classList.add(field.tab.replace(/\s/g, ''))
+        }
+
         if(allowedValues) {
             fieldElement = document.createElement('dl-select')
             allowedValues.forEach((val) => {
@@ -137,8 +141,54 @@ DeclarativForm.prototype = {
         document.addEventListener("keydown", this.enterHandler)
         document.body.addEventListener('keydown', this.escHandler, true)
 
+        this.updateTabs()
         this.modalEl.querySelector('.modal-content').appendChild(this.dom)
         this.modalEl.style.display = 'block'
+
+    },
+
+    updateTabs: function() {
+        var tabsWrapper = this.modalEl.querySelector('.tabWrapper'),
+            tabs = this.fields.filter(f => f.tab).map(f => f.tab).filter((value, index, self) => self.indexOf(value) === index),
+            self = this, tmpTabEl
+
+        tabsWrapper.innerHTML = ''
+
+        tabs.forEach((tab) => {
+            tmpTabEl = document.createElement('div')
+            tmpTabEl.classList.add('dl-tab-btn')
+            tmpTabEl.classList.add(tab.replace(/\s/g, ''))
+            tmpTabEl.innerHTML = tab
+            tmpTabEl.onclick = function() {
+                self.setActiveTab(tab)
+            }
+            tabsWrapper.appendChild(tmpTabEl)
+        })
+
+        if(tabs[0]) {
+            this.setActiveTab(tabs[0])
+        }
+    },
+
+    setActiveTab: function(tab) {
+        var tabClassName = tab.replace(/\s/g, ''),
+            currentActiveTabBtn = document.querySelector('.dl-tab-btn.active'),
+            tabBtn = document.querySelector('.dl-tab-btn.' + tabClassName)
+
+        if(currentActiveTabBtn) {
+            currentActiveTabBtn.classList.remove('active')
+        }
+
+        tabBtn.classList.add('active')
+
+        this.fields.forEach(field => {
+            if(!field.domElement) { return }
+            if(field.tab === tab) {
+                field.domElement.parentElement.classList.remove('notInTab')
+            } else {
+                field.domElement.parentElement.classList.add('notInTab')
+            }
+        })
     },
 
     cancelModalIfCancelable: function() {
@@ -193,12 +243,14 @@ DeclarativForm.prototype = {
             lowBar = document.createElement('div'),
             upBar  = document.createElement('div'),
             okBtn = document.createElement('div'),
-            cancelBtn = document.createElement('div')
+            cancelBtn = document.createElement('div'),
+            tabWrapper = document.createElement('div')
 
         modalWrapper.classList.add('dl-modal')
         modalWrapper.style.display = 'none'
         modal.classList.add('modal')
         modalContent.classList.add('modal-content')
+        tabWrapper.classList.add('tabWrapper')
         lowBar.classList.add('low-bar')
         okBtn.classList.add('btn')
         okBtn.innerHTML = 'OK'
@@ -214,6 +266,7 @@ DeclarativForm.prototype = {
 
         modalWrapper.appendChild(modal)
         modal.appendChild(upBar)
+        modal.appendChild(tabWrapper)
         modal.appendChild(modalContent)
         modal.appendChild(lowBar)
         document.body.appendChild(modalWrapper)
