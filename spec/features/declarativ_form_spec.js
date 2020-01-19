@@ -31,6 +31,42 @@ describe('DeclarativForm', () => {
         describe('attr Argument', () => {
            it('is an object');
 
+           describe('bottons Key', () => {
+              it('can be used to define custom buttons for the modal dialog', async () => {
+                  await browser.executeAsync((done) => {
+                      var formDef = {
+                          fields: [
+                              {
+                                  name: 'note',
+                                  displayName: 'Your Note',
+                                  defaultValue: 'A text'
+                              }
+                          ],
+                          buttons: {
+                              'Save & Export': function(formData) {
+                                 window.actionExecuted = ['Save & Export', formData]
+                              }
+                          }
+                      }
+
+                      var form = new DeclarativForm(formDef, (formData) => {
+                          window.formData = formData;
+                      });
+                      form.openInModal()
+                      done()
+                  })
+
+                  okbtn = await $('.dl-modal .btn')
+                  await okbtn.click()
+
+                  var actionExecuted = await browser.execute(() => {
+                      return window.actionExecuted
+                  })
+
+                  expect(actionExecuted).toEqual(['Save & Export', { note: 'A text' }])
+              })
+           })
+
            describe('classNames Key', () => {
               it('represents class names which will be added to the form DOM element', async () => {
                   var formDef = {

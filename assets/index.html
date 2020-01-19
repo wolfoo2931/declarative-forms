@@ -34,7 +34,16 @@
                         defaultValue: 'A longer text',
                         tab: 'Special'
                     }
-                ]
+                ],
+
+                buttons: {
+                    'Save & Export': function(formData) {
+                      console.log('save&export', formData)
+                    },
+                    'Save': function(formData) {
+                        console.log('save', formData)
+                    }
+                }
             }
 
             form = new DeclarativForm(attr, () => {}, () => {})
