@@ -242,6 +242,10 @@ class DlSelect extends HTMLElement {
         this.selectedOptionEl = optionEl
         this.inputField.value = optionEl.innerText
         this.setAttribute('value', optionEl.getAttribute('value') || optionEl.innerText)
+
+        var evt = document.createEvent("HTMLEvents")
+        evt.initEvent("change", false, true)
+        this.dispatchEvent(evt)
     }
 
     getDisplayedText() {
