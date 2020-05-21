@@ -27,6 +27,12 @@
                         tab: 'General Settings'
                     },
                     {
+                        name: 'rendered',
+
+                        render: (dom, formData) => {dom.innerHTML = JSON.stringify(formData)},
+                        tab: 'General Settings'
+                    },
+                    {
                         name: 'note',
                         displayName: 'Your Note',
                         largetext: true,

@@ -125,6 +125,16 @@ body {
     font-family: 'Rubik', sans-serif;
 }
 
+.dl-form form .render {
+    width: 400px;
+    max-width: 400px;
+    min-width: 400px;
+    padding: 6px;
+    font-size: 0.9em;
+    font-weight: 300;
+    font-family: 'Rubik', sans-serif;
+}
+
 .dl-form form > .dl-form-field-wrapper > textarea {
     min-height: 200px;
 }
