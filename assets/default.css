@@ -90,7 +90,6 @@ body {
 
 .dl-form {
     font-family: Rubik;
-    width: 500px;
 }
 
 .dl-form label {
@@ -133,6 +132,7 @@ body {
     font-size: 0.9em;
     font-weight: 300;
     font-family: 'Rubik', sans-serif;
+    text-align: center;
 }
 
 .dl-form form > .dl-form-field-wrapper > textarea {
