@@ -19,7 +19,7 @@ body {
 .dl-modal .modal {
     display: block;
     padding: 30px 10px 10px 10px;
-    width: 400px;
+    width: 416px;
     margin: 50px auto;
     border-radius: 4px;
     background-color: #fff;
@@ -28,7 +28,7 @@ body {
 
 .dl-modal .low-bar {
     margin: 0px;
-    margin: 0px -10px -10px -10px;
+    margin: 15px -10px -10px -10px;
     height: 45px;
     background-color: #f8f8f8;
     border-bottom-left-radius: 4px;
