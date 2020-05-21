@@ -118,6 +118,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             }
         }
     })
+
+    self.updateForm()
 }
 
 DeclarativForm.prototype = {
