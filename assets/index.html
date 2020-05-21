@@ -22,19 +22,20 @@
                         name: 'language',
                         displayName: 'Syntax Highlighting for a ... long long long long long long long long long long long name',
                         message: 'this is the message',
+                        tooltip: 'this is a tooltip<br/><b>some</b>',
                         allowedValues: ["XML", "HTML", "MathML", "SVG", "CSS", "clike", "JavaScript"],
                         defaultValue: 'JavaScript',
                         tab: 'General Settings'
                     },
                     {
                         name: 'rendered',
-
                         render: (dom, formData) => {dom.innerHTML = JSON.stringify(formData)},
                         tab: 'General Settings'
                     },
                     {
                         name: 'note',
                         displayName: 'Your Note',
+                        tooltip: 'this is a tooltip<br/><b>some</b>',
                         largetext: true,
                         allowNewlines: true,
                         defaultValue: 'A longer text',
