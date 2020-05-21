@@ -1,4 +1,5 @@
 var dl = require('./dl_select');
+var tippy = require('tippy.js').default;
 
 function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     var self = this;
@@ -40,7 +41,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
     this.fields.forEach(function(field) {
         var fieldWrapper = document.createElement('div'),
-            fieldElement, label, allowedValues, message
+            fieldElement, label, allowedValues, message, tooltip
 
         allowedValues = (field.allowedValues instanceof Function) ?
             field.allowedValues() :
@@ -101,6 +102,15 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         if(field.displayName) {
             label = document.createElement('label')
             label.innerHTML = field.displayName
+
+            if(field.tooltip) {
+                tooltip = document.createElement('span')
+                tooltip.dataset['tippyContent'] = field.tooltip
+                tooltip.classList.add('dl-tooltip')
+                tooltip.innerHTML = '?'
+                console.log(tooltip)
+                label.appendChild(tooltip)
+            }
             label.setAttribute('for', field.name)
             fieldWrapper.appendChild(label)
         }
@@ -165,7 +175,10 @@ DeclarativForm.prototype = {
         this.updateTabs()
         this.modalEl.querySelector('.modal-content').appendChild(this.dom)
         this.modalEl.style.display = 'block'
-
+        tippy('[data-tippy-content]', {
+            placement: 'right',
+            allowHTML: true
+        })
     },
 
     updateTabs: function() {
@@ -292,10 +305,6 @@ DeclarativForm.prototype = {
         } else {
             lowBar.appendChild(okBtn)
         }
-
-
-
-
 
         if(this.onCancelCallback) {
             upBar.classList.add('up-bar')

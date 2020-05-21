@@ -25,7 +25,9 @@
     "url": "https://github.com/wolfoo2931/declarativ-forms/issues"
   },
   "homepage": "https://github.com/wolfoo2931/declarativ-forms#readme",
-  "dependencies": {},
+  "dependencies": {
+    "tippy.js": "^6.2.3"
+  },
   "devDependencies": {
     "@wdio/cli": "5.4.17",
     "@wdio/jasmine-framework": "^5.4.14",
