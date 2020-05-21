@@ -78,10 +78,20 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement = document.createElement('p')
             fieldElement.classList.add('message')
             fieldElement.innerHTML = field.message
+        } else if (field.render) {
+            fieldElement = document.createElement('p')
+            fieldElement.classList.add('render')
+            field.render(fieldElement, self.formData)
         } else if (field.largetext) {
             fieldElement = document.createElement('textarea')
+            fieldElement.oninput = fieldElement.onchange = function() {
+                self.updateForm();
+            }
         } else {
             fieldElement = document.createElement('input')
+            fieldElement.oninput = fieldElement.onchange = function() {
+                self.updateForm();
+            }
         }
 
         field.domElement = fieldElement
@@ -124,6 +134,14 @@ DeclarativForm.prototype = {
                 field.domElement.parentElement.classList.add('inactive')
             } else if(field.isActive && field.isActive(formData)) {
                 field.domElement.parentElement.classList.remove('inactive')
+            }
+
+            if(field.onFormChange) {
+                field.onFormChange(formData)
+            }
+
+            if(field.render) {
+                field.render(field.domElement, formData)
             }
         });
     },
