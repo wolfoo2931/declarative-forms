@@ -108,7 +108,6 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 tooltip.dataset['tippyContent'] = field.tooltip
                 tooltip.classList.add('dl-tooltip')
                 tooltip.innerHTML = '?'
-                console.log(tooltip)
                 label.appendChild(tooltip)
             }
             label.setAttribute('for', field.name)
@@ -177,7 +176,8 @@ DeclarativForm.prototype = {
         this.modalEl.style.display = 'block'
         tippy('[data-tippy-content]', {
             placement: 'right',
-            allowHTML: true
+            allowHTML: true,
+            interactive: true
         })
     },
 
