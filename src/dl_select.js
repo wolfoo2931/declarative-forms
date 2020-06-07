@@ -39,6 +39,7 @@ style.textContent = `
     dl-select .options-wrapper dl-option {
         border-left: 1px solid #bbb;
         border-right: 1px solid #bbb;
+        cursor: pointer;
     }
 
     dl-select .options-wrapper .noMatchesHint {
