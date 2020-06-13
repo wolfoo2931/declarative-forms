@@ -241,20 +241,14 @@ DeclarativForm.prototype = {
 
     closeModalIfOpen: function(callaback) {
         callaback = callaback || this.onChangeCallback
-        let cbResult, dialog
 
-        if(callaback) {
-            cbResult = callaback(this.getValues())
-        }
-
-        if(this.modalEl && cbResult && cbResult.doNotRemoveOverlay) {
-            dialog = this.modalEl.querySelector('.modal')
-            if(dialog) {
-                dialog.remove()
-            }
-        } else if(this.modalEl) {
+        if(this.modalEl) {
             this.modalEl.remove()
             this.modalEl = null
+        }
+
+        if(callaback) {
+            callaback(this.getValues())
         }
 
         document.removeEventListener('keydown', this.enterHandler)
@@ -279,7 +273,7 @@ DeclarativForm.prototype = {
     },
 
     createModalElement: function() {
-        var modalWrapper = document.querySelector('.dl-modal') ||  document.createElement('div'),
+        var modalWrapper = document.createElement('div'),
             modal = document.createElement('div'),
             modalContent = document.createElement('div'),
             lowBar = document.createElement('div'),
