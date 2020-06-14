@@ -83,9 +83,19 @@ body {
     cursor: pointer;
 }
 
+.dl-modal .btn.disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
 .dl-modal .btn:hover {
     border: 2px solid #22bb8b;
     box-shadow: 0px 0px 19px -1px rgba(34,187,139,0.1);
+}
+
+.dl-modal .btn.disabled:hover {
+    border: 2px solid #1ea6a3;
+    box-shadow: none;
 }
 
 .dl-form {
