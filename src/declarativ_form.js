@@ -316,8 +316,6 @@ DeclarativForm.prototype = {
                 tmpBtn.classList.add('btn')
                 tmpBtn.innerHTML = btn
 
-                console.log(this.buttons[btn])
-
                 if(this.buttons[btn].id) {
                     tmpBtn.id = this.buttons[btn].id
                 }
