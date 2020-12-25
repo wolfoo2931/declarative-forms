@@ -39,7 +39,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         }
     }
 
-    this.fields.forEach(function(field) {
+    this.fields.forEach(function(field, fieldIndex) {
         var fieldWrapper = document.createElement('div'),
             fieldElement, label, allowedValues, message, tooltip
 
@@ -88,6 +88,28 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement.oninput = fieldElement.onchange = function() {
                 self.updateForm();
             }
+        } else if (field.check) {
+            fieldElement = document.createElement('span')
+
+            let cb = document.createElement('input')
+            cb.id = 'field-' + fieldIndex
+            cb.setAttribute('type', 'checkbox')
+            cb.oninput = cb.onchange = function() {
+                fieldElement.setAttribute('value', cb.checked)
+                self.updateForm();
+            }
+
+            let labelEl = document.createElement('label')
+            labelEl.setAttribute('for', 'field-' + fieldIndex)
+            labelEl.innerHTML = field.check
+
+            fieldElement.classList.add('check')
+            fieldElement.appendChild(cb)
+            fieldElement.appendChild(labelEl)
+            fieldElement.setAttribute('value', field.defaultValue)
+            fieldElement.setValue = function(val) {
+                cb.checked = !!val
+            }
         } else {
             fieldElement = document.createElement('input')
             fieldElement.oninput = fieldElement.onchange = function() {
@@ -108,7 +130,6 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 tooltip.dataset['tippyContent'] = field.tooltip
                 tooltip.classList.add('dl-tooltip')
                 tooltip.innerHTML = '?'
-                console.log(tooltip)
                 label.appendChild(tooltip)
             }
             label.setAttribute('for', field.name)
@@ -163,7 +184,6 @@ DeclarativForm.prototype = {
     },
 
     openInModal: function() {
-        var self = this;
         this.modalEl = this.modalEl || this.createModalElement()
 
         document.removeEventListener('keydown', this.enterHandler)
@@ -266,6 +286,10 @@ DeclarativForm.prototype = {
 
             if(!result[field.name]) {
                 result[field.name] = ''
+            }
+
+            if(field.check) {
+                result[field.name] = result[field.name] === 'true'
             }
         })
 
