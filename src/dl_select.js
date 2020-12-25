@@ -39,6 +39,7 @@ style.textContent = `
     dl-select .options-wrapper dl-option {
         border-left: 1px solid #bbb;
         border-right: 1px solid #bbb;
+        cursor: pointer;
     }
 
     dl-select .options-wrapper .noMatchesHint {
@@ -91,6 +92,21 @@ style.textContent = `
     dl-select .options-wrapper dl-option.dl-focused {
         background-color: rgba(224, 240, 227, 0.4);
     }
+
+    dl-select .dl-option-tag {
+        float: right;
+        border: 1px solid #888;
+        font-size: 0.8em;
+        padding: 2px;
+        font-family: 'Source Code Pro', monospace;
+        border-radius: 2px;
+        margin-top: -1px;
+      }
+    
+      dl-select .dl-option-tag:last-child {
+        margin-right: 10px;
+      }
+    
 `
 
 window.addEventListener('load', () => {
@@ -230,7 +246,7 @@ class DlSelect extends HTMLElement {
     }
 
     setValue(val) {
-        var option = this.querySelector('dl-option[value='+val+']') ||
+        var option = this.querySelector('dl-option[value="'+val+'"]') ||
                      Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
 
         this.setOption(option)
