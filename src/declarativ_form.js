@@ -177,6 +177,22 @@ DeclarativForm.prototype = {
                 field.render(field.domElement, formData)
             }
         });
+
+        if(this.buttons) {
+            Object.values(this.buttons)
+            .filter(btn => (btn.isActive && btn.id))
+            .forEach(btn => {
+              let buttonEl = document.getElementById(btn.id)
+              if(!buttonEl) return;
+
+              if(btn.isActive(formData)) {
+                  buttonEl.classList.remove('disabled')
+              } else {
+                  buttonEl.classList.add('disabled')
+              }
+            });
+        }
+
     },
 
     getHTML: function() {
@@ -197,7 +213,8 @@ DeclarativForm.prototype = {
         this.modalEl.style.display = 'block'
         tippy('[data-tippy-content]', {
             placement: 'right',
-            allowHTML: true
+            allowHTML: true,
+            interactive: true
         })
     },
 
@@ -319,10 +336,20 @@ DeclarativForm.prototype = {
 
         if(this.buttons) {
             Object.keys(this.buttons).forEach((btn => {
+                let callback = typeof this.buttons[btn] === 'function' ? this.buttons[btn] : this.buttons[btn].action
                 tmpBtn = document.createElement('div')
                 tmpBtn.classList.add('btn')
                 tmpBtn.innerHTML = btn
-                tmpBtn.onclick = () => { this.closeModalIfOpen(this.buttons[btn]) }
+
+                if(this.buttons[btn].id) {
+                    tmpBtn.id = this.buttons[btn].id
+                }
+
+                tmpBtn.onclick = (event) => {
+                    if(!event.target.classList.contains('disabled')) {
+                        this.closeModalIfOpen(callback)
+                    }
+                }
 
                 lowBar.appendChild(tmpBtn)
             }))
