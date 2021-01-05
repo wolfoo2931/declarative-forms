@@ -134,16 +134,23 @@ body {
     font-family: 'Rubik', sans-serif;
 }
 
+.dl-form form .check {
+    display: flex;
+    margin-top: 8px;
+}
+
 .dl-form form .check label {
     display: inline;
     font-weight: 100;
+    margin-top: 0px;
+    margin-left: 4px;
 }
 
 .dl-form form .check input {
     visibility: hidden;
     margin: 0px;
     margin-right: 12px;
-    margin-top: -5px;
+    margin-top: 0px;
 }
 
 .dl-form form input[type=checkbox]:before {
