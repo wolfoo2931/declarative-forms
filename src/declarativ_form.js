@@ -199,8 +199,11 @@ DeclarativForm.prototype = {
         return this.dom.outerHTML;
     },
 
-    openInModal: function() {
-        this.modalEl = this.modalEl || this.createModalElement()
+    openInModal: function(attr) {
+        this.modalEl = this.modalEl || this.createModalElement(attr)
+
+        var modalContent = this.modalEl.querySelector('.modal-content')
+        var modalWindow = this.modalEl.querySelector('.modal')
 
         document.removeEventListener('keydown', this.enterHandler)
         document.body.removeEventListener('keydown', this.escHandler, true)
@@ -209,8 +212,15 @@ DeclarativForm.prototype = {
         document.body.addEventListener('keydown', this.escHandler, true)
 
         this.updateTabs()
-        this.modalEl.querySelector('.modal-content').appendChild(this.dom)
+        modalContent.appendChild(this.dom)
         this.modalEl.style.display = 'block'
+
+        if(attr && attr.classNames) {
+            attr.classNames.forEach(function(name) {
+                modalWindow.classList.add(name)
+            })
+        }
+
         tippy('[data-tippy-content]', {
             placement: 'right',
             allowHTML: true,
@@ -313,7 +323,11 @@ DeclarativForm.prototype = {
         return result
     },
 
-    createModalElement: function() {
+    createModalElement: function(attr) {
+
+        attr = attr || {}
+        attr.classNames = attr.classNames || []
+
         var modalWrapper = document.createElement('div'),
             modal = document.createElement('div'),
             modalContent = document.createElement('div'),

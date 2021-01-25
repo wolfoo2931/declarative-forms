@@ -4275,6 +4275,7 @@ style.textContent = `
     dl-select .options-wrapper dl-option {
         border-left: 1px solid #bbb;
         border-right: 1px solid #bbb;
+        cursor: pointer;
     }
 
     dl-select .options-wrapper .noMatchesHint {
@@ -4327,6 +4328,21 @@ style.textContent = `
     dl-select .options-wrapper dl-option.dl-focused {
         background-color: rgba(224, 240, 227, 0.4);
     }
+
+    dl-select .dl-option-tag {
+        float: right;
+        border: 1px solid #888;
+        font-size: 0.8em;
+        padding: 2px;
+        font-family: 'Source Code Pro', monospace;
+        border-radius: 2px;
+        margin-top: -1px;
+      }
+    
+      dl-select .dl-option-tag:last-child {
+        margin-right: 10px;
+      }
+    
 `
 
 window.addEventListener('load', () => {
@@ -4466,7 +4482,7 @@ class DlSelect extends HTMLElement {
     }
 
     setValue(val) {
-        var option = this.querySelector('dl-option[value='+val+']') ||
+        var option = this.querySelector('dl-option[value="'+val+'"]') ||
                      Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
 
         this.setOption(option)
@@ -4635,6 +4651,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement.setValue = function(val) {
                 cb.checked = !!val
             }
+        } else if (field.detailedOptions) {
+
+
         } else {
             fieldElement = document.createElement('input')
             fieldElement.oninput = fieldElement.onchange = function() {
@@ -4702,14 +4721,33 @@ DeclarativForm.prototype = {
                 field.render(field.domElement, formData)
             }
         });
+
+        if(this.buttons) {
+            Object.values(this.buttons)
+            .filter(btn => (btn.isActive && btn.id))
+            .forEach(btn => {
+              let buttonEl = document.getElementById(btn.id)
+              if(!buttonEl) return;
+
+              if(btn.isActive(formData)) {
+                  buttonEl.classList.remove('disabled')
+              } else {
+                  buttonEl.classList.add('disabled')
+              }
+            });
+        }
+
     },
 
     getHTML: function() {
         return this.dom.outerHTML;
     },
 
-    openInModal: function() {
-        this.modalEl = this.modalEl || this.createModalElement()
+    openInModal: function(attr) {
+        this.modalEl = this.modalEl || this.createModalElement(attr)
+
+        var modalContent = this.modalEl.querySelector('.modal-content')
+        var modalWindow = this.modalEl.querySelector('.modal')
 
         document.removeEventListener('keydown', this.enterHandler)
         document.body.removeEventListener('keydown', this.escHandler, true)
@@ -4718,11 +4756,19 @@ DeclarativForm.prototype = {
         document.body.addEventListener('keydown', this.escHandler, true)
 
         this.updateTabs()
-        this.modalEl.querySelector('.modal-content').appendChild(this.dom)
+        modalContent.appendChild(this.dom)
         this.modalEl.style.display = 'block'
+
+        if(attr && attr.classNames) {
+            attr.classNames.forEach(function(name) {
+                modalWindow.classList.add(name)
+            })
+        }
+
         tippy('[data-tippy-content]', {
             placement: 'right',
-            allowHTML: true
+            allowHTML: true,
+            interactive: true
         })
     },
 
@@ -4821,7 +4867,11 @@ DeclarativForm.prototype = {
         return result
     },
 
-    createModalElement: function() {
+    createModalElement: function(attr) {
+
+        attr = attr || {}
+        attr.classNames = attr.classNames || []
+
         var modalWrapper = document.createElement('div'),
             modal = document.createElement('div'),
             modalContent = document.createElement('div'),
@@ -4844,10 +4894,20 @@ DeclarativForm.prototype = {
 
         if(this.buttons) {
             Object.keys(this.buttons).forEach((btn => {
+                let callback = typeof this.buttons[btn] === 'function' ? this.buttons[btn] : this.buttons[btn].action
                 tmpBtn = document.createElement('div')
                 tmpBtn.classList.add('btn')
                 tmpBtn.innerHTML = btn
-                tmpBtn.onclick = () => { this.closeModalIfOpen(this.buttons[btn]) }
+
+                if(this.buttons[btn].id) {
+                    tmpBtn.id = this.buttons[btn].id
+                }
+
+                tmpBtn.onclick = (event) => {
+                    if(!event.target.classList.contains('disabled')) {
+                        this.closeModalIfOpen(callback)
+                    }
+                }
 
                 lowBar.appendChild(tmpBtn)
             }))
