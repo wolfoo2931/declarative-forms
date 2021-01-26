@@ -41,7 +41,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
     this.fields.forEach(function(field, fieldIndex) {
         var fieldWrapper = document.createElement('div'),
-            fieldElement, label, allowedValues, message, tooltip
+            fieldElement, label, allowedValues,
+            message, tooltip
 
         allowedValues = (field.allowedValues instanceof Function) ?
             field.allowedValues() :
@@ -110,6 +111,43 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement.setValue = function(val) {
                 cb.checked = !!val
             }
+        } else if (field.detailedOptions) {
+            fieldElement = document.createElement('div')
+            fieldElement.classList.add('detailed-options')
+
+            field.detailedOptions.forEach(function(option) {
+                var optionEl = document.createElement('div');
+                optionEl.classList.add('detailed-option');
+
+                optionEl.innerHTML = option.html;
+                optionEl.setAttribute('data-value', option.value);
+
+                optionEl.addEventListener("click", function() {
+                    fieldElement.value = option.value;
+                    fieldElement.querySelectorAll('.detailed-option').forEach(function(option) {
+                        option.classList.remove('active');
+                    });
+
+                    optionEl.classList.add('active');
+                    self.updateForm();
+                });
+
+                fieldElement.appendChild(optionEl)
+                fieldElement.setValue = function(val) {
+                    var el = fieldElement.querySelector(`div[data-value="${val}"]`);
+
+                    if(!el) {
+                        return;
+                    }
+
+                    fieldElement.value = val;
+                    fieldElement.querySelectorAll('.detailed-option').forEach(function(option) {
+                        option.classList.remove('active');
+                    });
+
+                    el.classList.add('active');
+                }
+            });
         } else {
             fieldElement = document.createElement('input')
             fieldElement.oninput = fieldElement.onchange = function() {
