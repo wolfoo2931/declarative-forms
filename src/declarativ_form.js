@@ -216,6 +216,8 @@ DeclarativForm.prototype = {
             }
         });
 
+        formData = this.getValues();
+
         if(this.buttons) {
             Object.values(this.buttons)
             .filter(btn => (btn.isActive && btn.id))
