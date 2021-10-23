@@ -61,11 +61,13 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
         if(allowedValues) {
             fieldElement = document.createElement('dl-select')
+            fieldWrapper.classList.add('dl-select-wrapper')
             allowedValues.forEach((val) => {
                 let optEl = document.createElement('dl-option')
                 if(Array.isArray(val)) {
                     optEl.setAttribute('value', val[0])
                     optEl.innerHTML = val[1]
+                    optEl.setAttribute('displayWhenSelected', val[2] || val[1])
                 } else {
                     optEl.innerHTML = val
                 }
@@ -150,6 +152,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             });
         } else {
             fieldElement = document.createElement('input')
+
+            if(field.placeholder) {
+                fieldElement.placeholder = field.placeholder;
+            }
+
             fieldElement.oninput = fieldElement.onchange = function() {
                 self.updateForm();
             }
@@ -172,6 +179,19 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             }
             label.setAttribute('for', field.name)
             fieldWrapper.appendChild(label)
+        } else {
+            fieldWrapper.classList.add('withoutLabel')
+
+            if(field.tooltip) {
+                tooltip = document.createElement('span')
+                tooltip.dataset['tippyContent'] = field.tooltip
+                tooltip.classList.add('dl-tooltip')
+                tooltip.classList.add('dl-tooltip')
+                tooltip.classList.add('dl-tooltip-in-input')
+                tooltip.innerHTML = '?'
+                fieldElement.classList.add('dl-tooltip-inside')
+                fieldWrapper.appendChild(tooltip)
+            }
         }
 
         fieldWrapper.appendChild(fieldElement)

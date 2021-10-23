@@ -56,7 +56,7 @@ style.textContent = `
     }
 
     dl-select .input-wrapper input {
-        width: 367px;
+        width: 371px;
         outline-width: 0;
         margin-top: 2px;
         padding: 6px;
@@ -66,6 +66,7 @@ style.textContent = `
         border: 0px;
         border-radius: 4px;
         float: left;
+        cursor: pointer;
     }
 
     dl-select .input-wrapper svg {
@@ -77,6 +78,7 @@ style.textContent = `
         fill: #ddd;
         float: right;
         border-left: 1px solid #ddd;
+        cursor: pointer;
     }
 
     dl-select .options-wrapper dl-option {
@@ -102,11 +104,11 @@ style.textContent = `
         border-radius: 2px;
         margin-top: -1px;
       }
-    
+
       dl-select .dl-option-tag:last-child {
         margin-right: 10px;
       }
-    
+
 `
 
 window.addEventListener('load', () => {
@@ -256,7 +258,7 @@ class DlSelect extends HTMLElement {
         if(!optionEl) { return false }
 
         this.selectedOptionEl = optionEl
-        this.inputField.value = optionEl.innerText
+        this.inputField.value = this.getDisplayedText()
         this.setAttribute('value', optionEl.getAttribute('value') || optionEl.innerText)
 
         var evt = document.createEvent("HTMLEvents")
@@ -266,7 +268,7 @@ class DlSelect extends HTMLElement {
 
     getDisplayedText() {
         if(this.selectedOptionEl) {
-            return this.selectedOptionEl.innerText
+            return this.selectedOptionEl.getAttribute('displayWhenSelected') || this.selectedOptionEl.innerText
         } else {
             return ''
         }
