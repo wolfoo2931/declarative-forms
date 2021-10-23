@@ -129,12 +129,24 @@ body {
     margin-top: 25px;
 }
 
+.dl-form .withoutLabel {
+    margin-top: 9px;
+}
+
+.dl-form form > .dl-form-field-wrapper {
+    position: relative;
+}
+
 .dl-form form > .dl-form-field-wrapper.notInTab {
     display: none;
 }
 
 .dl-form form > .dl-form-field-wrapper.inactive {
     display: none;
+}
+
+.dl-form form > .dl-form-field-wrapper.dl-select-wrapper {
+    margin-bottom: -4px;
 }
 
 .dl-form form > .dl-form-field-wrapper > input, .dl-form form > .dl-form-field-wrapper >  textarea {
@@ -148,6 +160,13 @@ body {
     font-size: 0.9em;
     font-weight: 300;
     font-family: 'Rubik', sans-serif;
+}
+
+.dl-form form > .dl-form-field-wrapper > input.dl-tooltip-inside {
+    width: 369px;
+    max-width: 369px;
+    min-width: 369px;
+    padding-right: 37px;
 }
 
 .dl-form form .check {
@@ -231,6 +250,12 @@ body {
     border-radius: 10px;
     float: right;
     margin-right: 3px;
+}
+
+.dl-tooltip-in-input {
+    position: absolute;
+    right: 5px;
+    bottom: 6px;
 }
 
 .dl-form form > .dl-form-field-wrapper > textarea {
