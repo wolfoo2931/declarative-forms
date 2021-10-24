@@ -326,6 +326,7 @@ DeclarativForm.prototype = {
 
         tabBtn.classList.add('active')
 
+        this.activeTab = tab;
         this.fields.forEach(field => {
             if(!field.domElement) { return }
             if(field.tab === tab) {
@@ -384,6 +385,7 @@ DeclarativForm.prototype = {
             }
         })
 
+        result.activeTab = this.activeTab;
         return result
     },
 
