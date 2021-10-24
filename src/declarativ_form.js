@@ -152,6 +152,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             });
         } else {
             fieldElement = document.createElement('input')
+            fieldElement.setValue = function(val) {
+                fieldElement.value = val;
+            }
 
             if(field.placeholder) {
                 fieldElement.placeholder = field.placeholder;
@@ -215,6 +218,7 @@ DeclarativForm.prototype = {
 
     updateForm: function() {
         var formData = this.getValues();
+        var self = this
 
         this.fields.forEach(function(field) {
             if(!field.domElement) {
@@ -228,7 +232,7 @@ DeclarativForm.prototype = {
             }
 
             if(field.onFormChange) {
-                field.onFormChange(formData)
+                field.onFormChange(formData, self)
             }
 
             if(field.render) {
