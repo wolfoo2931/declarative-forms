@@ -67,7 +67,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 if(Array.isArray(val)) {
                     optEl.setAttribute('value', val[0])
                     optEl.innerHTML = val[1]
-                    optEl.setAttribute('displayWhenSelected', val[2] || val[1])
+                    if(val[2]) {
+                        optEl.setAttribute('displayWhenSelected', val[2])
+                    }
                 } else {
                     optEl.innerHTML = val
                 }
