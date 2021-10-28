@@ -75,7 +75,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 }
 
                 fieldElement.onchange = function() {
-                    self.updateForm();
+                    self.updateForm(fieldElement);
                 }
 
                 fieldElement.appendChild(optEl)
@@ -91,7 +91,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         } else if (field.largetext) {
             fieldElement = document.createElement('textarea')
             fieldElement.oninput = fieldElement.onchange = function() {
-                self.updateForm();
+                self.updateForm(fieldElement);
             }
         } else if (field.check) {
             fieldElement = document.createElement('span')
@@ -101,7 +101,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             cb.setAttribute('type', 'checkbox')
             cb.oninput = cb.onchange = function() {
                 fieldElement.setAttribute('value', cb.checked)
-                self.updateForm();
+                self.updateForm(cb);
             }
 
             let labelEl = document.createElement('label')
@@ -133,7 +133,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                     });
 
                     optionEl.classList.add('active');
-                    self.updateForm();
+                    self.updateForm(optionEl);
                 });
 
                 fieldElement.appendChild(optionEl)
@@ -163,7 +163,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             }
 
             fieldElement.oninput = fieldElement.onchange = function() {
-                self.updateForm();
+                self.updateForm(fieldElement);
             }
         }
 
@@ -218,7 +218,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
 DeclarativForm.prototype = {
 
-    updateForm: function() {
+    updateForm: function(triggerElement) {
         var formData = this.getValues();
         var self = this
 
@@ -234,7 +234,7 @@ DeclarativForm.prototype = {
             }
 
             if(field.onFormChange) {
-                field.onFormChange(formData, self)
+                field.onFormChange(formData, self, triggerElement)
             }
 
             if(field.render) {
