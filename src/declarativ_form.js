@@ -158,6 +158,10 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 fieldElement.value = val;
             }
 
+            if(field.autocomplete) {
+                fieldElement.setAttribute('autocomplete', field.autocomplete);
+            }
+
             if(field.placeholder) {
                 fieldElement.placeholder = field.placeholder;
             }
