@@ -1,5 +1,6 @@
 var dl = require('./dl_select');
 var tippy = require('tippy.js').default;
+var tippyInstances = new Map();
 
 function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     var self = this;
@@ -178,26 +179,22 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         if(field.displayName) {
             label = document.createElement('label')
             label.innerHTML = field.displayName
-
-            if(field.tooltip) {
-                tooltip = document.createElement('span')
-                tooltip.dataset['tippyContent'] = field.tooltip
-                tooltip.classList.add('dl-tooltip')
-                tooltip.innerHTML = '?'
-                label.appendChild(tooltip)
-            }
             label.setAttribute('for', field.name)
             fieldWrapper.appendChild(label)
         } else {
             fieldWrapper.classList.add('withoutLabel')
+        }
 
-            if(field.tooltip) {
-                tooltip = document.createElement('span')
-                tooltip.dataset['tippyContent'] = field.tooltip
-                tooltip.classList.add('dl-tooltip')
-                tooltip.classList.add('dl-tooltip')
+        if(field.tooltip) {
+            tooltip = document.createElement('span')
+            tooltip.dataset['tippyContent'] = field.tooltip.text || field.tooltip
+            tooltip.classList.add('dl-tooltip')
+            tooltip.innerHTML = '?'
+
+            if(label && !field.tooltip.inInput) {
+                label.appendChild(tooltip)
+            } else {
                 tooltip.classList.add('dl-tooltip-in-input')
-                tooltip.innerHTML = '?'
                 fieldElement.classList.add('dl-tooltip-inside')
                 fieldWrapper.appendChild(tooltip)
             }
@@ -291,11 +288,46 @@ DeclarativForm.prototype = {
             })
         }
 
-        tippy('[data-tippy-content]', {
+        this.updateTooltips();
+    },
+
+    updateTooltips: function(sel) {
+        sel = sel || '[data-tippy-content]';
+
+        var domElements = document.querySelectorAll(sel);
+
+        domElements.forEach(el => {
+            if(tippyInstances.get(el)) {
+                tippyInstances.get(el).forEach(el => el.destroy());
+                tippyInstances.delete(el);
+            }
+        })
+
+        var tippies = tippy(sel, {
             placement: 'right',
             allowHTML: true,
             interactive: true
         })
+
+        tippies.forEach(tippy => {
+            if(tippyInstances.get(tippy.reference)) {
+                tippyInstances.get(tippy.reference).push(tippy)
+            } else {
+                tippyInstances.set(tippy.reference, [tippy]);
+            }
+        });
+    },
+
+    setTooltip: function(fieldName, text, iconContent, className) {
+        className = className || '';
+        var tooltipSelector = `#dl-form-field-wrapper-for-${fieldName} .dl-tooltip`;
+        var tooltipEl = document.querySelector(tooltipSelector);
+
+        tooltipEl.classList.value = `dl-tooltip dl-tooltip-in-input ${className}`;
+        tooltipEl.dataset['tippyContent'] = text;
+        tooltipEl.innerHTML = iconContent;
+
+        this.updateTooltips(tooltipSelector);
     },
 
     updateTabs: function() {
