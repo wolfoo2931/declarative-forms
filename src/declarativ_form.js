@@ -188,6 +188,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         if(field.tooltip) {
             tooltip = document.createElement('span')
             tooltip.dataset['tippyContent'] = field.tooltip.text || field.tooltip
+            tooltip.dataset['initialTippyContent'] = field.tooltip.text || field.tooltip
             tooltip.classList.add('dl-tooltip')
             tooltip.innerHTML = '?'
 
@@ -328,6 +329,19 @@ DeclarativForm.prototype = {
         tooltipEl.innerHTML = iconContent;
 
         this.updateTooltips(tooltipSelector);
+    },
+
+    setTooltipWarning: function(fieldName, text) {
+        this.setTooltip(fieldName, text, '!', 'tooltip-warning');
+    },
+
+    setTooltipError: function(fieldName, text) {
+        this.setTooltip(fieldName, text, '!', 'tooltip-error');
+    },
+
+    resetTooltip: function(fieldName) {
+        var tooltipEl = document.querySelector(`#dl-form-field-wrapper-for-${fieldName} .dl-tooltip`);
+        this.setTooltip(fieldName, tooltipEl.dataset['initialTippyContent'], '?', '');
     },
 
     updateTabs: function() {
