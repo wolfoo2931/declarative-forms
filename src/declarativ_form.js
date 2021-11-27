@@ -1,6 +1,21 @@
 var dl = require('./dl_select');
 var tippy = require('tippy.js').default;
 var tippyInstances = new Map();
+var modalDialogs = [];
+
+document.addEventListener("keydown", e => {
+    if(modalDialogs.length === 0) {
+        return;
+    }
+
+    lastDialog = modalDialogs[modalDialogs.length - 1];
+
+    if(e.key === 'Escape') {
+        lastDialog.escHandler(e)
+    } else if(e.key === 'Enter') {
+        lastDialog.enterHandler(e)
+    }
+});
 
 function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     var self = this;
@@ -20,23 +35,19 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     }
 
     this.escHandler = function(e) {
-        if(e.key === 'Escape') {
-            self.cancelModalIfCancelable()
-        }
+        self.cancelModalIfCancelable()
     }
 
     this.enterHandler = function(e) {
-        if(e.key === 'Enter') {
-            var field = self.fields.find(function(f) { return f.name === e.target.name})
+        var field = self.fields.find(function(f) { return f.name === e.target.name})
 
-            if(!field || !field.largetext) {
-                self.closeModalIfOpen()
-                e.preventDefault()
-                e.stopPropagation()
-            } else if(!field.allowNewlines) {
-                e.preventDefault()
-                e.stopPropagation()
-            }
+        if(!field || !field.largetext) {
+            self.closeModalIfOpen()
+            e.preventDefault()
+            e.stopPropagation()
+        } else if(!field.allowNewlines) {
+            e.preventDefault()
+            e.stopPropagation()
         }
     }
 
@@ -273,12 +284,6 @@ DeclarativForm.prototype = {
         var modalContent = this.modalEl.querySelector('.modal-content')
         var modalWindow = this.modalEl.querySelector('.modal')
 
-        document.removeEventListener('keydown', this.enterHandler)
-        document.body.removeEventListener('keydown', this.escHandler, true)
-
-        document.addEventListener("keydown", this.enterHandler)
-        document.body.addEventListener('keydown', this.escHandler, true)
-
         this.updateTabs()
         modalContent.appendChild(this.dom)
         this.modalEl.style.display = 'block'
@@ -290,6 +295,20 @@ DeclarativForm.prototype = {
         }
 
         this.updateTooltips();
+
+        if(modalDialogs.length) {
+            modalDialogs[modalDialogs.length-1].hide()
+        }
+
+        modalDialogs.push(this);
+    },
+
+    hide: function() {
+        this.modalEl && this.modalEl.classList.add('dl-modal-hidden')
+    },
+
+    show: function() {
+        this.modalEl && this.modalEl.classList.remove('dl-modal-hidden')
     },
 
     updateTooltips: function(sel) {
@@ -389,6 +408,10 @@ DeclarativForm.prototype = {
         })
     },
 
+    deleteFromStack: function() {
+        modalDialogs = modalDialogs.filter(dia => dia !== this)
+    },
+
     cancelModalIfCancelable: function() {
         if(this.onCancelCallback) {
             if(this.modalEl) {
@@ -397,9 +420,7 @@ DeclarativForm.prototype = {
             }
 
             this.onCancelCallback()
-
-            document.removeEventListener('keydown', this.enterHandler)
-            document.body.removeEventListener('keydown', this.escHandler, true)
+            this.deleteFromStack()
         }
     },
 
@@ -415,8 +436,11 @@ DeclarativForm.prototype = {
             callaback(this.getValues())
         }
 
-        document.removeEventListener('keydown', this.enterHandler)
-        document.body.removeEventListener('keydown', this.escHandler, true)
+        this.deleteFromStack()
+
+        if(modalDialogs.length) {
+            modalDialogs[modalDialogs.length-1].show()
+        }
     },
 
     getValues: function() {
