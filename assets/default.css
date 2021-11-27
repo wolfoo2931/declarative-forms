@@ -16,6 +16,10 @@ body {
     overflow-y: scroll;
 }
 
+.dl-modal-hidden {
+    display: none !important;
+}
+
 .dl-modal .modal {
     display: block;
     padding: 30px 10px 10px 10px;
