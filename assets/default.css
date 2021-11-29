@@ -236,7 +236,7 @@ body {
     border: 2px solid #1ea6a3;
 }
 
-.dl-form form .render {
+.dl-form form .render, .dl-form form .array-of {
     width: 400px;
     max-width: 400px;
     min-width: 400px;

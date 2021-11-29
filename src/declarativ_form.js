@@ -96,6 +96,95 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement = document.createElement('p')
             fieldElement.classList.add('message')
             fieldElement.innerHTML = field.message
+        } else if (field.arrayOf) {
+            fieldElement = document.createElement('p')
+            fieldElement.classList.add('array-of')
+            fieldElement.setValue = (value) => {
+                fieldElement.value = value
+                self.updateForm(fieldElement)
+            }
+
+            field.render = (dom, formData) => {
+                dom.innerHTML = ''
+
+                let renderEntry = field.renderEntry || (obj => Object.values(obj).filter(val => (typeof val === 'string') && val.trim() !== '').join(', '))
+
+                if(field.suggested) {
+                    let suggestedEntries = typeof field.suggested === 'function' ?
+                        field.suggested(formData, modalDialogs.map(d => d.getValues())) :
+                        field.suggested;
+
+                    (suggestedEntries || []).forEach((suggestedEntry, fieldIndex) => {
+                        checkboxEl = document.createElement('span')
+
+                        let cb = document.createElement('input')
+                        cb.id = 'field-' + fieldIndex
+                        cb.setAttribute('type', 'checkbox')
+                        cb.oninput = cb.onchange = () => {
+                            field.domElement.acceptedSuggestions = field.domElement.acceptedSuggestions || [];
+
+                            checkboxEl.setAttribute('value', cb.checked)
+
+                            if(cb.checked) {
+                                field.domElement.acceptedSuggestions.push([suggestedEntry, fieldIndex])
+                            } else {
+                                field.domElement.acceptedSuggestions = field.domElement.acceptedSuggestions.filter(x => x[1] !== fieldIndex)
+                            }
+                        }
+
+                        let labelEl = document.createElement('label')
+                        labelEl.setAttribute('for', 'field-' + fieldIndex)
+                        labelEl.innerHTML = renderEntry(suggestedEntry)
+
+                        checkboxEl.classList.add('check')
+                        checkboxEl.classList.add('dl-form-array-of-suggestion')
+                        checkboxEl.appendChild(cb)
+                        checkboxEl.appendChild(labelEl)
+                        checkboxEl.setAttribute('value', false)
+                        checkboxEl.jsonValue = suggestedEntry
+
+                        dom.appendChild(checkboxEl)
+
+                        return checkboxEl
+                    })
+                }
+
+                dom.value && dom.value.forEach && dom.value.forEach((entryObj, elIndex) => {
+                    let entryEl = document.createElement('div')
+                    let deleteElBtn = document.createElement('button')
+                    deleteElBtn.innerHTML = 'Remove'
+                    entryEl.innerHTML = renderEntry(entryObj)
+                    entryEl.dataset.ElIndex = elIndex
+
+                    entryEl.appendChild(deleteElBtn)
+
+                    deleteElBtn.dataset.ElIndex = elIndex
+                    deleteElBtn.onclick = e => {
+                        dom.value.splice(deleteElBtn.dataset.ElIndex, 1)
+                        dom.setValue(dom.value)
+                        e.preventDefault()
+                    }
+
+                    dom.appendChild(entryEl)
+                })
+
+                let addButton = document.createElement('button')
+                addButton.innerHTML = field.newButtonLabel || 'Add'
+
+                addButton.onclick = e => {
+                    new DeclarativForm({ fields: field.arrayOf }, formData => {
+                        dom.value = dom.value || []
+                        dom.value.push(formData)
+                        dom.setValue(dom.value)
+                    }).openInModal()
+
+                    e.preventDefault()
+                }
+
+                dom.appendChild(addButton)
+            }
+
+            field.render(fieldElement, self.formData)
         } else if (field.render) {
             fieldElement = document.createElement('p')
             fieldElement.classList.add('render')
@@ -451,6 +540,17 @@ DeclarativForm.prototype = {
         }).forEach(function(field) {
             if(!field.domElement) { return }
             result[field.name] = field.domElement.getAttribute('value') || field.domElement.value
+
+            if(field.domElement.acceptedSuggestions) {
+                result[field.name] = result[field.name] || [];
+                field.domElement.acceptedSuggestions
+                    .map(el => el[0])
+                    .forEach(candidate => {
+                        if(!result[field.name].find(processed => JSON.stringify(candidate) === JSON.stringify(processed))) {
+                            result[field.name].push(candidate)
+                        }
+                    })
+            }
 
             if(!result[field.name]) {
                 result[field.name] = ''
