@@ -97,7 +97,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement.classList.add('message')
             fieldElement.innerHTML = field.message
         } else if (field.arrayOf) {
-            fieldElement = document.createElement('p')
+            fieldElement = document.createElement('div')
             fieldElement.classList.add('array-of')
             fieldElement.setValue = (value) => {
                 fieldElement.value = value
@@ -110,18 +110,20 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 let renderEntry = field.renderEntry || (obj => Object.values(obj).filter(val => (typeof val === 'string') && val.trim() !== '').join(', '))
 
                 if(field.suggested) {
+                    let suggestedContainer = document.createElement('div')
+                    suggestedContainer.classList.add('dl-form-array-suggested-container')
                     let suggestedEntries = typeof field.suggested === 'function' ?
                         field.suggested(formData, modalDialogs.map(d => d.getValues())) :
                         field.suggested;
 
-                    (suggestedEntries || []).forEach((suggestedEntry, fieldIndex) => {
+                    (suggestedEntries || []).forEach((suggestedEntry, fieldIndex) => {
                         checkboxEl = document.createElement('span')
 
                         let cb = document.createElement('input')
                         cb.id = 'field-' + fieldIndex
                         cb.setAttribute('type', 'checkbox')
                         cb.oninput = cb.onchange = () => {
-                            field.domElement.acceptedSuggestions = field.domElement.acceptedSuggestions || [];
+                            field.domElement.acceptedSuggestions = field.domElement.acceptedSuggestions || [];
 
                             checkboxEl.setAttribute('value', cb.checked)
 
@@ -143,18 +145,21 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                         checkboxEl.setAttribute('value', false)
                         checkboxEl.jsonValue = suggestedEntry
 
-                        dom.appendChild(checkboxEl)
+                        suggestedContainer.appendChild(checkboxEl)
 
                         return checkboxEl
                     })
+
+                    dom.appendChild(suggestedContainer)
                 }
 
                 dom.value && dom.value.forEach && dom.value.forEach((entryObj, elIndex) => {
                     let entryEl = document.createElement('div')
                     let deleteElBtn = document.createElement('button')
                     deleteElBtn.innerHTML = 'Remove'
-                    entryEl.innerHTML = renderEntry(entryObj)
+                    entryEl.innerHTML = '<span>' + renderEntry(entryObj) + '</span>'
                     entryEl.dataset.ElIndex = elIndex
+                    entryEl.classList.add('dl-form-array-of-entry')
 
                     entryEl.appendChild(deleteElBtn)
 
@@ -169,6 +174,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 })
 
                 let addButton = document.createElement('button')
+                addButton.classList.add('dl-form-array-of-add-entry')
                 addButton.innerHTML = field.newButtonLabel || 'Add'
 
                 addButton.onclick = e => {
@@ -542,7 +548,7 @@ DeclarativForm.prototype = {
             result[field.name] = field.domElement.getAttribute('value') || field.domElement.value
 
             if(field.domElement.acceptedSuggestions) {
-                result[field.name] = result[field.name] || [];
+                result[field.name] = result[field.name] || [];
                 field.domElement.acceptedSuggestions
                     .map(el => el[0])
                     .forEach(candidate => {
