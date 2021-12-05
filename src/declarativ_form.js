@@ -182,7 +182,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                         dom.value = dom.value || []
                         dom.value.push(formData)
                         dom.setValue(dom.value)
-                    }).openInModal()
+                    }, () => {}).openInModal()
 
                     e.preventDefault()
                 }
@@ -482,6 +482,11 @@ DeclarativForm.prototype = {
     },
 
     setActiveTab: function(tab) {
+
+        if(!tab) {
+            tab = this.activeTab
+        }
+
         var tabClassName = tab.replace(/\s/g, ''),
             currentActiveTabBtn = document.querySelector('.dl-tab-btn.active'),
             tabBtn = document.querySelector('.dl-tab-btn.' + tabClassName)
@@ -516,6 +521,11 @@ DeclarativForm.prototype = {
 
             this.onCancelCallback()
             this.deleteFromStack()
+
+            if(modalDialogs.length) {
+                modalDialogs[modalDialogs.length-1].show()
+                modalDialogs[modalDialogs.length-1].setActiveTab()
+            }
         }
     },
 
@@ -535,6 +545,7 @@ DeclarativForm.prototype = {
 
         if(modalDialogs.length) {
             modalDialogs[modalDialogs.length-1].show()
+            modalDialogs[modalDialogs.length-1].setActiveTab()
         }
     },
 
