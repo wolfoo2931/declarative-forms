@@ -335,10 +335,13 @@ DeclarativForm.prototype = {
                 return;
             }
 
-            if(field.isActive && !field.isActive(formData)) {
-                field.domElement.parentElement.classList.add('inactive')
-            } else if(field.isActive && field.isActive(formData)) {
-                field.domElement.parentElement.classList.remove('inactive')
+            if(field.isActive) {
+                let tmpIsActive = field.isActive(formData, modalDialogs.map(d => d.getValues()))
+                if(tmpIsActive) {
+                    field.domElement.parentElement.classList.remove('inactive')
+                } else {
+                    field.domElement.parentElement.classList.add('inactive')
+                }
             }
 
             if(field.onFormChange) {
