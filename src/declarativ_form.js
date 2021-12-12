@@ -377,6 +377,8 @@ DeclarativForm.prototype = {
     },
 
     openInModal: function(attr) {
+        modalDialogs.push(this);
+
         this.modalEl = this.modalEl || this.createModalElement(attr)
 
         var modalContent = this.modalEl.querySelector('.modal-content')
@@ -394,11 +396,9 @@ DeclarativForm.prototype = {
 
         this.updateTooltips();
 
-        if(modalDialogs.length) {
-            modalDialogs[modalDialogs.length-1].hide()
+        if(modalDialogs.length >= 2) {
+            modalDialogs[modalDialogs.length-2].hide()
         }
-
-        modalDialogs.push(this);
     },
 
     hide: function() {
