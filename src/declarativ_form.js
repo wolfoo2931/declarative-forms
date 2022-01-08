@@ -218,7 +218,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement.classList.add('check')
             fieldElement.appendChild(cb)
             fieldElement.appendChild(labelEl)
-            fieldElement.setAttribute('value', field.defaultValue)
+            fieldElement.setAttribute('value', typeof field.defaultValue === 'function' ? field.defaultValue(self.formData) : field.defaultValue)
             fieldElement.setValue = function(val) {
                 cb.checked = !!val
             }
@@ -311,12 +311,15 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         self.dom.children[0].appendChild(fieldWrapper)
 
         if(field.defaultValue) {
+
+            let tmpDefaultValue = typeof field.defaultValue === 'function' ? field.defaultValue(self.formData) : field.defaultValue
+
             if(fieldElement.setValue) {
-                fieldElement.setValue(field.defaultValue)
+                fieldElement.setValue(tmpDefaultValue)
             } else if (fieldElement.tagName === 'INPUT' || fieldElement.tagName === 'TEXTAREA') {
-                fieldElement.value = field.defaultValue
+                fieldElement.value = tmpDefaultValue
             } else {
-                fieldElement.setAttribute('value', field.defaultValue)
+                fieldElement.setAttribute('value', tmpDefaultValue)
             }
         }
     })
