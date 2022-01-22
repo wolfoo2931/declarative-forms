@@ -156,12 +156,35 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 dom.value && dom.value.forEach && dom.value.forEach((entryObj, elIndex) => {
                     let entryEl = document.createElement('div')
                     let deleteElBtn = document.createElement('button')
+                    let editElBtn = document.createElement('button')
                     deleteElBtn.innerHTML = 'Remove'
+                    editElBtn.innerHTML = 'Edit'
                     entryEl.innerHTML = '<span>' + renderEntry(entryObj) + '</span>'
                     entryEl.dataset.ElIndex = elIndex
                     entryEl.classList.add('dl-form-array-of-entry')
 
+                    entryEl.appendChild(editElBtn)
                     entryEl.appendChild(deleteElBtn)
+
+                    editElBtn.classList.add('edit-array-of-btn')
+                    editElBtn.dataset.ElIndex = elIndex
+                    editElBtn.onclick = e => {
+                        e.preventDefault()
+
+                        let editFieds = field.arrayOf.map(field => {
+                            return {
+                                ...field,
+                                defaultValue: dom.value[deleteElBtn.dataset.ElIndex][field.name] || ''
+                            };
+                        })
+
+                        new DeclarativForm({ fields:  editFieds }, formData => {
+                            dom.value = dom.value || []
+                            dom.value[deleteElBtn.dataset.ElIndex] = formData
+                            dom.setValue(dom.value)
+                        }, () => {}).openInModal()
+
+                    }
 
                     deleteElBtn.dataset.ElIndex = elIndex
                     deleteElBtn.onclick = e => {

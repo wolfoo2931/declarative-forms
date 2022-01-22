@@ -333,10 +333,16 @@ body {
 .dl-form-array-of-entry button {
     float: right;
     margin-top: -1px;
-    border: 1px solid #fe070b;
-    color: #fe070b;
+    border: 1px solid #fe070b59;
+    color: #fe070b9e;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.dl-form-array-of-entry button.edit-array-of-btn {
+    border: 1px solid #1ea6a3;
+    color: #1ea6a3;
+    margin-left: 3px;
 }
 
 .dl-form-array-of-add-entry {
