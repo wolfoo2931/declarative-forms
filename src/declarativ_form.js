@@ -34,6 +34,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         })
     }
 
+    this.formElement.onsubmit = function(e) {
+        e.preventDefault();
+        return false;
+    }
+
     this.escHandler = function(e) {
         self.cancelModalIfCancelable()
     }
