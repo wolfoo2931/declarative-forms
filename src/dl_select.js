@@ -67,6 +67,7 @@ style.textContent = `
         border-radius: 4px;
         float: left;
         cursor: pointer;
+        box-sizing: content-box;
     }
 
     dl-select .input-wrapper svg {

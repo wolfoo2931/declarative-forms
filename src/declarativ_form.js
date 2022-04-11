@@ -436,6 +436,28 @@ DeclarativForm.prototype = {
         }
     },
 
+    appendInElement: function(el, attr) {
+        var self = this
+        this.modalEl = this.modalEl || this.createModalElement(attr, true)
+        this.modalEl.style.display = 'block'
+
+        var modalContent = this.modalEl.querySelector('.modal-content')
+
+        this.modalEl.classList.add('noModalDialog')
+
+        if(attr && attr.classNames) {
+            attr.classNames.forEach(function(name) {
+                self.modalEl.classList.add(name)
+            })
+        }
+
+        modalContent.appendChild(this.dom)
+        el.appendChild(this.modalEl)
+        this.updateTabs()
+
+        this.updateTooltips()
+    },
+
     hide: function() {
         this.modalEl && this.modalEl.classList.add('dl-modal-hidden')
     },
@@ -620,7 +642,7 @@ DeclarativForm.prototype = {
         return result
     },
 
-    createModalElement: function(attr) {
+    createModalElement: function(attr, doNotMount) {
 
         attr = attr || {}
         attr.classNames = attr.classNames || []
@@ -680,7 +702,11 @@ DeclarativForm.prototype = {
         modal.appendChild(tabWrapper)
         modal.appendChild(modalContent)
         modal.appendChild(lowBar)
-        document.body.appendChild(modalWrapper)
+
+        if(!doNotMount) {
+            document.body.appendChild(modalWrapper)
+        }
+
         return modalWrapper
     }
 }

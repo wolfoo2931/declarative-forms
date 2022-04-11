@@ -16,6 +16,18 @@ body {
     overflow-y: scroll;
 }
 
+.dl-modal.noModalDialog  {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    display: block;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+
 .dl-modal-hidden {
     display: none !important;
 }
@@ -28,6 +40,13 @@ body {
     border-radius: 4px;
     background-color: #fff;
     box-shadow: 0px 0px 23px -2px rgba(0,0,0,0.06);
+}
+
+.dl-modal.noModalDialog .modal {
+    box-shadow: none;
+    border-radius: none;
+    width: auto;
+    padding-top: 0px;
 }
 
 .dl-modal .largeModal {
@@ -47,12 +66,17 @@ body {
 }
 
 .dl-modal .low-bar {
-    margin: 0px;
     margin: 40px -10px -10px -10px;
     height: 45px;
     background-color: #f8f8f8;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
+}
+
+.dl-modal.dl-full-height .low-bar {
+    bottom: 11px;
+    width: 100%;
+    position: absolute;
 }
 
 .dl-modal .tabWrapper {
@@ -124,12 +148,12 @@ body {
 
 .dl-form label {
     display: block;
-    width: 400px;
+    width: 409px;
     margin-bottom: 7px;
     margin-left: 2px;
     font-size: 0.9em;
     color: #58565c;
-    font-weight: #500;
+    font-weight: 500;
     margin-top: 25px;
 }
 
@@ -171,6 +195,7 @@ body {
     max-width: 369px;
     min-width: 369px;
     padding-right: 37px;
+    box-sizing: content-box;
 }
 
 .dl-form form .check {
@@ -245,6 +270,12 @@ body {
     font-weight: 300;
     font-family: 'Rubik', sans-serif;
     text-align: center;
+}
+
+.largeModal .dl-form form .render, .dl-form form .array-of {
+    width: auto;
+    max-width: initial;
+    min-width: auto;
 }
 
 .dl-form .dl-tooltip {
