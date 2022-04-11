@@ -505,6 +505,10 @@ DeclarativForm.prototype = {
         this.updateTooltips(tooltipSelector);
     },
 
+    setTooltipSuccess: function(fieldName, text) {
+        dFrom.setTooltip(fieldName, text, '&#10003;', 'tooltip-success')
+    },
+
     setTooltipWarning: function(fieldName, text) {
         this.setTooltip(fieldName, text, '!', 'tooltip-warning');
     },
@@ -516,6 +520,10 @@ DeclarativForm.prototype = {
     resetTooltip: function(fieldName) {
         var tooltipEl = document.querySelector(`#dl-form-field-wrapper-for-${fieldName} .dl-tooltip`);
         this.setTooltip(fieldName, tooltipEl.dataset['initialTippyContent'], '?', '');
+    },
+
+    resetTooltips: function(fieldNames) {
+        fieldNames.forEach(fieldName => this.resetTooltip(fieldName))
     },
 
     updateTabs: function() {

@@ -12,7 +12,7 @@ body {
     padding: 0px;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0,0,0,0.6);
     overflow-y: scroll;
 }
 
@@ -419,4 +419,40 @@ body {
 
 .tippy-arrow {
     color: #413e48;
+}
+
+@keyframes loading-icon-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.tooltip-loading {
+    border: 2px solid #D1D0D8;
+    border-top: 2px solid #88858e;
+    border-radius: 50% !important;
+    width: 16px;
+    height: 16px;
+    padding: 0px !important;
+    animation: loading-icon-spin 1s linear infinite;
+}
+
+.tooltip-success {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    background-color: #d1e7dd !important;
+    color: #12b568 !important;
+}
+
+.tooltip-warning {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    background-color: #ffecb5 !important;
+    color: #664d03 !important;
+}
+
+.tooltip-error {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    background-color: #f8d7da !important;
+    color: #842029 !important;
 }
