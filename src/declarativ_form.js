@@ -162,6 +162,14 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                     dom.appendChild(suggestedContainer)
                 }
 
+                const getConfirmButton = action => ({
+                    'OK': {
+                        action,
+                        id: 'addIntegration',
+                        isActive: formData => field.isValidRecord ? field.isValidRecord(formData, self) : true,
+                    }
+                })
+
                 dom.value && dom.value.forEach && dom.value.forEach((entryObj, elIndex) => {
                     let entryEl = document.createElement('div')
                     let deleteElBtn = document.createElement('button')
@@ -187,12 +195,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                             };
                         })
 
-                        new DeclarativForm({ fields:  editFieds }, formData => {
+                        new DeclarativForm({ fields:  editFieds, buttons: getConfirmButton(formData => {
                             dom.value = dom.value || []
                             dom.value[deleteElBtn.dataset.ElIndex] = formData
                             dom.setValue(dom.value)
-                        }, () => {}).openInModal()
-
+                        }) }, () => {}, () => {}).openInModal()
                     }
 
                     deleteElBtn.dataset.ElIndex = elIndex
@@ -210,11 +217,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 addButton.innerHTML = field.newButtonLabel || 'Add'
 
                 addButton.onclick = e => {
-                    new DeclarativForm({ fields: field.arrayOf }, formData => {
+                    new DeclarativForm({ fields: field.arrayOf, buttons: getConfirmButton(formData => {
                         dom.value = dom.value || []
                         dom.value.push(formData)
                         dom.setValue(dom.value)
-                    }, () => {}).openInModal()
+                    })}, () => {}, () => {}).openInModal()
 
                     e.preventDefault()
                 }
@@ -394,14 +401,17 @@ DeclarativForm.prototype = {
             Object.values(this.buttons)
             .filter(btn => (btn.isActive && btn.id))
             .forEach(btn => {
-              let buttonEl = document.getElementById(btn.id)
-              if(!buttonEl) return;
+                let buttonEl = document.getElementById(btn.id)
+                if(!buttonEl) return;
 
-              if(btn.isActive(formData)) {
-                  buttonEl.classList.remove('disabled')
-              } else {
-                  buttonEl.classList.add('disabled')
-              }
+                Promise.resolve(btn.isActive(formData))
+                    .then(BtnIsActive => {
+                        if(BtnIsActive) {
+                            buttonEl.classList.remove('disabled')
+                        } else {
+                            buttonEl.classList.add('disabled')
+                        }
+                    })
             });
         }
 
@@ -506,7 +516,7 @@ DeclarativForm.prototype = {
     },
 
     setTooltipSuccess: function(fieldName, text) {
-        dFrom.setTooltip(fieldName, text, '&#10003;', 'tooltip-success')
+        this.setTooltip(fieldName, text, '&#10003;', 'tooltip-success')
     },
 
     setTooltipWarning: function(fieldName, text) {
