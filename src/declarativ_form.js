@@ -31,6 +31,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.onChangeCallback = onChangeCallback
     this.onCancelCallback = onCancelCallback
     this.buttons = attrs.buttons
+    this.initPromises = {}
 
     if(attrs.classNames) {
         attrs.classNames.forEach(function(name) {
@@ -60,7 +61,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         }
     }
 
-    this.fields.forEach(function(field, fieldIndex) {
+    this.fields.forEach((field, fieldIndex) => {
         var fieldWrapper = document.createElement('div'),
             fieldElement, label, allowedValues,
             message, tooltip
@@ -83,23 +84,34 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         if(allowedValues) {
             fieldElement = document.createElement('dl-select')
             fieldWrapper.classList.add('dl-select-wrapper')
-            allowedValues.forEach((val) => {
-                let optEl = document.createElement('dl-option')
-                if(Array.isArray(val)) {
-                    optEl.setAttribute('value', val[0])
-                    optEl.innerHTML = val[1]
-                    if(val[2]) {
-                        optEl.setAttribute('displayWhenSelected', val[2])
+            fieldElement.classList.add('dl-select-loading')
+            self.initPromises[field.name] = Promise.resolve(allowedValues).then(values => {
+                fieldElement.classList.remove('dl-select-loading')
+
+                if(!values.length) {
+                    fieldElement.classList.add('dl-select-no-options-available')
+                }
+
+                values.forEach((val) => {
+                    let optEl = document.createElement('dl-option')
+                    if(Array.isArray(val)) {
+                        optEl.setAttribute('value', val[0])
+                        optEl.innerHTML = val[1]
+                        if(val[2]) {
+                            optEl.setAttribute('displayWhenSelected', val[2])
+                        }
+                    } else {
+                        optEl.innerHTML = val
                     }
-                } else {
-                    optEl.innerHTML = val
-                }
 
-                fieldElement.onchange = function() {
-                    self.updateForm(fieldElement);
-                }
+                    fieldElement.onchange = () => {
+                        self.updateForm(fieldElement)
+                    }
 
-                fieldElement.appendChild(optEl)
+                    fieldElement.addOption(optEl)
+                })
+            }).catch(_ => {
+                fieldElement.classList.remove('dl-select-loading')
             })
         } else if (field.message) {
             fieldElement = document.createElement('p')
@@ -350,20 +362,21 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         self.dom.children[0].appendChild(fieldWrapper)
 
         if(field.defaultValue) {
+            Promise.resolve(self.initPromises[field.name]).then(_ => {
+                let tmpDefaultValue = typeof field.defaultValue === 'function' ? field.defaultValue(self.formData) : field.defaultValue
 
-            let tmpDefaultValue = typeof field.defaultValue === 'function' ? field.defaultValue(self.formData) : field.defaultValue
-
-            if(fieldElement.setValue) {
-                fieldElement.setValue(tmpDefaultValue)
-            } else if (fieldElement.tagName === 'INPUT' || fieldElement.tagName === 'TEXTAREA') {
-                fieldElement.value = tmpDefaultValue
-            } else {
-                fieldElement.setAttribute('value', tmpDefaultValue)
-            }
+                if(fieldElement.setValue) {
+                    fieldElement.setValue(tmpDefaultValue)
+                } else if (fieldElement.tagName === 'INPUT' || fieldElement.tagName === 'TEXTAREA') {
+                    fieldElement.value = tmpDefaultValue
+                } else {
+                    fieldElement.setAttribute('value', tmpDefaultValue)
+                }
+            })
         }
     })
 
-    self.updateForm()
+    Promise.all(Object.values(self.initPromises)).then(_ => self.updateForm())
 }
 
 DeclarativForm.prototype = {
@@ -372,7 +385,14 @@ DeclarativForm.prototype = {
         var formData = this.getValues();
         var self = this
 
-        this.fields.forEach(function(field) {
+        if(this._lastFromUpdatSate === JSON.stringify(formData)) {
+            console.log('skip updateForm')
+            return;
+        }
+
+        this._lastFromUpdatSate = JSON.stringify(formData)
+
+        this.fields.forEach(field => {
             if(!field.domElement) {
                 return;
             }
@@ -392,6 +412,46 @@ DeclarativForm.prototype = {
 
             if(field.render) {
                 field.render(field.domElement, formData)
+            }
+
+            if(field.allowedValues instanceof Function) {
+                const allowedValues = field.allowedValues(formData)
+                field.domElement.classList.add('dl-select-loading')
+                field.domElement.classList.remove('dl-select-no-options-available')
+
+                field.domElement.querySelectorAll('dl-option').forEach(opt => opt.remove())
+
+                Promise.resolve(allowedValues).then(values => {
+                    field.domElement.classList.remove('dl-select-loading')
+
+                    if(!values.length) {
+                        field.domElement.classList.add('dl-select-no-options-available')
+                    }
+
+                    values && values.forEach((val) => {
+                        let optEl = document.createElement('dl-option')
+                        if(Array.isArray(val)) {
+                            optEl.setAttribute('value', val[0])
+                            optEl.innerHTML = val[1]
+                            if(val[2]) {
+                                optEl.setAttribute('displayWhenSelected', val[2])
+                            }
+                        } else {
+                            optEl.innerHTML = val
+                        }
+
+                        field.domElement.onchange = function() {
+                            self.updateForm(field.domElement)
+                        }
+
+                        field.domElement.addOption(optEl)
+                    })
+
+                    field.domElement.setValue(field.domElement.getValue())
+                }).catch(_ => {
+                    field.domElement.classList.remove('dl-select-loading')
+                    field.domElement.classList.add('dl-select-no-options-available')
+                })
             }
         });
 
@@ -508,7 +568,12 @@ DeclarativForm.prototype = {
         var tooltipSelector = `#dl-form-field-wrapper-for-${fieldName} .dl-tooltip`;
         var tooltipEl = document.querySelector(tooltipSelector);
 
-        tooltipEl.classList.value = `dl-tooltip dl-tooltip-in-input ${className}`;
+        if(tooltipEl.classList.value.includes('dl-tooltip-in-input')) {
+            tooltipEl.classList.value = `dl-tooltip dl-tooltip-in-input ${className}`;
+        } else {
+            tooltipEl.classList.value = `dl-tooltip ${className}`;
+        }
+
         tooltipEl.dataset['tippyContent'] = text;
         tooltipEl.innerHTML = iconContent;
 
@@ -529,7 +594,10 @@ DeclarativForm.prototype = {
 
     resetTooltip: function(fieldName) {
         var tooltipEl = document.querySelector(`#dl-form-field-wrapper-for-${fieldName} .dl-tooltip`);
-        this.setTooltip(fieldName, tooltipEl.dataset['initialTippyContent'], '?', '');
+
+        if(tooltipEl) {
+            this.setTooltip(fieldName, tooltipEl.dataset['initialTippyContent'], '?', '');
+        }
     },
 
     resetTooltips: function(fieldNames) {
