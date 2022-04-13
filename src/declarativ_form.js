@@ -30,7 +30,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.dom.appendChild(this.formElement)
     this.onChangeCallback = onChangeCallback
     this.onCancelCallback = onCancelCallback
-    this.buttons = attrs.buttons
+    this.buttons = attrs.buttons || { 'OK': onChangeCallback }
     this.initPromises = {}
 
     if(attrs.classNames) {
@@ -84,13 +84,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         if(allowedValues) {
             fieldElement = document.createElement('dl-select')
             fieldWrapper.classList.add('dl-select-wrapper')
-            fieldElement.classList.add('dl-select-loading')
+            fieldElement.setLoadingStatus()
             self.initPromises[field.name] = Promise.resolve(allowedValues).then(values => {
-                fieldElement.classList.remove('dl-select-loading')
-
-                if(!values.length) {
-                    fieldElement.classList.add('dl-select-no-options-available')
-                }
+                fieldElement.unsetLoadingStatus()
 
                 values.forEach((val) => {
                     let optEl = document.createElement('dl-option')
@@ -111,7 +107,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                     fieldElement.addOption(optEl)
                 })
             }).catch(_ => {
-                fieldElement.classList.remove('dl-select-loading')
+                fieldElement.unsetLoadingStatus()
             })
         } else if (field.message) {
             fieldElement = document.createElement('p')
@@ -416,17 +412,11 @@ DeclarativForm.prototype = {
 
             if(field.allowedValues instanceof Function) {
                 const allowedValues = field.allowedValues(formData)
-                field.domElement.classList.add('dl-select-loading')
-                field.domElement.classList.remove('dl-select-no-options-available')
-
-                field.domElement.querySelectorAll('dl-option').forEach(opt => opt.remove())
+                field.domElement.setLoadingStatus()
+                field.domElement.removeAllOptions()
 
                 Promise.resolve(allowedValues).then(values => {
-                    field.domElement.classList.remove('dl-select-loading')
-
-                    if(!values.length) {
-                        field.domElement.classList.add('dl-select-no-options-available')
-                    }
+                    field.domElement.unsetLoadingStatus()
 
                     values && values.forEach((val) => {
                         let optEl = document.createElement('dl-option')
@@ -449,20 +439,20 @@ DeclarativForm.prototype = {
 
                     field.domElement.setValue(field.domElement.getValue())
                 }).catch(_ => {
-                    field.domElement.classList.remove('dl-select-loading')
-                    field.domElement.classList.add('dl-select-no-options-available')
+                    field.domElement.unsetLoadingStatus()
                 })
             }
         });
 
         formData = this.getValues();
 
-        if(this.buttons) {
-            Object.values(this.buttons)
+        Object.values(this.buttons)
             .filter(btn => (btn.isActive && btn.id))
             .forEach(btn => {
                 let buttonEl = document.getElementById(btn.id)
                 if(!buttonEl) return;
+
+                buttonEl.classList.add('disabled')
 
                 Promise.resolve(btn.isActive(formData))
                     .then(BtnIsActive => {
@@ -473,8 +463,6 @@ DeclarativForm.prototype = {
                         }
                     })
             });
-        }
-
     },
 
     getHTML: function() {
@@ -738,7 +726,6 @@ DeclarativForm.prototype = {
             modalContent = document.createElement('div'),
             lowBar = document.createElement('div'),
             upBar  = document.createElement('div'),
-            okBtn = document.createElement('div'),
             cancelBtn = document.createElement('div'),
             tabWrapper = document.createElement('div'),
             tmpBtn
@@ -749,32 +736,25 @@ DeclarativForm.prototype = {
         modalContent.classList.add('modal-content')
         tabWrapper.classList.add('tabWrapper')
         lowBar.classList.add('low-bar')
-        okBtn.classList.add('btn')
-        okBtn.innerHTML = 'OK'
-        okBtn.onclick = () => { this.closeModalIfOpen() }
 
-        if(this.buttons) {
-            Object.keys(this.buttons).forEach((btn => {
-                let callback = typeof this.buttons[btn] === 'function' ? this.buttons[btn] : this.buttons[btn].action
-                tmpBtn = document.createElement('div')
-                tmpBtn.classList.add('btn')
-                tmpBtn.innerHTML = btn
+        Object.keys(this.buttons).forEach((btn => {
+            let callback = typeof this.buttons[btn] === 'function' ? this.buttons[btn] : this.buttons[btn].action
+            tmpBtn = document.createElement('div')
+            tmpBtn.classList.add('btn')
+            tmpBtn.innerHTML = btn
 
-                if(this.buttons[btn].id) {
-                    tmpBtn.id = this.buttons[btn].id
+            if(this.buttons[btn].id) {
+                tmpBtn.id = this.buttons[btn].id
+            }
+
+            tmpBtn.onclick = (event) => {
+                if(!event.target.classList.contains('disabled')) {
+                    this.closeModalIfOpen(callback)
                 }
+            }
 
-                tmpBtn.onclick = (event) => {
-                    if(!event.target.classList.contains('disabled')) {
-                        this.closeModalIfOpen(callback)
-                    }
-                }
-
-                lowBar.appendChild(tmpBtn)
-            }))
-        } else {
-            lowBar.appendChild(okBtn)
-        }
+            lowBar.appendChild(tmpBtn)
+        }))
 
         if(this.onCancelCallback) {
             upBar.classList.add('up-bar')
