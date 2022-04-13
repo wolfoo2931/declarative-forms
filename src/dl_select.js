@@ -165,6 +165,8 @@ class DlSelect extends HTMLElement {
 
         this.optionsWrapper.appendChild(this.noMatchesHint)
 
+        this.classList.add('dl-select-no-options-available')
+
         if (document.readyState !== 'loading') {
             this.loadOptions()
         } else {
@@ -192,6 +194,14 @@ class DlSelect extends HTMLElement {
         this.isInitialized = true;
     }
 
+    setLoadingStatus() {
+        this.classList.add('dl-select-loading')
+    }
+
+    unsetLoadingStatus() {
+        this.classList.remove('dl-select-loading')
+    }
+
     loadOptions() {
         var self = this
         while(self.firstElementChild) {
@@ -207,12 +217,19 @@ class DlSelect extends HTMLElement {
         self.setValue(self.getValue())
     }
 
+    removeAllOptions() {
+        this.classList.add('dl-select-no-options-available')
+        this.querySelectorAll('dl-option').forEach(opt => opt.remove())
+    }
+
     addOption(optionEl) {
         var self = this
 
         optionEl.onmousedown = function() { self.setOption(this) }
         optionEl.onmouseover = function() { self.clearFocusedOption() }
         self.optionsWrapper.appendChild(optionEl)
+
+        this.classList.remove('dl-select-no-options-available')
     }
 
     clearFocusedOption() {
