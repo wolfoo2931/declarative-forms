@@ -188,6 +188,7 @@ body {
     font-size: 0.9em;
     font-weight: 300;
     font-family: 'Rubik', sans-serif;
+    box-sizing: content-box;
 }
 
 .dl-form form > .dl-form-field-wrapper > input.dl-tooltip-inside {
@@ -387,6 +388,7 @@ body {
     border: 1px solid #e7e6e6;
     padding: 8px;
     margin-top: 4px;
+    outline: none;
 }
 
 .dl-form-array-of-suggestion label {
