@@ -28,8 +28,12 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.dom.appendChild(this.formElement)
     this.onChangeCallback = onChangeCallback
     this.onCancelCallback = onCancelCallback
-    this.buttons = attrs.buttons || { 'OK': onChangeCallback }
+    this.buttons = attrs.buttons || { 'OK': { action: onChangeCallback, id: 'confirmBtn-' + Math.round(Math.random()*1000000) }  }
     this.initPromises = {}
+
+    if(Object.keys(this.buttons).length === 1) {
+        this.onChangeCallback = Object.values(this.buttons)[0].action || Object.values(this.buttons)[0]
+    }
 
     if(attrs.classNames) {
         attrs.classNames.forEach(function(name) {
@@ -48,9 +52,14 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
     this.enterHandler = function(e) {
         var field = self.fields.find(function(f) { return f.name === e.target.name})
+        var confirmBtnElID =  Object.values(self.buttons).map(b => b.id).find(id => !!id)
+        var confirmBtnEl = document.getElementById(confirmBtnElID)
 
         if(!field || !field.largetext) {
-            self.closeModalIfOpen()
+            if(!confirmBtnEl || !confirmBtnEl.classList.contains('disabled')) {
+                self.closeModalIfOpen()
+            }
+
             e.preventDefault()
             e.stopPropagation()
         } else if(!field.allowNewlines) {
