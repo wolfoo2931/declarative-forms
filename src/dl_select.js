@@ -104,12 +104,31 @@ style.textContent = `
         font-family: 'Source Code Pro', monospace;
         border-radius: 2px;
         margin-top: -1px;
-      }
+    }
 
-      dl-select .dl-option-tag:last-child {
-        margin-right: 10px;
-      }
+    dl-select .dl-option-tag:last-child {
+       margin-right: 10px;
+    }
 
+    .dl-select-loading {
+        opacity: 0.5;
+    }
+
+    .dl-select-no-options-available svg path {
+        display: none;
+    }
+
+    .dl-select-no-options-available svg {
+        border-left: none !important;
+    }
+
+    .dl-select-loading svg, .dl-select-no-options-available svg {
+        pointer-events: none;
+    }
+
+    .dl-select-loading input, .dl-select-no-options-available input {
+        pointer-events: none;
+    }
 `
 
 window.addEventListener('load', () => {
@@ -186,6 +205,14 @@ class DlSelect extends HTMLElement {
         self.appendChild(self.inputWrapper)
         self.appendChild(self.optionsWrapper)
         self.setValue(self.getValue())
+    }
+
+    addOption(optionEl) {
+        var self = this
+
+        optionEl.onmousedown = function() { self.setOption(this) }
+        optionEl.onmouseover = function() { self.clearFocusedOption() }
+        self.optionsWrapper.appendChild(optionEl)
     }
 
     clearFocusedOption() {
