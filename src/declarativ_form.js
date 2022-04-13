@@ -10,14 +10,12 @@ document.addEventListener("keydown", e => {
 
     lastDialog = modalDialogs[modalDialogs.length - 1];
 
-    if(lastDialog.buttons) {
-        return;
-    }
-
     if(e.key === 'Escape') {
         lastDialog.escHandler(e)
     } else if(e.key === 'Enter') {
-        lastDialog.enterHandler(e)
+        if(Object.keys(lastDialog.buttons).length === 1) {
+            lastDialog.enterHandler(e)
+        }
     }
 });
 
