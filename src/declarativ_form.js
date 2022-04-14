@@ -387,6 +387,7 @@ DeclarativForm.prototype = {
     updateForm: function(triggerElement) {
         var formData = this.getValues();
         var self = this
+        var triggerFieldName = triggerElement && triggerElement.name
 
         if(this._lastFromUpdatSate === JSON.stringify(formData)) {
             return;
@@ -395,6 +396,8 @@ DeclarativForm.prototype = {
         this._lastFromUpdatSate = JSON.stringify(formData)
 
         this.fields.forEach(field => {
+            var shouldReload = (!triggerFieldName || (field.reloadOnChangeOf && field.reloadOnChangeOf.includes(triggerFieldName)))
+
             if(!field.domElement) {
                 return;
             }
@@ -416,7 +419,7 @@ DeclarativForm.prototype = {
                 field.render(field.domElement, formData)
             }
 
-            if(field.allowedValues instanceof Function) {
+            if(field.allowedValues instanceof Function && shouldReload) {
                 const allowedValues = field.allowedValues(formData)
                 field.domElement.setLoadingStatus()
 
