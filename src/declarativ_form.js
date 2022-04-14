@@ -389,7 +389,6 @@ DeclarativForm.prototype = {
         var self = this
 
         if(this._lastFromUpdatSate === JSON.stringify(formData)) {
-            console.log('skip updateForm')
             return;
         }
 
@@ -420,10 +419,10 @@ DeclarativForm.prototype = {
             if(field.allowedValues instanceof Function) {
                 const allowedValues = field.allowedValues(formData)
                 field.domElement.setLoadingStatus()
-                field.domElement.removeAllOptions()
 
                 Promise.resolve(allowedValues).then(values => {
                     field.domElement.unsetLoadingStatus()
+                    field.domElement.removeAllOptions()
 
                     values && values.forEach((val) => {
                         let optEl = document.createElement('dl-option')

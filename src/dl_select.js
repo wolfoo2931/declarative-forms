@@ -296,6 +296,7 @@ class DlSelect extends HTMLElement {
         var option = this.querySelector('dl-option[value="'+val+'"]') ||
                      Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
 
+        this.setAttribute('tmp-value', val)
         this.setOption(option)
     }
 
@@ -328,7 +329,16 @@ class DlSelect extends HTMLElement {
     }
 
     getValue() {
-        return this.getAttribute('value')
+        if(this.getAttribute('value')) {
+            return this.getAttribute('value')
+        }
+
+        var tmpValue = this.getAttribute('tmp-value')
+        var option = this.querySelector('dl-option[value="'+this.getAttribute('tmp-value')+'"]')
+
+        if(option && tmpValue) {
+            return tmpValue
+        }
     }
 
     focus() {
