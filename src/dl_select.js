@@ -2,6 +2,15 @@ var style = document.createElement('style'),
     xmlns = 'http://www.w3.org/2000/svg'
 
 style.textContent = `
+    @keyframes placeHolderShimmer{
+        0%{
+            background-position: -468px 0
+        }
+        100%{
+            background-position: 468px 0
+        }
+    }
+
     dl-select {
         position: relative;
         font-weight: 300;
@@ -111,7 +120,7 @@ style.textContent = `
     }
 
     .dl-select-loading {
-        opacity: 0.5;
+
     }
 
     .dl-select-no-options-available svg path {
@@ -129,6 +138,24 @@ style.textContent = `
     .dl-select-loading input, .dl-select-no-options-available input {
         pointer-events: none;
     }
+
+    .dl-select-loading .input-wrapper {
+        animation-duration: 1.25s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: infinite;
+        animation-name: placeHolderShimmer;
+        animation-timing-function: linear;
+        background: darkgray;
+        background: linear-gradient(to right, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);
+        background-size: 800px 104px;
+        position: relative;
+        width: 412px;
+        height: 31px;
+    }
+
+    .dl-select-loading input {
+        display: none;
+    }
 `
 
 window.addEventListener('load', () => {
@@ -138,6 +165,8 @@ window.addEventListener('load', () => {
 class DlSelect extends HTMLElement {
     constructor() {
         super()
+        this.loadingScreenTimeouts = []
+        this.loadingStartedAt = undefined
         this.optionsWrapper = document.createElement('div')
         this.inputWrapper = document.createElement('span')
         this.noMatchesHint = document.createElement('span')
@@ -195,11 +224,24 @@ class DlSelect extends HTMLElement {
     }
 
     setLoadingStatus() {
-        this.classList.add('dl-select-loading')
+        this.loadingScreenTimeouts.push(setTimeout(() => {
+            this.classList.add('dl-select-loading')
+            this.loadingStartedAt = Date.now()
+        }, 100))
     }
 
     unsetLoadingStatus() {
-        this.classList.remove('dl-select-loading')
+        this.loadingScreenTimeouts.forEach(clearTimeout)
+        this.loadingScreenTimeouts = []
+
+        const minLoadTimeInSeconds = 1.5
+        const delay = this.loadingStartedAt ?
+            (minLoadTimeInSeconds * 1000) - (Date.now() - this.loadingStartedAt)
+            : 0
+
+        setTimeout(() => {
+            this.classList.remove('dl-select-loading')
+        }, delay)
     }
 
     loadOptions() {
