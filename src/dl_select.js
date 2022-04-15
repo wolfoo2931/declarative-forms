@@ -215,11 +215,13 @@ class DlSelect extends HTMLElement {
         self.appendChild(self.inputWrapper)
         self.appendChild(self.optionsWrapper)
         self.setValue(self.getValue())
+        this.updatePlaceholderText()
     }
 
     removeAllOptions() {
         this.classList.add('dl-select-no-options-available')
         this.querySelectorAll('dl-option').forEach(opt => opt.remove())
+        this.updatePlaceholderText()
     }
 
     addOption(optionEl) {
@@ -230,6 +232,7 @@ class DlSelect extends HTMLElement {
         self.optionsWrapper.appendChild(optionEl)
 
         this.classList.remove('dl-select-no-options-available')
+        this.updatePlaceholderText()
     }
 
     clearFocusedOption() {
@@ -321,11 +324,17 @@ class DlSelect extends HTMLElement {
     }
 
     getPlaceholderText() {
-        if(this.selectedOptionEl) {
+        if (this.optionsWrapper.querySelectorAll('dl-option').length === 0) {
+            return 'No Options Available'
+        } else if(this.selectedOptionEl) {
             return this.selectedOptionEl.innerText
         } else {
             return 'Select ...'
         }
+    }
+
+    updatePlaceholderText() {
+        this.inputField.placeholder = this.getPlaceholderText()
     }
 
     getValue() {
@@ -343,7 +352,7 @@ class DlSelect extends HTMLElement {
 
     focus() {
         this.classList.add('dl-focused')
-        this.inputField.placeholder = this.getPlaceholderText()
+        this.updatePlaceholderText()
         this.inputField.value = ''
         this.optionsWrapper.style.display = 'inline-block'
         this.filterOptions(this.inputField.value)
