@@ -319,6 +319,10 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 fieldElement.value = val;
             }
 
+            if(field.inputType) {
+                fieldElement.setAttribute('type', field.inputType);
+            }
+
             if(field.autocomplete) {
                 fieldElement.setAttribute('autocomplete', field.autocomplete);
             }
