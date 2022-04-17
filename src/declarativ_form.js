@@ -218,7 +218,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                             dom.value[deleteElBtn.dataset.ElIndex] = formData
                             dom.setValue(dom.value)
                             if(field.onChange) {
-                                Promise.all(this.allPromises).then(() => field.onChange(this.getValues()))
+                                Promise.allSettled(this.allPromises).then(() => field.onChange(this.getValues()))
                             }
                         }) }, () => {}, () => {}).openInModal()
                     }
@@ -229,7 +229,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                         dom.setValue(dom.value)
                         e.preventDefault()
                         if(field.onChange) {
-                            Promise.all(this.allPromises).then(() => field.onChange(this.getValues()))
+                            Promise.allSettled(this.allPromises).then(() => field.onChange(this.getValues()))
                         }
                     }
 
@@ -402,7 +402,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         }
     })
 
-    Promise.all(this.allPromises).then(_ => self.updateForm())
+    Promise.allSettled(this.allPromises).then(_ => self.updateForm())
 }
 
 DeclarativForm.prototype = {
@@ -477,7 +477,7 @@ DeclarativForm.prototype = {
             }
         });
 
-        Promise.all(this.allPromises).then(() => {
+        Promise.allSettled(this.allPromises).then(() => {
             formData = this.getValues();
 
             Object.values(this.buttons)
@@ -807,7 +807,7 @@ DeclarativForm.prototype = {
             }
 
             tmpBtn.onclick = (event) => {
-                Promise.all(this.allPromises).then(() => {
+                Promise.allSettled(this.allPromises).then(() => {
                     Promise.resolve(this.updateCalculatedFields()).then(() => {
                         if(!event.target.classList.contains('disabled')) {
                             this.closeModalIfOpen(callback)
