@@ -742,6 +742,7 @@ DeclarativForm.prototype = {
     getValues: function() {
         var result  = {}
 
+        //TODO: filter calculated fields
         this.fields.filter(function(field) {
             return field.domElement && !field.domElement.parentElement.classList.contains('inactive')
         }).forEach(function(field) {
