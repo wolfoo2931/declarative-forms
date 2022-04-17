@@ -30,6 +30,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.onCancelCallback = onCancelCallback
     this.buttons = attrs.buttons || { 'OK': { action: onChangeCallback, id: 'confirmBtn-' + Math.round(Math.random()*1000000) }  }
     this.initPromises = {}
+    this.allPromises = []
 
     if(Object.keys(this.buttons).length === 1) {
         this.onChangeCallback = Object.values(this.buttons)[0].action || Object.values(this.buttons)[0]
@@ -116,6 +117,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             }).catch(_ => {
                 fieldElement.unsetLoadingStatus()
             })
+
+            this.allPromises.push(self.initPromises[field.name])
         } else if (field.message) {
             fieldElement = document.createElement('p')
             fieldElement.classList.add('message')
@@ -313,6 +316,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                     el.classList.add('active');
                 }
             });
+        } else if (field.calculate) {
+            fieldElement = document.createElement('input')
+            fieldElement.type = 'hidden'
         } else {
             fieldElement = document.createElement('input')
             fieldElement.setValue = function(val) {
@@ -365,11 +371,15 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             }
         }
 
+        if(fieldElement.type === 'hidden') {
+            fieldWrapper.classList.add('dl-form-hidden-field')
+        }
+
         fieldWrapper.appendChild(fieldElement)
         self.dom.children[0].appendChild(fieldWrapper)
 
         if(field.defaultValue) {
-            Promise.resolve(self.initPromises[field.name]).then(_ => {
+            this.allPromises.push(Promise.resolve(self.initPromises[field.name]).then(_ => {
                 let tmpDefaultValue = typeof field.defaultValue === 'function' ? field.defaultValue(self.formData) : field.defaultValue
 
                 if(fieldElement.setValue) {
@@ -379,11 +389,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                 } else {
                     fieldElement.setAttribute('value', tmpDefaultValue)
                 }
-            })
+            }))
         }
     })
 
-    Promise.all(Object.values(self.initPromises)).then(_ => self.updateForm())
+    Promise.all(this.allPromises).then(_ => self.updateForm())
 }
 
 DeclarativForm.prototype = {
@@ -426,6 +436,7 @@ DeclarativForm.prototype = {
             if(field.allowedValues instanceof Function && shouldReload) {
                 const allowedValues = field.allowedValues(formData)
                 field.domElement.setLoadingStatus()
+                this.allPromises.push(allowedValues)
 
                 Promise.resolve(allowedValues).then(values => {
                     field.domElement.unsetLoadingStatus()
@@ -457,25 +468,52 @@ DeclarativForm.prototype = {
             }
         });
 
-        formData = this.getValues();
+        Promise.all(this.allPromises).then(() => {
+            formData = this.getValues();
 
-        Object.values(this.buttons)
-            .filter(btn => (btn.isActive && btn.id))
-            .forEach(btn => {
-                let buttonEl = document.getElementById(btn.id)
-                if(!buttonEl) return;
+            Object.values(this.buttons)
+                .filter(btn => (btn.isActive && btn.id))
+                .forEach(btn => {
+                    let buttonEl = document.getElementById(btn.id)
+                    if(!buttonEl) return;
 
-                buttonEl.classList.add('disabled')
+                    buttonEl.classList.add('disabled')
 
-                Promise.resolve(btn.isActive(formData))
-                    .then(BtnIsActive => {
-                        if(BtnIsActive) {
-                            buttonEl.classList.remove('disabled')
-                        } else {
-                            buttonEl.classList.add('disabled')
-                        }
-                    })
-            });
+                    let isActiveCheckPrmise = btn.isActive(formData)
+                    this.allPromises.push(isActiveCheckPrmise)
+
+                    Promise.resolve(isActiveCheckPrmise)
+                        .then(BtnIsActive => {
+                            if(BtnIsActive) {
+                                buttonEl.classList.remove('disabled')
+                            } else {
+                                buttonEl.classList.add('disabled')
+                            }
+                        })
+                });
+
+            this.allPromises.push(this.updateCalculatedFields(triggerFieldName, formData))
+        })
+    },
+
+    updateCalculatedFields(triggerFieldName, formData) {
+        var thisUpdatePromise = null
+        const updatePromises = []
+        this.fields.forEach(field => {
+            var shouldReload = (!triggerFieldName || (field.reloadOnChangeOf && field.reloadOnChangeOf.includes(triggerFieldName)))
+
+
+            if(field.calculate && shouldReload) {
+                thisUpdatePromise = field.calculate(formData || this.getValues())
+                updatePromises.push(thisUpdatePromise)
+                this.allPromises.push(thisUpdatePromise)
+                Promise.resolve(thisUpdatePromise).then(v => {
+                    field.domElement._value = v
+                })
+            }
+        })
+
+        return thisUpdatePromise
     },
 
     getHTML: function() {
@@ -629,7 +667,6 @@ DeclarativForm.prototype = {
     },
 
     setActiveTab: function(tab) {
-
         if(!tab) {
             tab = this.activeTab
         }
@@ -703,7 +740,7 @@ DeclarativForm.prototype = {
             return field.domElement && !field.domElement.parentElement.classList.contains('inactive')
         }).forEach(function(field) {
             if(!field.domElement) { return }
-            result[field.name] = field.domElement.getAttribute('value') || field.domElement.value
+            result[field.name] = field.domElement.getAttribute('value') || field.domElement._value || field.domElement.value
 
             if(field.domElement.acceptedSuggestions) {
                 result[field.name] = result[field.name] || [];
@@ -761,9 +798,13 @@ DeclarativForm.prototype = {
             }
 
             tmpBtn.onclick = (event) => {
-                if(!event.target.classList.contains('disabled')) {
-                    this.closeModalIfOpen(callback)
-                }
+                Promise.all(this.allPromises).then(() => {
+                    Promise.resolve(this.updateCalculatedFields()).then(() => {
+                        if(!event.target.classList.contains('disabled')) {
+                            this.closeModalIfOpen(callback)
+                        }
+                    })
+                })
             }
 
             lowBar.appendChild(tmpBtn)
