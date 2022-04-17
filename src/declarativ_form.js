@@ -500,29 +500,26 @@ DeclarativForm.prototype = {
                             }
                         })
                 });
-
-            this.allPromises.push(this.updateCalculatedFields(triggerFieldName, formData))
         })
     },
 
     updateCalculatedFields(triggerFieldName, formData) {
-        var thisUpdatePromise = null
-        const updatePromises = []
-        this.fields.forEach(field => {
+        return Promise.allSettled(this.fields.map(field => new Promise(done => {
             var shouldReload = (!triggerFieldName || (field.reloadOnChangeOf && field.reloadOnChangeOf.includes(triggerFieldName)))
 
-
             if(field.calculate && shouldReload) {
-                thisUpdatePromise = field.calculate(formData || this.getValues())
-                updatePromises.push(thisUpdatePromise)
-                this.allPromises.push(thisUpdatePromise)
-                Promise.resolve(thisUpdatePromise).then(v => {
-                    field.domElement._value = v
+                return Promise.allSettled(this.allPromises).then(() => {
+                    const thisUpdatePromise = field.calculate(formData || this.getValues())
+                    this.allPromises.push(thisUpdatePromise)
+                    return Promise.resolve(thisUpdatePromise).then(v => {
+                        field.domElement._value = v
+                        done()
+                    })
                 })
+            } else {
+                done()
             }
-        })
-
-        return thisUpdatePromise
+        })))
     },
 
     getHTML: function() {
@@ -808,11 +805,11 @@ DeclarativForm.prototype = {
 
             tmpBtn.onclick = (event) => {
                 Promise.allSettled(this.allPromises).then(() => {
-                    Promise.resolve(this.updateCalculatedFields()).then(() => {
-                        if(!event.target.classList.contains('disabled')) {
+                    if(!event.target.classList.contains('disabled')) {
+                        this.updateCalculatedFields().then(() => {
                             this.closeModalIfOpen(callback)
-                        }
-                    })
+                        })
+                    }
                 })
             }
 
