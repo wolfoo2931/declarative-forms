@@ -217,6 +217,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                             dom.value = dom.value || []
                             dom.value[deleteElBtn.dataset.ElIndex] = formData
                             dom.setValue(dom.value)
+                            if(field.onChange) {
+                                Promise.all(this.allPromises).then(() => field.onChange(this.getValues()))
+                            }
                         }) }, () => {}, () => {}).openInModal()
                     }
 
@@ -225,6 +228,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                         dom.value.splice(deleteElBtn.dataset.ElIndex, 1)
                         dom.setValue(dom.value)
                         e.preventDefault()
+                        if(field.onChange) {
+                            Promise.all(this.allPromises).then(() => field.onChange(this.getValues()))
+                        }
                     }
 
                     dom.appendChild(entryEl)
@@ -239,6 +245,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
                         dom.value = dom.value || []
                         dom.value.push(formData)
                         dom.setValue(dom.value)
+                        if(field.onChange) {
+                            Promise.all(this.allPromises).then(() => field.onChange(this.getValues()))
+                        }
                     })}, () => {}, () => {}).openInModal()
 
                     e.preventDefault()
