@@ -260,6 +260,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
         } else if (field.render) {
             fieldElement = document.createElement('p')
             fieldElement.classList.add('render')
+
+            fieldElement.onChange = function () {
+                self.updateForm(fieldElement);
+            }
+
             field.render(fieldElement, self.formData)
         } else if (field.largetext) {
             fieldElement = document.createElement('textarea')
