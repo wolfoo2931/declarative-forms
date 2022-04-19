@@ -381,6 +381,11 @@ body {
     min-height: 17px;
 }
 
+.dl-form-array-of-entry span {
+    width: 280px;
+    display: inline-block;
+}
+
 .dl-form-array-of-entry button {
     float: right;
     margin-top: -1px;
