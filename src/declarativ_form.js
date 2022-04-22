@@ -19,7 +19,7 @@ document.addEventListener("keydown", e => {
     }
 });
 
-function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
+function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButtonCaption) {
     var self = this;
     this.fields = attrs.fields
     this.dom = document.createElement('div')
@@ -28,7 +28,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
     this.dom.appendChild(this.formElement)
     this.onChangeCallback = onChangeCallback
     this.onCancelCallback = onCancelCallback
-    this.buttons = attrs.buttons || { 'OK': { action: onChangeCallback, id: 'confirmBtn-' + Math.round(Math.random()*1000000) }  }
+    this.buttons = attrs.buttons || { [confirmButtonCaption || 'OK']: { action: onChangeCallback, id: 'confirmBtn-' + Math.round(Math.random()*1000000) }  }
     this.initPromises = {}
     this.allPromises = []
 
