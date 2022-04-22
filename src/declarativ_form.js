@@ -810,16 +810,17 @@ DeclarativForm.prototype = {
             }
 
             tmpBtn.onclick = (event) => {
-                if(event.target.classList.contains('loading-btn')) {
+                const classes = event.target.classList
+
+                if(classes.contains('loading-btn') || classes.contains('disabled')) {
                     return
                 }
 
-                event.target.classList.add('loading-btn')
                 Promise.allSettled(this.allPromises).then(() => {
-                    if(!event.target.classList.contains('disabled')) {
+                    if(!classes.contains('disabled')) {
                         this.updateCalculatedFields().then(() => {
                             this.closeModalIfOpen(callback)
-                            event.target.classList.remove('loading-btn')
+                            classes.remove('loading-btn')
                         })
                     }
                 })
