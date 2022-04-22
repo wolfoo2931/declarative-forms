@@ -261,8 +261,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
             fieldElement = document.createElement('p')
             fieldElement.classList.add('render')
 
-            fieldElement.onChange = function () {
-                self.updateForm(fieldElement);
+            fieldElement.onChange = function (forceFormUpdate) {
+                self.updateForm(fieldElement, forceFormUpdate);
             }
 
             field.render(fieldElement, self.formData)
@@ -412,12 +412,12 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback) {
 
 DeclarativForm.prototype = {
 
-    updateForm: function(triggerElement) {
+    updateForm: function(triggerElement, forceFormUpdate) {
         var formData = this.getValues();
         var self = this
         var triggerFieldName = triggerElement && triggerElement.name
 
-        if(this._lastFromUpdatSate === JSON.stringify(formData)) {
+        if(this._lastFromUpdatSate === JSON.stringify(formData) && !forceFormUpdate) {
             return;
         }
 
