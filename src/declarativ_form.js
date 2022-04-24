@@ -201,6 +201,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
                     entryEl.appendChild(editElBtn)
                     entryEl.appendChild(deleteElBtn)
 
+                    deleteElBtn.classList.add('delete-array-of-btn')
+
                     editElBtn.classList.add('edit-array-of-btn')
                     editElBtn.dataset.ElIndex = elIndex
                     editElBtn.onclick = e => {
@@ -213,7 +215,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
                             };
                         })
 
-                        new DeclarativForm({ fields:  editFieds, buttons: getConfirmButton(formData => {
+                        new DeclarativForm({ classNames: [`form-for-array-of-${field.name}`], fields: editFieds, buttons: getConfirmButton(formData => {
                             dom.value = dom.value || []
                             dom.value[deleteElBtn.dataset.ElIndex] = formData
                             dom.setValue(dom.value)
@@ -241,7 +243,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
                 addButton.innerHTML = field.newButtonLabel || 'Add'
 
                 addButton.onclick = e => {
-                    new DeclarativForm({ fields: field.arrayOf, buttons: getConfirmButton(formData => {
+                    new DeclarativForm({ classNames: [`form-for-array-of-${field.name}`], fields: field.arrayOf, buttons: getConfirmButton(formData => {
                         dom.value = dom.value || []
                         dom.value.push(formData)
                         dom.setValue(dom.value)
