@@ -455,6 +455,7 @@ DeclarativForm.prototype = {
                 this.allPromises.push(allowedValues)
 
                 Promise.resolve(allowedValues).then(values => {
+                    this.resetTooltip(field.name)
                     field.domElement.unsetLoadingStatus()
                     field.domElement.removeAllOptions()
 
@@ -478,8 +479,18 @@ DeclarativForm.prototype = {
                     })
 
                     field.domElement.setValue(field.domElement.getValue())
-                }).catch(_ => {
+                }).catch(err => {
                     field.domElement.unsetLoadingStatus()
+                    if(field.onValuesCalculationFailedMessage) {
+                        const message = field.onValuesCalculationFailedMessage(formData, err);
+                        if(message.level === 'info') {
+                            this.setTooltipWarning(field.name, message.text)
+                        } else if(message.level === 'warning') {
+                            this.setTooltipWarning(field.name, message.text)
+                        } else if(message.level === 'error') {
+                            this.setTooltipError(field.name, message.text)
+                        }
+                    }
                 })
             }
         });
