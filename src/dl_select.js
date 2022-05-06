@@ -139,6 +139,16 @@ style.textContent = `
         pointer-events: none;
     }
 
+    body.dark-theme dl-select {
+        --dl-select-loading-col1: #282727;
+        --dl-select-loading-col2: #505656;
+    }
+
+    dl-select {
+        --dl-select-loading-col1: #eeeeee;
+        --dl-select-loading-col2: #dddddd;
+    }
+
     .dl-select-loading .input-wrapper {
         animation-duration: 1.25s;
         animation-fill-mode: forwards;
@@ -146,13 +156,12 @@ style.textContent = `
         animation-name: placeHolderShimmer;
         animation-timing-function: linear;
         background: darkgray;
-        background: linear-gradient(to right, #eeeeee 10%, #dddddd 18%, #eeeeee 33%);
+        background: linear-gradient(to right, var(--dl-select-loading-col1) 10%, var(--dl-select-loading-col2) 18%, var(--dl-select-loading-col1) 33%);
         background-size: 800px 104px;
         position: relative;
         width: 412px;
         height: 31px;
     }
-
     .dl-select-loading input {
         display: none;
     }
