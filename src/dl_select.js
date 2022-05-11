@@ -235,6 +235,7 @@ class DlSelect extends HTMLElement {
     setLoadingStatus() {
         this.loadingScreenTimeouts.push(setTimeout(() => {
             this.classList.add('dl-select-loading')
+            this.optionsWrapper.remove()
             this.loadingStartedAt = Date.now()
         }, 100))
     }
@@ -249,6 +250,7 @@ class DlSelect extends HTMLElement {
             : 0
 
         setTimeout(() => {
+            this.appendChild(this.optionsWrapper)
             this.classList.remove('dl-select-loading')
         }, delay)
     }
