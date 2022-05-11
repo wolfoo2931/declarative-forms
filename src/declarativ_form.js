@@ -94,8 +94,6 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
             fieldWrapper.classList.add('dl-select-wrapper')
             fieldElement.setLoadingStatus()
             self.initPromises[field.name] = Promise.resolve(allowedValues).then(values => {
-                fieldElement.unsetLoadingStatus()
-
                 values.forEach((val) => {
                     let optEl = document.createElement('dl-option')
                     if(Array.isArray(val)) {
@@ -114,6 +112,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
 
                     fieldElement.addOption(optEl)
                 })
+
+                fieldElement.unsetLoadingStatus()
             }).catch(_ => {
                 fieldElement.unsetLoadingStatus()
             })
@@ -456,7 +456,6 @@ DeclarativForm.prototype = {
 
                 Promise.resolve(allowedValues).then(values => {
                     this.resetTooltip(field.name)
-                    field.domElement.unsetLoadingStatus()
                     field.domElement.removeAllOptions()
 
                     values && values.forEach((val) => {
@@ -478,6 +477,7 @@ DeclarativForm.prototype = {
                         field.domElement.addOption(optEl)
                     })
 
+                    field.domElement.unsetLoadingStatus()
                     field.domElement.setValue(field.domElement.getValue())
                 }).catch(err => {
                     field.domElement.unsetLoadingStatus()
