@@ -258,7 +258,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
                 dom.appendChild(addButton)
             }
 
-            field.render(fieldElement, self.formData)
+            field.render(fieldElement, self.formData, self)
         } else if (field.render) {
             fieldElement = document.createElement('p')
             fieldElement.classList.add('render')
@@ -267,7 +267,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
                 self.updateForm(fieldElement, forceFormUpdate);
             }
 
-            field.render(fieldElement, self.formData)
+            field.render(fieldElement, self.formData, self)
         } else if (field.largetext) {
             fieldElement = document.createElement('textarea')
             fieldElement.oninput = fieldElement.onchange = function() {
@@ -446,7 +446,7 @@ DeclarativForm.prototype = {
             }
 
             if(field.render) {
-                field.render(field.domElement, formData)
+                field.render(field.domElement, formData, self)
             }
 
             if(field.allowedValues instanceof Function && shouldReload) {
