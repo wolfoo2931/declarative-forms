@@ -337,7 +337,7 @@ class DlSelect extends HTMLElement {
         str = str.toLowerCase()
 
         Array.prototype.forEach.call(this.optionsWrapper.children, (opt) => {
-            if(str === '' || opt.innerText.toLowerCase().includes(str)) {
+            if(str === '' || str.split(' ').every(term => opt.innerText.toLowerCase().includes(term))) {
                 opt.style.display = 'block'
                 hasMatched = true
             } else {
