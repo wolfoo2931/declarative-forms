@@ -86,7 +86,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
         fieldWrapper.classList.add('dl-form-field-wrapper')
 
         if(field.tab) {
-            fieldWrapper.classList.add(field.tab.replace(/\s/g, ''))
+            (Array.isArray(field.tab) ? field.tab : [field.tab]).forEach(x => {
+                fieldWrapper.classList.add(x.replace(/\s/g, ''))
+            })
         }
 
         if(allowedValues) {
@@ -669,7 +671,7 @@ DeclarativForm.prototype = {
 
     updateTabs: function() {
         var tabsWrapper = this.modalEl.querySelector('.tabWrapper'),
-            tabs = this.fields.filter(f => f.tab).map(f => f.tab).filter((value, index, self) => self.indexOf(value) === index),
+            tabs = this.fields.filter(f => f.tab).map(f => f.tab).flat().filter((value, index, self) => self.indexOf(value) === index),
             self = this, tmpTabEl
 
         tabsWrapper.innerHTML = ''
@@ -708,12 +710,14 @@ DeclarativForm.prototype = {
         this.activeTab = tab;
         this.fields.forEach(field => {
             if(!field.domElement) { return }
-            if(field.tab === tab) {
+            if(field.tab === tab || (field.tab.includes && field.tab.includes(tab))) {
                 field.domElement.parentElement.classList.remove('notInTab')
             } else {
                 field.domElement.parentElement.classList.add('notInTab')
             }
         })
+
+        this.updateForm();
     },
 
     deleteFromStack: function() {
