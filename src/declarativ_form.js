@@ -351,7 +351,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
                 fieldElement.setAttribute('autocomplete', field.autocomplete);
             }
 
-            if(field.placeholder) {
+            if(field.placeholder && typeof field.placeholder !== 'function') {
                 fieldElement.placeholder = field.placeholder;
             }
 
@@ -363,6 +363,10 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
         field.domElement = fieldElement
         fieldElement.name = field.name
         fieldElement.setAttribute('name', field.name)
+
+        if(field.className) {
+            field.className.split(' ').forEach(cn => fieldWrapper.classList.add(cn))
+        }
 
         if(field.displayName) {
             label = document.createElement('label')
@@ -449,6 +453,10 @@ DeclarativForm.prototype = {
 
             if(field.render) {
                 field.render(field.domElement, formData, self)
+            }
+
+            if(field.placeholder && typeof field.placeholder === 'function') {
+                field.domElement.placeholder = field.placeholder(formData);
             }
 
             if(field.allowedValues instanceof Function && shouldReload) {

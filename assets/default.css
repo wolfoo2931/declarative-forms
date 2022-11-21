@@ -486,3 +486,21 @@ body {
 .dl-form-hidden-field {
     display: none;
 }
+
+.dl-field-two-third input {
+    width: 194px !important;
+    min-width: 128px !important;
+}
+
+.left-side {
+    float: left;
+}
+
+.right-side {
+    margin-left: 173px;
+}
+
+.right-side input {
+    margin-left: 3px;
+    padding-top: 8px !important;
+}

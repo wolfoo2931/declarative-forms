@@ -65,7 +65,7 @@ style.textContent = `
     }
 
     dl-select .input-wrapper input {
-        width: 371px;
+        width: var(--dl-select-input-width);
         outline-width: 0;
         margin-top: 2px;
         padding: 6px;
@@ -147,6 +147,7 @@ style.textContent = `
     dl-select {
         --dl-select-loading-col1: #eeeeee;
         --dl-select-loading-col2: #dddddd;
+        --dl-select-input-width: 371px;
     }
 
     .dl-select-loading .input-wrapper {
@@ -164,6 +165,14 @@ style.textContent = `
     }
     .dl-select-loading input {
         display: none;
+    }
+
+    .dl-field-one-third input {
+        --dl-select-input-width: 128px;
+    }
+
+    .dl-field-two-third input {
+        --dl-select-input-width: 128px;
     }
 `
 
