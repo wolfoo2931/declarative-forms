@@ -86,8 +86,12 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
         fieldWrapper.classList.add('dl-form-field-wrapper')
 
         if(field.tab) {
-            (Array.isArray(field.tab) ? field.tab : [field.tab]).forEach(x => {
-                fieldWrapper.classList.add(x.replace(/\s/g, ''))
+            let tmpFieldTab = typeof field.tab === 'function' ? field.tab(field) : field.tab;
+
+            (Array.isArray(tmpFieldTab) ? tmpFieldTab : [tmpFieldTab])
+            .filter(x => x)
+            .forEach(x => {
+                fieldWrapper.classList.add(x.replace(/\s/g, ''));
             })
         }
 
@@ -213,13 +217,16 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
                         let editFieds = field.arrayOf.map(field => {
                             return {
                                 ...field,
-                                defaultValue: dom.value[deleteElBtn.dataset.ElIndex][field.name] || ''
+                                editArrayOfEntryMode: true,
+                                defaultValue: dom.value[editElBtn.dataset.ElIndex][field.name] || field.defaultValue || ''
                             };
                         })
 
-                        new DeclarativForm({ classNames: [`form-for-array-of-${field.name}`], fields: editFieds, buttons: getConfirmButton(formData => {
+                        field.mapFiledsOnEdit = field.mapFiledsOnEdit || (f => f);
+
+                        new DeclarativForm({ classNames: [`form-for-array-of-${field.name}`], fields: field.mapFiledsOnEdit(editFieds, dom.value[editElBtn.dataset.ElIndex]), buttons: getConfirmButton(formData => {
                             dom.value = dom.value || []
-                            dom.value[deleteElBtn.dataset.ElIndex] = formData
+                            dom.value[editElBtn.dataset.ElIndex] = formData
                             dom.setValue(dom.value)
                             if(field.onChange) {
                                 Promise.allSettled(this.allPromises).then(() => field.onChange(this.getValues()))
@@ -439,7 +446,7 @@ DeclarativForm.prototype = {
             }
 
             if(field.isActive) {
-                let tmpIsActive = field.isActive(formData, modalDialogs.map(d => d.getValues()))
+                let tmpIsActive = field.isActive(formData, modalDialogs.map(d => d.getValues()), field)
                 if(tmpIsActive) {
                     field.domElement.parentElement.classList.remove('inactive')
                 } else {
@@ -679,12 +686,16 @@ DeclarativForm.prototype = {
 
     updateTabs: function() {
         var tabsWrapper = this.modalEl.querySelector('.tabWrapper'),
-            tabs = this.fields.filter(f => f.tab).map(f => f.tab).flat().filter((value, index, self) => self.indexOf(value) === index),
-            self = this, tmpTabEl
+            self = this, tmpTabEl,
+            tabs = this.fields
+                .filter(f => f.tab)
+                .map(f => typeof f.tab === 'function' ? f.tab(f) : f.tab)
+                .flat()
+                .filter((value, index, self) => self.indexOf(value) === index);
 
-        tabsWrapper.innerHTML = ''
+        tabsWrapper.innerHTML = '';
 
-        tabs.forEach((tab) => {
+        tabs.filter(x => x).forEach((tab) => {
             tmpTabEl = document.createElement('div')
             tmpTabEl.classList.add('dl-tab-btn')
             tmpTabEl.classList.add(tab.replace(/\s/g, ''))
@@ -705,6 +716,10 @@ DeclarativForm.prototype = {
             tab = this.activeTab
         }
 
+        if(!tab) {
+            return;
+        }
+
         var tabClassName = tab.replace(/\s/g, ''),
             currentActiveTabBtn = document.querySelector('.dl-tab-btn.active'),
             tabBtn = document.querySelector('.dl-tab-btn.' + tabClassName)
@@ -718,7 +733,10 @@ DeclarativForm.prototype = {
         this.activeTab = tab;
         this.fields.forEach(field => {
             if(!field.domElement) { return }
-            if(field.tab === tab || (field.tab.includes && field.tab.includes(tab))) {
+
+            let tmpFieldTab = typeof field.tab === 'function' ? field.tab(field) : field.tab;
+
+            if(tmpFieldTab === tab || (tmpFieldTab.includes && tmpFieldTab.includes(tab))) {
                 field.domElement.parentElement.classList.remove('notInTab')
             } else {
                 field.domElement.parentElement.classList.add('notInTab')
