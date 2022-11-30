@@ -52,13 +52,18 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
     }
 
     this.enterHandler = function(e) {
+        var self = this;
         var field = self.fields.find(function(f) { return f.name === e.target.name})
         var confirmBtnElID =  Object.values(self.buttons).map(b => b.id).find(id => !!id)
         var confirmBtnEl = document.getElementById(confirmBtnElID)
 
         if(!field || !field.largetext) {
             if(!confirmBtnEl || !confirmBtnEl.classList.contains('disabled')) {
-                self.closeModalIfOpen()
+                Promise.allSettled(self.allPromises).then(() => {
+                    self.updateCalculatedFields().then(() => {
+                        self.closeModalIfOpen()
+                    })
+                })
             }
 
             e.preventDefault()
