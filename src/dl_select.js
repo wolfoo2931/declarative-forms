@@ -200,7 +200,7 @@ class DlSelect extends HTMLElement {
         this.inputWrapper.classList.add('input-wrapper')
         this.optionsWrapper.classList.add('options-wrapper')
         this.optionsWrapper.style.display = 'none'
-        this.inputField.placeholder = 'Select ...'
+        this.inputField.placeholder = this.getAttribute('placeholder') || 'Select ...'
         this.noMatchesHint.classList.add('noMatchesHint')
         this.noMatchesHint.innerHTML = 'No Matches'
         this.noMatchesHint.style.display = 'none'
@@ -395,7 +395,7 @@ class DlSelect extends HTMLElement {
         } else if(this.selectedOptionEl) {
             return this.selectedOptionEl.innerText
         } else {
-            return 'Select ...'
+            return this.getAttribute('placeholder') || 'Select ...';
         }
     }
 
