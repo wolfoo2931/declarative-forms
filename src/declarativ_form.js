@@ -102,6 +102,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
 
         if(allowedValues) {
             fieldElement = document.createElement('dl-select')
+
+            if(field.placeholder) {
+                fieldElement.setAttribute('placeholder', field.placeholder)
+            }
+
             fieldWrapper.classList.add('dl-select-wrapper')
             fieldElement.setLoadingStatus()
             self.initPromises[field.name] = Promise.resolve(allowedValues).then(values => {
