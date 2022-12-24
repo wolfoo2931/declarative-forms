@@ -413,6 +413,8 @@ body {
     padding: 8px;
     margin-top: 4px;
     outline: none;
+    font-family: 'Rubik';
+    font-size: 1.05em;
 }
 
 .dl-form-array-of-suggestion label {
