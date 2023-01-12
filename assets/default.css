@@ -382,8 +382,9 @@ body {
 }
 
 .dl-form-array-of-entry span {
-    width: 280px;
+    width: 275px;
     display: inline-block;
+    overflow: hidden;
 }
 
 .dl-form-array-of-entry button {
