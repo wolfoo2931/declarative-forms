@@ -282,7 +282,7 @@ class DlSelect extends HTMLElement {
 
     removeAllOptions() {
         this.classList.add('dl-select-no-options-available')
-        this.querySelectorAll('dl-option').forEach(opt => opt.remove())
+        this.optionsWrapper.querySelectorAll('dl-option').forEach(opt => opt.remove())
         this.updatePlaceholderText()
     }
 
