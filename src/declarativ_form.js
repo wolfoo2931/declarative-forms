@@ -110,6 +110,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
             fieldWrapper.classList.add('dl-select-wrapper')
             fieldElement.setLoadingStatus()
             self.initPromises[field.name] = Promise.resolve(allowedValues).then(values => {
+                field.domElement.removeAllOptions()
+
                 values.forEach((val) => {
                     let optEl = document.createElement('dl-option')
                     if(Array.isArray(val)) {
