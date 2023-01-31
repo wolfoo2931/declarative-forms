@@ -748,7 +748,7 @@ DeclarativForm.prototype = {
 
             let tmpFieldTab = typeof field.tab === 'function' ? field.tab(field) : field.tab;
 
-            if(tmpFieldTab === tab || (tmpFieldTab.includes && tmpFieldTab.includes(tab))) {
+            if(tmpFieldTab === tab || (tmpFieldTab && tmpFieldTab.includes && tmpFieldTab.includes(tab))) {
                 field.domElement.parentElement.classList.remove('notInTab')
             } else {
                 field.domElement.parentElement.classList.add('notInTab')
