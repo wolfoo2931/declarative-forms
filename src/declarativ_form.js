@@ -294,6 +294,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
             fieldElement.oninput = fieldElement.onchange = function() {
                 self.updateForm(fieldElement);
             }
+
+            fieldElement.setValue = (value) => {
+                fieldElement.value = value
+                self.updateForm(fieldElement)
+            }
         } else if (field.check) {
             fieldElement = document.createElement('span')
 
