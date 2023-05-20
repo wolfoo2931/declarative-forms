@@ -432,4 +432,7 @@ class DlSelect extends HTMLElement {
     }
 }
 
-customElements.define('dl-select', DlSelect)
+try {
+    customElements.define('dl-select', DlSelect)
+} catch(ex) {}
+
