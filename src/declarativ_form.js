@@ -31,6 +31,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
     this.buttons = attrs.buttons || { [confirmButtonCaption || 'OK']: { action: onChangeCallback, id: 'confirmBtn-' + Math.round(Math.random()*1000000) }  }
     this.initPromises = {}
     this.allPromises = []
+    this.nonEmptyTabs = new Set()
 
     if(Object.keys(this.buttons).length === 1) {
         this.onChangeCallback = Object.values(this.buttons)[0].action || Object.values(this.buttons)[0]
@@ -447,7 +448,8 @@ DeclarativForm.prototype = {
     updateForm: function(triggerElement, forceFormUpdate) {
         var formData = this.getValues();
         var self = this
-        var triggerFieldName = triggerElement && triggerElement.name
+        var triggerFieldName = triggerElement && triggerElement.name;
+        this.nonEmptyTabs = new Set();
 
         if(this._lastFromUpdatSate === JSON.stringify(formData) && !forceFormUpdate) {
             return;
@@ -466,6 +468,9 @@ DeclarativForm.prototype = {
                 let tmpIsActive = field.isActive(formData, modalDialogs.map(d => d.getValues()), field)
                 if(tmpIsActive) {
                     field.domElement.parentElement.classList.remove('inactive')
+                    if(field.tab) {
+                        this.nonEmptyTabs.push(field.tab)
+                    }
                 } else {
                     field.domElement.parentElement.classList.add('inactive')
                 }
@@ -531,6 +536,8 @@ DeclarativForm.prototype = {
 
         Promise.allSettled(this.allPromises).then(() => {
             formData = this.getValues();
+
+            self.updateTabs()
 
             Object.values(this.buttons)
                 .filter(btn => (btn.isActive && btn.id))
@@ -715,6 +722,10 @@ DeclarativForm.prototype = {
         tabsWrapper.innerHTML = '';
 
         tabs.filter(x => x).forEach((tab) => {
+            if(!self.nonEmptyTabs.has(tab)) {
+                return;
+            }
+
             tmpTabEl = document.createElement('div')
             tmpTabEl.classList.add('dl-tab-btn')
             tmpTabEl.classList.add(tab.replace(/\s/g, ''))
