@@ -469,7 +469,7 @@ DeclarativForm.prototype = {
                 if(tmpIsActive) {
                     field.domElement.parentElement.classList.remove('inactive')
                     if(field.tab) {
-                        this.nonEmptyTabs.push(field.tab)
+                        this.nonEmptyTabs.add(field.tab)
                     }
                 } else {
                     field.domElement.parentElement.classList.add('inactive')
@@ -753,6 +753,10 @@ DeclarativForm.prototype = {
         var tabClassName = tab.replace(/\s/g, ''),
             currentActiveTabBtn = document.querySelector('.dl-tab-btn.active'),
             tabBtn = document.querySelector('.dl-tab-btn.' + tabClassName)
+
+        if(!tabBtn) {
+            return;
+        }
 
         if(currentActiveTabBtn) {
             currentActiveTabBtn.classList.remove('active')
