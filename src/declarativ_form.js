@@ -806,6 +806,20 @@ DeclarativForm.prototype = {
         }
     },
 
+    remove: function() {
+        if(this.modalEl) {
+            this.modalEl.remove()
+            this.modalEl = null
+        }
+
+        this.deleteFromStack()
+
+        if(modalDialogs.length) {
+            modalDialogs[modalDialogs.length-1].show()
+            modalDialogs[modalDialogs.length-1].setActiveTab()
+        }
+    },
+
     getValues: function() {
         var result  = {}
 
