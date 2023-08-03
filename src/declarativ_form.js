@@ -580,6 +580,7 @@ DeclarativForm.prototype = {
 
     openInModal: function(attr) {
         modalDialogs.push(this);
+        this.isEmbedded = false;
 
         this.modalEl = this.modalEl || this.createModalElement(attr)
 
@@ -605,6 +606,7 @@ DeclarativForm.prototype = {
 
     appendInElement: function(el, attr) {
         var self = this
+        this.isEmbedded = true;
         this.modalEl = this.modalEl || this.createModalElement(attr, true)
         this.modalEl.style.display = 'block'
 
@@ -787,7 +789,7 @@ DeclarativForm.prototype = {
     closeModalIfOpen: function(callaback) {
         callaback = callaback || this.onChangeCallback
 
-        if(this.modalEl) {
+        if(this.modalEl && !this.isEmbedded) {
             this.modalEl.remove()
             this.modalEl = null
         }
