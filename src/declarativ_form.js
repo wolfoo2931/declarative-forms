@@ -1,5 +1,7 @@
 import './dl_select';
 import tippy from 'tippy.js';
+import equal from 'deep-equal';
+
 var tippyInstances = new Map();
 var modalDialogs = [];
 
@@ -446,17 +448,33 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
 
 DeclarativForm.prototype = {
 
+    hasUpdatedSinceLastCompare(formData) {
+        if(!this._lastFromUpdatSate && formData) {
+            this._lastFromUpdatSate = formData;
+            return true;
+        }
+
+        const formDataCopy = JSON.parse(JSON.stringify(formData));
+        delete formDataCopy.activeTab;
+
+        if(!equal(this._lastFromUpdatSate, formDataCopy)) {
+            this._lastFromUpdatSate = formDataCopy;
+            return true;
+        }
+
+        return false;
+    },
+
     updateForm: function(triggerElement, forceFormUpdate) {
         var formData = this.getValues();
         var self = this
         var triggerFieldName = triggerElement && triggerElement.name;
-        var dataUnchanged = this._lastFromUpdatSate === JSON.stringify(formData);
+        var dataUnchanged = !this.hasUpdatedSinceLastCompare(formData);
 
         if(dataUnchanged && !forceFormUpdate) {
             return;
         }
 
-        this._lastFromUpdatSate = JSON.stringify(formData)
         this.nonEmptyTabs = new Set();
 
         this.fields.forEach(field => {
