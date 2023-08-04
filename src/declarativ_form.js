@@ -592,7 +592,7 @@ DeclarativForm.prototype = {
     },
 
     notifyOnInputSubscribers(formData) {
-        this.onInputChangeSubscribers.forEach((cb) => cb(formData))
+        this.onInputChangeSubscribers.forEach((cb) => cb(JSON.parse(JSON.stringify(formData))))
     },
 
     updateCalculatedFields(triggerFieldName, formData) {
