@@ -259,7 +259,7 @@ class DlSelect extends HTMLElement {
             : 0
 
         setTimeout(() => {
-            document.body.appendChild(this.optionsWrapper)
+            this.appendChild(this.optionsWrapper)
             this.classList.remove('dl-select-loading')
         }, delay)
     }
