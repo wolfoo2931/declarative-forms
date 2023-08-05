@@ -151,6 +151,10 @@ body {
     cursor: default;
 }
 
+.dl-modal .btn.invisible {
+    display: none;
+}
+
 .dl-modal .btn:hover {
     border: 2px solid #22bb8b;
     box-shadow: 0px 0px 19px -1px rgba(34,187,139,0.1);

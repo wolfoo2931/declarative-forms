@@ -448,28 +448,38 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
 
 DeclarativForm.prototype = {
 
-    hasUpdatedSinceLastCompare(formData) {
+    hasUpdatedSinceLastCompare(formData, includeTab) {
         if(!this._lastFromUpdatSate && formData) {
             this._lastFromUpdatSate = formData;
             return true;
         }
 
         const formDataCopy = JSON.parse(JSON.stringify(formData));
-        delete formDataCopy.activeTab;
+        const formDataCopyWithoutTab = JSON.parse(JSON.stringify(formData));
+        delete formDataCopyWithoutTab.activeTab;
 
-        if(!equal(this._lastFromUpdatSate, formDataCopy)) {
-            this._lastFromUpdatSate = formDataCopy;
-            return true;
+        if(includeTab) {
+            if(!equal(this._lastFromUpdatSate, formDataCopy)) {
+                this._lastFromUpdatSate = formDataCopy;
+                this._lastFromUpdatSateWithoutTab = formDataCopyWithoutTab;
+                return true;
+            }
+        } else {
+            if(!equal(this._lastFromUpdatSateWithoutTab, formDataCopyWithoutTab)) {
+                this._lastFromUpdatSate = formDataCopy;
+                this._lastFromUpdatSateWithoutTab = formDataCopyWithoutTab;
+                return true;
+            }
         }
 
         return false;
     },
 
-    updateForm: function(triggerElement, forceFormUpdate) {
+    updateForm: function(triggerElement, forceFormUpdate, alsoWhenTabChanged) {
         var formData = this.getValues();
         var self = this
         var triggerFieldName = triggerElement && triggerElement.name;
-        var dataUnchanged = !this.hasUpdatedSinceLastCompare(formData);
+        var dataUnchanged = !this.hasUpdatedSinceLastCompare(formData, alsoWhenTabChanged);
 
         if(dataUnchanged && !forceFormUpdate) {
             return;
@@ -581,6 +591,27 @@ DeclarativForm.prototype = {
                                 buttonEl.classList.remove('disabled')
                             } else {
                                 buttonEl.classList.add('disabled')
+                            }
+                        })
+                });
+
+            Object.values(this.buttons)
+                .filter(btn => (btn.isVisible && btn.id))
+                .forEach(btn => {
+                    let buttonEl = document.getElementById(btn.id)
+                    if(!buttonEl) return;
+
+                    buttonEl.classList.add('invisible')
+
+                    let isVisibleCheckPrmise = btn.isVisible(formData)
+                    this.allPromises.push(isVisibleCheckPrmise)
+
+                    Promise.resolve(isVisibleCheckPrmise)
+                        .then(BtnIsActive => {
+                            if(BtnIsActive) {
+                                buttonEl.classList.remove('invisible')
+                            } else {
+                                buttonEl.classList.add('invisible')
                             }
                         })
                 });
@@ -807,7 +838,7 @@ DeclarativForm.prototype = {
             }
         })
 
-        this.updateForm();
+        this.updateForm(undefined, undefined, true);
     },
 
     deleteFromStack: function() {
