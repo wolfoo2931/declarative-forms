@@ -422,12 +422,6 @@ class DlSelect extends HTMLElement {
         this.inputField.value = ''
         this.optionsWrapper.style.display = 'inline-block'
         this.filterOptions(this.inputField.value)
-
-        var inputWrapDim = inputWrapper.getBoundingClientRect();
-
-        this.optionsWrapper.style.left = '0px';
-        this.optionsWrapper.style.top = (inputWrapDim.height + 2) + 'px';
-        this.optionsWrapper.style.width = inputWrapDim.width + 'px'
     }
 
     unfocus() {
