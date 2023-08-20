@@ -12,6 +12,7 @@ style.textContent = `
     }
 
     dl-select {
+        position: relative;
         font-weight: 300;
         font-family: 'Rubik', sans-serif;
     }
@@ -422,12 +423,11 @@ class DlSelect extends HTMLElement {
         this.optionsWrapper.style.display = 'inline-block'
         this.filterOptions(this.inputField.value)
 
-        var bodyRect = document.body.getBoundingClientRect();
-        var selectPos = this.getBoundingClientRect();
+        var inputWrapDim = inputWrapper.getBoundingClientRect();
 
-        this.optionsWrapper.style.left = (selectPos.left - bodyRect.left) + 'px';
-        this.optionsWrapper.style.top = (selectPos.top - bodyRect.top + selectPos.height + 2)+ 'px';
-        this.optionsWrapper.style.width = selectPos.width + 'px'
+        this.optionsWrapper.style.left = '0px';
+        this.optionsWrapper.style.top = (inputWrapDim.height + 2) + 'px';
+        this.optionsWrapper.style.width = inputWrapDim.width + 'px'
     }
 
     unfocus() {
