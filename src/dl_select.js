@@ -91,7 +91,7 @@ style.textContent = `
         padding-left: 4px;
         fill: var(--dl-line-color, #ddd);
         float: right;
-        border-left-width: 2px;
+        border-left-width: 1px;
         border-left-style: solid;
         border-left-color: var(--dl-line-color, #ddd);
         cursor: pointer;
