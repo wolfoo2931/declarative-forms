@@ -37,7 +37,7 @@ style.textContent = `
     }
 
     dl-select .options-wrapper {
-        position: absolute;
+        position: fixed;
         left: 0px;
         top: 20px;
         font-size: var(--dl-font-size, 0.9em);
@@ -423,11 +423,23 @@ class DlSelect extends HTMLElement {
     }
 
     focus() {
+        const self = this;
         this.classList.add('dl-focused')
         this.updatePlaceholderText()
         this.inputField.value = ''
         this.optionsWrapper.style.display = 'inline-block'
         this.filterOptions(this.inputField.value)
+
+        this.positionOptions = () => {
+            const inputRect = self.inputWrapper.getBoundingClientRect();
+            self.optionsWrapper.style.top = (inputRect.y + inputRect.height + 2) + 'px';
+            self.optionsWrapper.style.left = inputRect.left + 'px';
+            self.optionsWrapper.optionsWrap.style.width = inputRect.width + 'px';
+        }
+
+        this.positionOptions();
+
+        document.addEventListener('scroll', this.positionOptions);
     }
 
     unfocus() {
@@ -435,6 +447,8 @@ class DlSelect extends HTMLElement {
         this.optionsWrapper.style.display = 'none'
         this.inputField.value = this.getDisplayedText()
         this.inputField.blur()
+
+        document.removeEventListener('scroll', this.positionOptions);
     }
 }
 
