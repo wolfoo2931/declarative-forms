@@ -40,7 +40,7 @@ style.textContent = `
         position: absolute;
         left: 0px;
         top: 20px;
-        font-size: 0.9em;
+        font-size: var(--dl-font-size, 0.9em);
         background-color: #fff;
         width: 100%;
         max-height: 230px;
@@ -73,7 +73,7 @@ style.textContent = `
         outline-width: 0;
         margin-top: 2px;
         padding: 6px;
-        font-size: 0.9em;
+        font-size: var(--dl-font-size, 0.9em);
         font-family: var(--dl-font-family, 'Rubik');
         font-weight: 300;
         border: 0px;
@@ -86,7 +86,7 @@ style.textContent = `
     dl-select .input-wrapper svg {
         width: 20px;
         height: 20px;
-        margin-top: 5px;
+        margin-top: var(--dl-drop-down-icon-margin-top, 5px);
         margin-right: 4px;
         padding-left: 4px;
         fill: var(--dl-line-color, #ddd);
