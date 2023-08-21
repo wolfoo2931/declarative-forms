@@ -182,6 +182,38 @@ style.textContent = `
     }
 `
 
+function attachScrollListenerToParents(element, callback) {
+    let currentElement = element;
+
+    while (currentElement) {
+        const hasScrollbar = currentElement.scrollHeight > currentElement.clientHeight;
+
+        if (hasScrollbar) {
+            currentElement.addEventListener('scroll', callback);
+        }
+
+        currentElement = currentElement.parentElement;
+    }
+
+    document.addEventListener('scroll', callback);
+}
+
+function removeScrollListenerFromParents(element, callback) {
+    let currentElement = element;
+
+    while (currentElement) {
+        const hasScrollbar = currentElement.scrollHeight > currentElement.clientHeight;
+
+        if (hasScrollbar) {
+            currentElement.removeEventListener('scroll', callback);
+        }
+
+        currentElement = currentElement.parentElement;
+    }
+
+    document.removeEventListener('scroll', callback);
+}
+
 window.addEventListener('load', () => {
     document.body.appendChild(style)
 })
@@ -434,12 +466,12 @@ class DlSelect extends HTMLElement {
             const inputRect = self.inputWrapper.getBoundingClientRect();
             self.optionsWrapper.style.top = (inputRect.y + inputRect.height + 2) + 'px';
             self.optionsWrapper.style.left = inputRect.left + 'px';
-            self.optionsWrapper.optionsWrap.style.width = inputRect.width + 'px';
+            self.optionsWrapper.style.width = inputRect.width + 'px';
         }
 
         this.positionOptions();
 
-        document.addEventListener('scroll', this.positionOptions);
+        attachScrollListenerToParents(this.optionsWrapper, this.positionOptions);
     }
 
     unfocus() {
@@ -448,7 +480,7 @@ class DlSelect extends HTMLElement {
         this.inputField.value = this.getDisplayedText()
         this.inputField.blur()
 
-        document.removeEventListener('scroll', this.positionOptions);
+        removeScrollListenerFromParents(this.optionsWrapper, this.positionOptions);
     }
 }
 
