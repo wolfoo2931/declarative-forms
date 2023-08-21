@@ -14,22 +14,26 @@ style.textContent = `
     dl-select {
         position: relative;
         font-weight: 300;
-        font-family: 'Rubik', sans-serif;
+        font-family: --var(--dl-font-family, 'Rubik');
     }
 
     dl-select .input-wrapper {
         display: inline-block;
-        border: 2px solid #ddd;
+        border-width: 2px;
+        border-style: solid;
+        border-color: --var(--dl-line-color, #ddd);
         border-radius: 4px;
     }
 
     dl-select.dl-focused .input-wrapper {
-        border: 2px solid #bbb;
+        border-width: 2px;
+        border-style: solid;
+        border-color: --var(--dl-focused-line-color, #bbb);
     }
 
     dl-select.dl-focused .input-wrapper svg {
-        border-left: 1px solid #bbb;
-        fill: #bbb;
+        border-left: 1px solid --var(--dl-focused-line-color, #bbb);
+        fill: --var(--dl-focused-line-color, #bbb);
     }
 
     dl-select .options-wrapper {
@@ -46,21 +50,21 @@ style.textContent = `
     }
 
     dl-select .options-wrapper dl-option {
-        border-left: 1px solid #bbb;
-        border-right: 1px solid #bbb;
+        border-left: 1px solid --var(--dl-focused-line-color, #bbb);
+        border-right: 1px solid --var(--dl-focused-line-color, #bbb);
         cursor: pointer;
     }
 
     dl-select .options-wrapper .noMatchesHint {
-        border-left: 1px solid #bbb;
-        border-right: 1px solid #bbb;
+        border-left: 1px solid --var(--dl-focused-line-color, #bbb);
+        border-right: 1px solid --var(--dl-focused-line-color, #bbb);
         padding: 5px;
         font-style: italic;
     }
 
     dl-select .options-wrapper {
-        border-top: 1px solid #bbb;
-        border-bottom: 1px solid #bbb;
+        border-top: 1px solid --var(--dl-focused-line-color, #bbb);
+        border-bottom: 1px solid --var(--dl-focused-line-color, #bbb);
         border-radius: 4px;
     }
 
@@ -70,7 +74,7 @@ style.textContent = `
         margin-top: 2px;
         padding: 6px;
         font-size: 0.9em;
-        font-family: 'Rubik', sans-serif;
+        font-family: --var(--dl-font-family, 'Rubik');
         font-weight: 300;
         border: 0px;
         border-radius: 4px;
@@ -85,16 +89,18 @@ style.textContent = `
         margin-top: 5px;
         margin-right: 4px;
         padding-left: 4px;
-        fill: #ddd;
+        fill: --var(--dl-line-color, #ddd);
         float: right;
-        border-left: 1px solid #ddd;
+        border-left-width: 2px;
+        border-left-style: solid;
+        border-left-color: --var(--dl-line-color, #ddd);
         cursor: pointer;
     }
 
     dl-select .options-wrapper dl-option {
         display: block;
         padding: 5px;
-        color: #545454;
+        color: --var(--dl-options-background, #545454);
     }
 
     dl-select .options-wrapper dl-option:hover {
@@ -145,8 +151,8 @@ style.textContent = `
     }
 
     dl-select {
-        --dl-select-loading-col1: #eeeeee;
-        --dl-select-loading-col2: #dddddd;
+        --dl-select-loading-col1: --var(--dl-select-loading-col1, #eee);
+        --dl-select-loading-col2: --var(--dl-select-loading-col2, #ddd);
         --dl-select-input-width: 371px;
     }
 
