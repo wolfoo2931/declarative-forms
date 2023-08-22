@@ -785,12 +785,16 @@ DeclarativForm.prototype = {
                 .flat()
                 .filter((value, index, self) => self.indexOf(value) === index);
 
+        var tabsClassNames = Array.prototype.map.call(tabsWrapper.children, (tab) => {
+            return tab.className.split(' ').filter((cn) => ['seen'].includes(cn))
+        });
+
         tabsWrapper.innerHTML = '';
 
         var filteredTabs = tabs
             .filter(tab => tab && self.nonEmptyTabs.has(tab))
 
-        filteredTabs.forEach((tab) => {
+        filteredTabs.forEach((tab, tabIndex) => {
             tmpTabEl = document.createElement('div')
             tmpTabEl.classList.add('dl-tab-btn')
             tmpTabEl.classList.add(tab.replace(/\s/g, ''))
@@ -798,6 +802,11 @@ DeclarativForm.prototype = {
             tmpTabEl.onclick = function() {
                 self.setActiveTab(tab)
             }
+
+            if(tabsClassNames[tabIndex]) {
+                tabsClassNames[tabIndex].forEach(cn => tmpTabEl.classList.add(cn))
+            }
+
             tabsWrapper.appendChild(tmpTabEl)
         })
 
