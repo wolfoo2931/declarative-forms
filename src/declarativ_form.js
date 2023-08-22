@@ -824,6 +824,7 @@ DeclarativForm.prototype = {
         }
 
         tabBtn.classList.add('active')
+        tabBtn.classList.add('seen')
 
         this.activeTab = tab;
         this.fields.forEach(field => {
@@ -961,6 +962,12 @@ DeclarativForm.prototype = {
                 tmpBtn.id = this.buttons[btn].id
             }
 
+            if(this.buttons[btn].class) {
+                this.buttons[btn].class.split(' ').forEach((className) => {
+                    tmpBtn.classList.add(className)
+                })
+            }
+
             tmpBtn.onclick = (event) => {
                 const classes = event.target.classList
 
@@ -984,6 +991,7 @@ DeclarativForm.prototype = {
         if(this.onCancelCallback) {
             upBar.classList.add('up-bar')
             cancelBtn.classList.add('cancelBtn')
+            cancelBtn.classList.add('secondary')
             cancelBtn.onclick = () => { this.cancelModalIfCancelable() }
             upBar.appendChild(cancelBtn)
         }
