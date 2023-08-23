@@ -181,7 +181,12 @@ body {
 }
 
 .dl-form .withoutLabel {
+    position: relative;
     margin-top: 9px;
+}
+
+.dl-form form > .dl-form-field-wrapper {
+    position: relative;
 }
 
 .dl-form form > .dl-form-field-wrapper.notInTab {
