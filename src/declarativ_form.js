@@ -487,6 +487,13 @@ DeclarativForm.prototype = {
 
         this.nonEmptyTabs = new Set();
 
+        var addNonEmptyTab = (f) => {
+            let tmpFieldTab = typeof f.tab === 'function' ? f.tab(f) : f.tab;
+            if(tmpFieldTab) {
+                this.nonEmptyTabs.add(tmpFieldTab)
+            }
+        }
+
         this.fields.forEach(field => {
             var shouldReload = (!triggerFieldName || (field.reloadOnChangeOf && field.reloadOnChangeOf.includes(triggerFieldName)))
             if(!field.domElement) {
@@ -498,13 +505,13 @@ DeclarativForm.prototype = {
                 if(tmpIsActive) {
                     field.domElement.parentElement.classList.remove('inactive')
                     if(field.tab) {
-                        this.nonEmptyTabs.add(field.tab)
+                        addNonEmptyTab(field)
                     }
                 } else {
                     field.domElement.parentElement.classList.add('inactive')
                 }
             } else if (field.tab) {
-                this.nonEmptyTabs.add(field.tab)
+                addNonEmptyTab(field)
             }
 
             if(field.onFormChange) {
