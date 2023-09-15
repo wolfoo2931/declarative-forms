@@ -1001,6 +1001,8 @@ DeclarativForm.prototype = {
                         this.updateCalculatedFields().then(() => {
                             if(!this.buttons[btn].doNotCloseModal) {
                                 this.closeModalIfOpen(callback)
+                            } else {
+                                callback(this.getValues())
                             }
 
                             classes.remove('loading-btn')
