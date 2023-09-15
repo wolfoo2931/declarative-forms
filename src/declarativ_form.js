@@ -288,6 +288,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
             fieldElement = document.createElement('p')
             fieldElement.classList.add('render')
 
+            fieldElement.setValue = (value) => {
+                fieldElement.value = value
+                self.updateForm(fieldElement)
+            }
+
             fieldElement.onChange = function (forceFormUpdate) {
                 self.updateForm(fieldElement, forceFormUpdate);
             }
@@ -994,7 +999,10 @@ DeclarativForm.prototype = {
                 Promise.allSettled(this.allPromises).then(() => {
                     if(!classes.contains('disabled')) {
                         this.updateCalculatedFields().then(() => {
-                            this.closeModalIfOpen(callback)
+                            if(!this.buttons[btn].doNotCloseModal) {
+                                this.closeModalIfOpen(callback)
+                            }
+
                             classes.remove('loading-btn')
                         })
                     }
