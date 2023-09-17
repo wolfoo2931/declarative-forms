@@ -145,15 +145,15 @@ style.textContent = `
         pointer-events: none;
     }
 
+    dl-select {
+        --dl-select-loading-col1: #eee;
+        --dl-select-loading-col2: #ddd;
+        --dl-select-input-width: 371px;
+    }
+
     body.dark-theme dl-select {
         --dl-select-loading-col1: #282727;
         --dl-select-loading-col2: #505656;
-    }
-
-    dl-select {
-        --dl-select-loading-col1: var(--dl-select-loading-col1, #eee);
-        --dl-select-loading-col2: var(--dl-select-loading-col2, #ddd);
-        --dl-select-input-width: 371px;
     }
 
     .dl-select-loading .input-wrapper {
@@ -162,15 +162,13 @@ style.textContent = `
         animation-iteration-count: infinite;
         animation-name: placeHolderShimmer;
         animation-timing-function: linear;
-        background: darkgray;
         background: linear-gradient(to right, var(--dl-select-loading-col1) 10%, var(--dl-select-loading-col2) 18%, var(--dl-select-loading-col1) 33%);
         background-size: 800px 104px;
         position: relative;
         width: 412px;
-        height: 31px;
     }
     .dl-select-loading input {
-        display: none;
+        opacity: 0;
     }
 
     .dl-field-one-third input {
