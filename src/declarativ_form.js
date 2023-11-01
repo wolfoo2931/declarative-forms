@@ -1,5 +1,7 @@
-var dl = require('./dl_select');
-var tippy = require('tippy.js').default;
+import './dl_select';
+import tippy from 'tippy.js';
+import equal from 'deep-equal';
+
 var tippyInstances = new Map();
 var modalDialogs = [];
 
@@ -8,7 +10,7 @@ document.addEventListener("keydown", e => {
         return;
     }
 
-    lastDialog = modalDialogs[modalDialogs.length - 1];
+    const lastDialog = modalDialogs[modalDialogs.length - 1];
 
     if(e.key === 'Escape') {
         lastDialog.escHandler(e)
@@ -31,6 +33,8 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
     this.buttons = attrs.buttons || { [confirmButtonCaption || 'OK']: { action: onChangeCallback, id: 'confirmBtn-' + Math.round(Math.random()*1000000) }  }
     this.initPromises = {}
     this.allPromises = []
+    this.nonEmptyTabs = new Set()
+    this.onInputChangeSubscribers = []
 
     if(Object.keys(this.buttons).length === 1) {
         this.onChangeCallback = Object.values(this.buttons)[0].action || Object.values(this.buttons)[0]
@@ -288,6 +292,11 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
             fieldElement = document.createElement('p')
             fieldElement.classList.add('render')
 
+            fieldElement.setValue = (value) => {
+                fieldElement.value = value
+                self.updateForm(fieldElement)
+            }
+
             fieldElement.onChange = function (forceFormUpdate) {
                 self.updateForm(fieldElement, forceFormUpdate);
             }
@@ -448,20 +457,54 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
 
 DeclarativForm.prototype = {
 
-    updateForm: function(triggerElement, forceFormUpdate) {
+    hasUpdatedSinceLastCompare(formData, includeTab) {
+        if(!this._lastFromUpdatSate && formData) {
+            this._lastFromUpdatSate = formData;
+            return true;
+        }
+
+        const formDataCopy = JSON.parse(JSON.stringify(formData));
+        const formDataCopyWithoutTab = JSON.parse(JSON.stringify(formData));
+        delete formDataCopyWithoutTab.activeTab;
+
+        if(includeTab) {
+            if(!equal(this._lastFromUpdatSate, formDataCopy)) {
+                this._lastFromUpdatSate = formDataCopy;
+                this._lastFromUpdatSateWithoutTab = formDataCopyWithoutTab;
+                return true;
+            }
+        } else {
+            if(!equal(this._lastFromUpdatSateWithoutTab, formDataCopyWithoutTab)) {
+                this._lastFromUpdatSate = formDataCopy;
+                this._lastFromUpdatSateWithoutTab = formDataCopyWithoutTab;
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    updateForm: function(triggerElement, forceFormUpdate, alsoWhenTabChanged) {
         var formData = this.getValues();
         var self = this
-        var triggerFieldName = triggerElement && triggerElement.name
+        var triggerFieldName = triggerElement && triggerElement.name;
+        var dataUnchanged = !this.hasUpdatedSinceLastCompare(formData, alsoWhenTabChanged);
 
-        if(this._lastFromUpdatSate === JSON.stringify(formData) && !forceFormUpdate) {
+        if(dataUnchanged && !forceFormUpdate) {
             return;
         }
 
-        this._lastFromUpdatSate = JSON.stringify(formData)
+        this.nonEmptyTabs = new Set();
+
+        var addNonEmptyTab = (f) => {
+            let tmpFieldTab = typeof f.tab === 'function' ? f.tab(f) : f.tab;
+            if(tmpFieldTab) {
+                this.nonEmptyTabs.add(tmpFieldTab)
+            }
+        }
 
         this.fields.forEach(field => {
             var shouldReload = (!triggerFieldName || (field.reloadOnChangeOf && field.reloadOnChangeOf.includes(triggerFieldName)))
-
             if(!field.domElement) {
                 return;
             }
@@ -470,9 +513,14 @@ DeclarativForm.prototype = {
                 let tmpIsActive = field.isActive(formData, modalDialogs.map(d => d.getValues()), field)
                 if(tmpIsActive) {
                     field.domElement.parentElement.classList.remove('inactive')
+                    if(field.tab) {
+                        addNonEmptyTab(field)
+                    }
                 } else {
                     field.domElement.parentElement.classList.add('inactive')
                 }
+            } else if (field.tab) {
+                addNonEmptyTab(field)
             }
 
             if(field.onFormChange) {
@@ -536,6 +584,12 @@ DeclarativForm.prototype = {
         Promise.allSettled(this.allPromises).then(() => {
             formData = this.getValues();
 
+            if(!dataUnchanged) {
+                self.notifyOnInputSubscribers(formData);
+            }
+
+            self.updateTabs()
+
             Object.values(this.buttons)
                 .filter(btn => (btn.isActive && btn.id))
                 .forEach(btn => {
@@ -556,7 +610,36 @@ DeclarativForm.prototype = {
                             }
                         })
                 });
+
+            Object.values(this.buttons)
+                .filter(btn => (btn.isVisible && btn.id))
+                .forEach(btn => {
+                    let buttonEl = document.getElementById(btn.id)
+                    if(!buttonEl) return;
+
+                    buttonEl.classList.add('invisible')
+
+                    let isVisibleCheckPrmise = btn.isVisible(formData)
+                    this.allPromises.push(isVisibleCheckPrmise)
+
+                    Promise.resolve(isVisibleCheckPrmise)
+                        .then(BtnIsActive => {
+                            if(BtnIsActive) {
+                                buttonEl.classList.remove('invisible')
+                            } else {
+                                buttonEl.classList.add('invisible')
+                            }
+                        })
+                });
         })
+    },
+
+    subscribeOnInput(callback) {
+        this.onInputChangeSubscribers.push(callback);
+    },
+
+    notifyOnInputSubscribers(formData) {
+        this.onInputChangeSubscribers.forEach((cb) => cb(JSON.parse(JSON.stringify(formData))))
     },
 
     updateCalculatedFields(triggerFieldName, formData) {
@@ -584,6 +667,7 @@ DeclarativForm.prototype = {
 
     openInModal: function(attr) {
         modalDialogs.push(this);
+        this.isEmbedded = false;
 
         this.modalEl = this.modalEl || this.createModalElement(attr)
 
@@ -609,6 +693,7 @@ DeclarativForm.prototype = {
 
     appendInElement: function(el, attr) {
         var self = this
+        this.isEmbedded = true;
         this.modalEl = this.modalEl || this.createModalElement(attr, true)
         this.modalEl.style.display = 'block'
 
@@ -624,9 +709,11 @@ DeclarativForm.prototype = {
 
         modalContent.appendChild(this.dom)
         el.appendChild(this.modalEl)
-        this.updateTabs()
 
-        this.updateTooltips()
+        Promise.allSettled(this.allPromises).then(_ => {
+            this.updateTabs()
+            this.updateTooltips()
+        })
     },
 
     hide: function() {
@@ -714,9 +801,16 @@ DeclarativForm.prototype = {
                 .flat()
                 .filter((value, index, self) => self.indexOf(value) === index);
 
+        var tabsClassNames = Array.prototype.map.call(tabsWrapper.children, (tab) => {
+            return tab.className.split(' ').filter((cn) => ['seen'].includes(cn))
+        });
+
         tabsWrapper.innerHTML = '';
 
-        tabs.filter(x => x).forEach((tab) => {
+        var filteredTabs = tabs
+            .filter(tab => tab && self.nonEmptyTabs.has(tab))
+
+        filteredTabs.forEach((tab, tabIndex) => {
             tmpTabEl = document.createElement('div')
             tmpTabEl.classList.add('dl-tab-btn')
             tmpTabEl.classList.add(tab.replace(/\s/g, ''))
@@ -724,11 +818,16 @@ DeclarativForm.prototype = {
             tmpTabEl.onclick = function() {
                 self.setActiveTab(tab)
             }
+
+            if(tabsClassNames[tabIndex]) {
+                tabsClassNames[tabIndex].forEach(cn => tmpTabEl.classList.add(cn))
+            }
+
             tabsWrapper.appendChild(tmpTabEl)
         })
 
-        if(tabs[0]) {
-            this.setActiveTab(tabs[0])
+        if(this.activeTab || filteredTabs[0]) {
+            this.setActiveTab(this.activeTab || filteredTabs[0])
         }
     },
 
@@ -750,6 +849,7 @@ DeclarativForm.prototype = {
         }
 
         tabBtn.classList.add('active')
+        tabBtn.classList.add('seen')
 
         this.activeTab = tab;
         this.fields.forEach(field => {
@@ -764,7 +864,7 @@ DeclarativForm.prototype = {
             }
         })
 
-        this.updateForm();
+        this.updateForm(undefined, undefined, true);
     },
 
     deleteFromStack: function() {
@@ -791,13 +891,27 @@ DeclarativForm.prototype = {
     closeModalIfOpen: function(callaback) {
         callaback = callaback || this.onChangeCallback
 
-        if(this.modalEl) {
+        if(this.modalEl && !this.isEmbedded) {
             this.modalEl.remove()
             this.modalEl = null
         }
 
         if(callaback) {
             callaback(this.getValues())
+        }
+
+        this.deleteFromStack()
+
+        if(modalDialogs.length) {
+            modalDialogs[modalDialogs.length-1].show()
+            modalDialogs[modalDialogs.length-1].setActiveTab()
+        }
+    },
+
+    remove: function() {
+        if(this.modalEl) {
+            this.modalEl.remove()
+            this.modalEl = null
         }
 
         this.deleteFromStack()
@@ -873,6 +987,12 @@ DeclarativForm.prototype = {
                 tmpBtn.id = this.buttons[btn].id
             }
 
+            if(this.buttons[btn].class) {
+                this.buttons[btn].class.split(' ').forEach((className) => {
+                    tmpBtn.classList.add(className)
+                })
+            }
+
             tmpBtn.onclick = (event) => {
                 const classes = event.target.classList
 
@@ -883,7 +1003,12 @@ DeclarativForm.prototype = {
                 Promise.allSettled(this.allPromises).then(() => {
                     if(!classes.contains('disabled')) {
                         this.updateCalculatedFields().then(() => {
-                            this.closeModalIfOpen(callback)
+                            if(!this.buttons[btn].doNotCloseModal) {
+                                this.closeModalIfOpen(callback)
+                            } else {
+                                callback(this.getValues())
+                            }
+
                             classes.remove('loading-btn')
                         })
                     }
@@ -896,6 +1021,7 @@ DeclarativForm.prototype = {
         if(this.onCancelCallback) {
             upBar.classList.add('up-bar')
             cancelBtn.classList.add('cancelBtn')
+            cancelBtn.classList.add('secondary')
             cancelBtn.onclick = () => { this.cancelModalIfCancelable() }
             upBar.appendChild(cancelBtn)
         }
@@ -914,4 +1040,4 @@ DeclarativForm.prototype = {
     }
 }
 
-module.exports = DeclarativForm
+export default DeclarativForm
