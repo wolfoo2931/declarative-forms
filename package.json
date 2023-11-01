@@ -28,23 +28,5 @@
   "dependencies": {
     "tippy.js": "^6.3.7",
     "deep-equal": "^2.2.2"
-  },
-  "devDependencies": {
-    "@wdio/cli": "5.4.17",
-    "@wdio/jasmine-framework": "^5.4.14",
-    "@wdio/local-runner": "5.4.17",
-    "@wdio/spec-reporter": "^5.4.15",
-    "browserify": "^16.2.3",
-    "google-closure-compiler": "^20180610.0.2",
-    "jasmine-core": "^3.3.0",
-    "karma": "^4.0.0",
-    "karma-browserify": "^6.0.0",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-coverage": "^1.1.2",
-    "karma-jasmine": "^2.0.1",
-    "karma-spec-reporter": "0.0.32",
-    "watchify": "^3.11.0",
-    "webdriver-manager": "^12.1.7",
-    "webdriverio": "^5.4.17"
   }
 }
