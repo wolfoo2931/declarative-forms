@@ -103,6 +103,10 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
         if(allowedValues) {
             fieldElement = document.createElement('dl-select')
 
+            if(field.multiple) {
+                fieldElement.setAttribute('mulitple-allowed', 'true');
+            }
+
             if(field.placeholder) {
                 fieldElement.setAttribute('placeholder', field.placeholder)
             }

@@ -19,14 +19,23 @@
             attr = {
                 fields: [
                     {
-                        name: 'language',
-                        displayName: 'Syntax Highlighting for a ... long long long long long long long long long long long name',
-                        message: 'this is the message',
+                        name: 'tags',
+                        displayName: 'Classify this',
                         tooltip: 'this is a tooltip<br/><b>some</b>',
-                        allowedValues: ["XML", "HTML", "MathML", "SVG", "CSS", "clike", "JavaScript"],
+                        multiple: true,
+                        allowedValues: [[1, "XML"], [2, "HTML"], [3, "MathML"], [4, "SVG"], [5, "CSS"], [6, "clike"], [7, "JavaScript"]],
                         defaultValue: 'JavaScript',
                         tab: 'General Settings'
                     },
+                    // {
+                    //     name: 'language',
+                    //     displayName: 'Syntax Highlighting for a ... long long long long long long long long long long long name',
+                    //     message: 'this is the message',
+                    //     tooltip: 'this is a tooltip<br/><b>some</b>',
+                    //     allowedValues: ["XML", "HTML", "MathML", "SVG", "CSS", "clike", "JavaScript"],
+                    //     defaultValue: 'JavaScript',
+                    //     tab: 'General Settings'
+                    // },
                     {
                         name: 'rendered',
                         render: (dom, formData) => {dom.innerHTML = JSON.stringify(formData)},

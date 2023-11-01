@@ -12,6 +12,7 @@ style.textContent = `
     }
 
     dl-select {
+        display: block;
         position: relative;
         font-weight: 300;
         font-family: 'Rubik', sans-serif;
@@ -95,6 +96,11 @@ style.textContent = `
         display: block;
         padding: 5px;
         color: #545454;
+    }
+
+    dl-select .options-wrapper dl-option[selected="true"] {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 
     dl-select .options-wrapper dl-option:hover {
@@ -188,6 +194,7 @@ class DlSelect extends HTMLElement {
         this.optionsWrapper = document.createElement('div')
         this.inputWrapper = document.createElement('span')
         this.noMatchesHint = document.createElement('span')
+        this.selectedContainer = document.createElement('span')
         this.inputField = document.createElement('input')
         this.arrow = document.createElementNS(xmlns, 'svg')
     }
@@ -199,11 +206,13 @@ class DlSelect extends HTMLElement {
 
         this.inputWrapper.classList.add('input-wrapper')
         this.optionsWrapper.classList.add('options-wrapper')
+        this.selectedContainer.classList.add('selected-container')
         this.optionsWrapper.style.display = 'none'
         this.inputField.placeholder = this.getAttribute('placeholder') || 'Select ...'
         this.noMatchesHint.classList.add('noMatchesHint')
         this.noMatchesHint.innerHTML = 'No Matches'
         this.noMatchesHint.style.display = 'none'
+        this.multiple = this.getAttribute('mulitple-allowed') === 'true';
         this.inputField.onfocus = () => { self.focus() }
         this.inputField.onblur = (e) => { self.unfocus() }
         this.inputField.oninput = () => { self.filterOptions(this.inputField.value) }
@@ -272,6 +281,7 @@ class DlSelect extends HTMLElement {
             self.optionsWrapper.appendChild(self.firstElementChild)
         }
 
+        self.inputWrapper.appendChild(self.selectedContainer)
         self.inputWrapper.appendChild(self.inputField)
         self.inputWrapper.appendChild(self.arrow)
         self.appendChild(self.inputWrapper)
@@ -362,19 +372,86 @@ class DlSelect extends HTMLElement {
             return
         }
 
-        var option = this.querySelector('dl-option[value="'+val+'"]') ||
-                     Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
+        if(this.multiple) {
+            var currentValue = this.getValue() || [];
 
-        this.setAttribute('tmp-value', val)
-        this.setOption(option)
+            currentValue.forEach((val) => {
+                var option = this.querySelector('dl-option[value="'+val+'"]') ||
+                    Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
+
+                this.removeOption(option)
+            })
+
+            val.forEach((val) => {
+                var option = this.querySelector('dl-option[value="'+val+'"]') ||
+                    Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
+
+                this.setOption(option)
+            })
+
+
+        } else {
+            var option = this.querySelector('dl-option[value="'+val+'"]') ||
+                Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
+
+            this.setAttribute('tmp-value', val)
+            this.setOption(option)
+        }
     }
 
     setOption(optionEl) {
         if(!optionEl) { return false }
 
-        this.selectedOptionEl = optionEl
-        this.inputField.value = this.getDisplayedText()
-        this.setAttribute('value', optionEl.getAttribute('value') || optionEl.innerText)
+        var optionName = optionEl.getAttribute('value') || optionEl.innerText;
+
+        if(this.multiple) {
+            var currentValue = this.getValue() || [];
+
+            if(currentValue.find((el) => el === optionName)) {
+                return;
+            }
+
+            var tagEl = document.createElement('span');
+            var tagElRemove = document.createElement('span');
+            var tagElRemoveContainer = document.createElement('span');
+
+            tagEl.classList.add('multiselect-tag');
+            tagEl.innerText = optionEl.getAttribute('displayWhenSelected') || optionEl.innerText;
+            tagElRemove.classList.add('dl-muliselect-selected-remove')
+            tagElRemoveContainer.classList.add('dl-muliselect-selected-remove-container');
+            tagElRemove.onclick = () => {
+                this.removeOption(optionEl, tagEl);
+            }
+
+            tagElRemoveContainer.appendChild(tagElRemove);
+            tagEl.appendChild(tagElRemoveContainer);
+            optionEl.setAttribute('selected', 'true');
+
+            var newValue = [...currentValue, optionName];
+            this.setAttribute('value', JSON.stringify(newValue));
+
+            this.selectedContainer.appendChild(tagEl);
+        } else {
+            this.selectedOptionEl = optionEl
+            this.inputField.value = this.getDisplayedText()
+            this.setAttribute('value', optionName)
+        }
+
+        var evt = document.createEvent("HTMLEvents")
+        evt.initEvent("change", false, true)
+        this.dispatchEvent(evt)
+    }
+
+    removeOption(optionEl, tagEl) {
+        if(!optionEl || !tagEl) { return false }
+
+        tagEl.remove();
+        optionEl.setAttribute('selected', 'false');
+
+        var currentValue = this.getValue() || [];
+        var newValue = currentValue.filter((val) => val !== optionEl.getAttribute('value') && val !== optionEl.innerText);
+
+        this.setAttribute('value', JSON.stringify(newValue));
 
         var evt = document.createEvent("HTMLEvents")
         evt.initEvent("change", false, true)
@@ -405,22 +482,44 @@ class DlSelect extends HTMLElement {
 
     getValue() {
         if(this.getAttribute('value')) {
-            return this.getAttribute('value')
+            if(this.multiple) {
+                try {
+                    return JSON.parse(this.getAttribute('value'))
+                } catch(ex) {
+                    return;
+                }
+
+            } else {
+                return this.getAttribute('value')
+            }
+
         }
 
-        var tmpValue = this.getAttribute('tmp-value')
-        var option = this.querySelector('dl-option[value="'+this.getAttribute('tmp-value')+'"]')
+        if(this.multiple) {
+            try {
+                var tmpValue = JSON.parse(this.getAttribute('tmp-value'))
+                return tmpValue
+                    .filter((v) => this.querySelector('dl-option[value="'+v+'"]'));
+            } catch(ex) {
+                return;
+            }
+        } else {
+            var tmpValue = this.getAttribute('tmp-value')
+            var option = this.querySelector('dl-option[value="'+this.getAttribute('tmp-value')+'"]')
 
-        if(option && tmpValue) {
-            return tmpValue
+            if(option && tmpValue) {
+                return tmpValue
+            }
         }
     }
 
     focus() {
+        var inputWrapperDim = this.inputWrapper.getBoundingClientRect()
         this.classList.add('dl-focused')
         this.updatePlaceholderText()
         this.inputField.value = ''
         this.optionsWrapper.style.display = 'inline-block'
+        this.optionsWrapper.style.top = (inputWrapperDim.height + 5) + 'px';
         this.filterOptions(this.inputField.value)
     }
 

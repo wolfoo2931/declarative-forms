@@ -371,6 +371,63 @@ body {
     width: 12px;
 }
 
+.multiselect-tag {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 9px;
+    margin: 2px;
+    border-radius: 3px;
+    background-color: #eeeeee;
+}
+
+.multiselect-tag:last-child {
+    margin-bottom: 6px;
+}
+
+.dl-muliselect-selected-remove-container {
+    margin-top: 9px;
+    margin-bottom: -5px;
+    margin-right: 6px;
+}
+
+.dl-muliselect-selected-remove {
+    display: inline-block;
+    width: 12px;
+    height: 35px;
+    position: relative;
+    transform:rotate(45deg);
+    opacity: 0.3;
+    cursor: pointer;
+    margin-right: 3px;
+}
+
+.dl-muliselect-selected-remove:hover {
+    opacity: 0.6;
+}
+
+.dl-muliselect-selected-remove:before, .dl-muliselect-selected-remove:after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    background: #000;
+}
+
+.dl-muliselect-selected-remove:before {
+    left: 6px;
+    width: 2px;
+    margin-left: -1px;
+    height: 12px;
+}
+
+.dl-muliselect-selected-remove:after {
+    top: 6px;
+    height: 2px;
+    margin-top: -1px;
+    width: 12px;
+}
+
+
 .dl-form-array-of-entry {
     text-align: left;
     background-color: #f8f8f8;
