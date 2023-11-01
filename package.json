@@ -1,5 +1,5 @@
 {
-  "name": "declarativ-forms",
+  "name": "declarativ_forms",
   "version": "0.1.0",
   "description": "",
   "main": "src/declarativ_form.js",
@@ -26,7 +26,8 @@
   },
   "homepage": "https://github.com/wolfoo2931/declarativ-forms#readme",
   "dependencies": {
-    "tippy.js": "^6.2.3"
+    "tippy.js": "^6.3.7",
+    "deep-equal": "^2.2.2"
   },
   "devDependencies": {
     "@wdio/cli": "5.4.17",

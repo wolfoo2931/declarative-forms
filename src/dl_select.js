@@ -15,29 +15,33 @@ style.textContent = `
         display: block;
         position: relative;
         font-weight: 300;
-        font-family: 'Rubik', sans-serif;
+        font-family: var(--dl-font-family, 'Rubik');
     }
 
     dl-select .input-wrapper {
         display: inline-block;
-        border: 2px solid #ddd;
+        border-width: 2px;
+        border-style: solid;
+        border-color: var(--dl-line-color, #ddd);
         border-radius: 4px;
     }
 
     dl-select.dl-focused .input-wrapper {
-        border: 2px solid #bbb;
+        border-width: 2px;
+        border-style: solid;
+        border-color: var(--dl-focused-line-color, #bbb);
     }
 
     dl-select.dl-focused .input-wrapper svg {
-        border-left: 1px solid #bbb;
-        fill: #bbb;
+        border-left: 1px solid var(--dl-focused-line-color, #bbb);
+        fill: var(--dl-focused-line-color, #bbb);
     }
 
     dl-select .options-wrapper {
-        position: absolute;
+        position: fixed;
         left: 0px;
         top: 20px;
-        font-size: 0.9em;
+        font-size: var(--dl-font-size, 0.9em);
         background-color: #fff;
         width: 100%;
         max-height: 230px;
@@ -47,21 +51,21 @@ style.textContent = `
     }
 
     dl-select .options-wrapper dl-option {
-        border-left: 1px solid #bbb;
-        border-right: 1px solid #bbb;
+        border-left: 1px solid var(--dl-focused-line-color, #bbb);
+        border-right: 1px solid var(--dl-focused-line-color, #bbb);
         cursor: pointer;
     }
 
     dl-select .options-wrapper .noMatchesHint {
-        border-left: 1px solid #bbb;
-        border-right: 1px solid #bbb;
+        border-left: 1px solid var(--dl-focused-line-color, #bbb);
+        border-right: 1px solid var(--dl-focused-line-color, #bbb);
         padding: 5px;
         font-style: italic;
     }
 
     dl-select .options-wrapper {
-        border-top: 1px solid #bbb;
-        border-bottom: 1px solid #bbb;
+        border-top: 1px solid var(--dl-focused-line-color, #bbb);
+        border-bottom: 1px solid var(--dl-focused-line-color, #bbb);
         border-radius: 4px;
     }
 
@@ -70,8 +74,8 @@ style.textContent = `
         outline-width: 0;
         margin-top: 2px;
         padding: 6px;
-        font-size: 0.9em;
-        font-family: 'Rubik', sans-serif;
+        font-size: var(--dl-font-size, 0.9em);
+        font-family: var(--dl-font-family, 'Rubik');
         font-weight: 300;
         border: 0px;
         border-radius: 4px;
@@ -83,19 +87,21 @@ style.textContent = `
     dl-select .input-wrapper svg {
         width: 20px;
         height: 20px;
-        margin-top: 5px;
+        margin-top: var(--dl-drop-down-icon-margin-top, 5px);
         margin-right: 4px;
         padding-left: 4px;
-        fill: #ddd;
+        fill: var(--dl-line-color, #ddd);
         float: right;
-        border-left: 1px solid #ddd;
+        border-left-width: 1px;
+        border-left-style: solid;
+        border-left-color: var(--dl-line-color, #ddd);
         cursor: pointer;
     }
 
     dl-select .options-wrapper dl-option {
         display: block;
         padding: 5px;
-        color: #545454;
+        color: var(--dl-options-background, #545454);
     }
 
     dl-select .options-wrapper dl-option[selected="true"] {
@@ -145,15 +151,15 @@ style.textContent = `
         pointer-events: none;
     }
 
+    dl-select {
+        --dl-select-loading-col1: #eee;
+        --dl-select-loading-col2: #ddd;
+        --dl-select-input-width: 371px;
+    }
+
     body.dark-theme dl-select {
         --dl-select-loading-col1: #282727;
         --dl-select-loading-col2: #505656;
-    }
-
-    dl-select {
-        --dl-select-loading-col1: #eeeeee;
-        --dl-select-loading-col2: #dddddd;
-        --dl-select-input-width: 371px;
     }
 
     .dl-select-loading .input-wrapper {
@@ -162,15 +168,13 @@ style.textContent = `
         animation-iteration-count: infinite;
         animation-name: placeHolderShimmer;
         animation-timing-function: linear;
-        background: darkgray;
         background: linear-gradient(to right, var(--dl-select-loading-col1) 10%, var(--dl-select-loading-col2) 18%, var(--dl-select-loading-col1) 33%);
         background-size: 800px 104px;
         position: relative;
         width: 412px;
-        height: 31px;
     }
     .dl-select-loading input {
-        display: none;
+        opacity: 0;
     }
 
     .dl-field-one-third input {
@@ -181,6 +185,38 @@ style.textContent = `
         --dl-select-input-width: 128px;
     }
 `
+
+function attachScrollListenerToParents(element, callback) {
+    let currentElement = element;
+
+    while (currentElement) {
+        const hasScrollbar = currentElement.scrollHeight > currentElement.clientHeight;
+
+        if (hasScrollbar) {
+            currentElement.addEventListener('scroll', callback);
+        }
+
+        currentElement = currentElement.parentElement;
+    }
+
+    document.addEventListener('scroll', callback);
+}
+
+function removeScrollListenerFromParents(element, callback) {
+    let currentElement = element;
+
+    while (currentElement) {
+        const hasScrollbar = currentElement.scrollHeight > currentElement.clientHeight;
+
+        if (hasScrollbar) {
+            currentElement.removeEventListener('scroll', callback);
+        }
+
+        currentElement = currentElement.parentElement;
+    }
+
+    document.removeEventListener('scroll', callback);
+}
 
 window.addEventListener('load', () => {
     document.body.appendChild(style)
@@ -514,13 +550,24 @@ class DlSelect extends HTMLElement {
     }
 
     focus() {
-        var inputWrapperDim = this.inputWrapper.getBoundingClientRect()
+        const self = this;
         this.classList.add('dl-focused')
         this.updatePlaceholderText()
         this.inputField.value = ''
         this.optionsWrapper.style.display = 'inline-block'
-        this.optionsWrapper.style.top = (inputWrapperDim.height + 5) + 'px';
+
         this.filterOptions(this.inputField.value)
+
+        this.positionOptions = () => {
+            const inputRect = self.inputWrapper.getBoundingClientRect();
+            self.optionsWrapper.style.top = (inputRect.y + inputRect.height + 2) + 'px';
+            self.optionsWrapper.style.left = inputRect.left + 'px';
+            self.optionsWrapper.style.width = inputRect.width + 'px';
+        }
+
+        this.positionOptions();
+
+        attachScrollListenerToParents(this.optionsWrapper, this.positionOptions);
     }
 
     unfocus() {
@@ -528,6 +575,8 @@ class DlSelect extends HTMLElement {
         this.optionsWrapper.style.display = 'none'
         this.inputField.value = this.getDisplayedText()
         this.inputField.blur()
+
+        removeScrollListenerFromParents(this.optionsWrapper, this.positionOptions);
     }
 }
 
