@@ -684,6 +684,12 @@ DeclarativForm.prototype = {
             })
         }
 
+        if(attr && attr.wrapperClassNames) {
+            attr.wrapperClassNames.forEach(function(name) {
+                this.modalEl.classList.add(name)
+            })
+        }
+
         this.updateTooltips();
 
         if(modalDialogs.length >= 2) {
