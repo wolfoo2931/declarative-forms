@@ -666,6 +666,7 @@ DeclarativForm.prototype = {
     },
 
     openInModal: function(attr) {
+        var self = this;
         modalDialogs.push(this);
         this.isEmbedded = false;
 
@@ -686,7 +687,7 @@ DeclarativForm.prototype = {
 
         if(attr && attr.wrapperClassNames) {
             attr.wrapperClassNames.forEach(function(name) {
-                this.modalEl.classList.add(name)
+                self.modalEl.classList.add(name)
             })
         }
 
