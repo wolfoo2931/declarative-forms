@@ -406,9 +406,11 @@ class DlSelect extends HTMLElement {
     }
 
     setValue(val) {
+        this._tmpValueWhileLoading = val;
         if (this.loadingScreenTimeouts && this.loadingScreenTimeouts.length) {
             setTimeout(() => {
-                this.setValue(val);
+                this.setValue(this._tmpValueWhileLoading);
+                this._tmpValueWhileLoading = undefined;
             }, 50);
         } else {
             this. _setValue(val);
