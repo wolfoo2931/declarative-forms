@@ -308,6 +308,10 @@ class DlSelect extends HTMLElement {
         setTimeout(() => {
             this.appendChild(this.optionsWrapper)
             this.classList.remove('dl-select-loading')
+            if (this._tmpValueWhileLoading) {
+                this.setValue(this._tmpValueWhileLoading)
+                this._tmpValueWhileLoading = undefined
+            }
         }, delay)
     }
 
@@ -406,19 +410,12 @@ class DlSelect extends HTMLElement {
     }
 
     setValue(val) {
-        this._tmpValueWhileLoading = val;
-        if (this.loadingScreenTimeouts && this.loadingScreenTimeouts.length) {
-            setTimeout(() => {
-                this.setValue(this._tmpValueWhileLoading);
-                this._tmpValueWhileLoading = undefined;
-            }, 50);
-        } else {
-            this. _setValue(val);
-        }
-    }
-
-    _setValue(val) {
         if(!val) {
+            return
+        }
+
+        if (this.loadingScreenTimeouts && this.loadingScreenTimeouts.length) {
+            this._tmpValueWhileLoading = val
             return
         }
 
