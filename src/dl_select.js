@@ -426,8 +426,6 @@ class DlSelect extends HTMLElement {
 
                 this.setOption(option)
             })
-
-
         } else {
             var option = this.querySelector('dl-option[value="'+val+'"]') ||
                 Array.prototype.find.call(this.querySelectorAll('dl-option'), function(el) {return el.innerText == val})
