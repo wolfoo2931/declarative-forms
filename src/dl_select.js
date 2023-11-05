@@ -222,6 +222,8 @@ window.addEventListener('load', () => {
     document.body.appendChild(style)
 })
 
+
+
 class DlSelect extends HTMLElement {
     constructor() {
         super()
@@ -461,7 +463,10 @@ class DlSelect extends HTMLElement {
 
             tagElRemoveContainer.appendChild(tagElRemove);
             tagEl.appendChild(tagElRemoveContainer);
-            optionEl.setAttribute('selected', 'true');
+
+            Array.prototype.forEach.call(this.querySelectorAll('dl-option[value="' + optionEl.getAttribute('value') + '"]'), (opt) => {
+                opt.setAttribute('selected', 'true');
+            });
 
             var newValue = [...currentValue, optionName];
             this.setAttribute('value', JSON.stringify(newValue));
@@ -482,7 +487,10 @@ class DlSelect extends HTMLElement {
         if(!optionEl || !tagEl) { return false }
 
         tagEl.remove();
-        optionEl.setAttribute('selected', 'false');
+
+        Array.prototype.forEach.call(this.querySelectorAll('dl-option[value="' + optionEl.getAttribute('value') + '"]'), (opt) => {
+            opt.setAttribute('selected', 'false');
+        });
 
         var currentValue = this.getValue() || [];
         var newValue = currentValue.filter((val) => val !== optionEl.getAttribute('value') && val !== optionEl.innerText);
