@@ -438,7 +438,7 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
         self.dom.children[0].appendChild(fieldWrapper)
 
         if(field.defaultValue) {
-            this.allPromises.push((Promise.resolve(self.initPromises[field.name])).then(_ => {
+            const promiseToSetDefaultValue = Promise.resolve(self.initPromises[field.name]).then(_ => {
                 let tmpDefaultValue = typeof field.defaultValue === 'function' ? field.defaultValue(self.formData) : field.defaultValue
 
                 if(fieldElement.setValue) {
@@ -448,7 +448,9 @@ function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButton
                 } else {
                     fieldElement.setAttribute('value', tmpDefaultValue)
                 }
-            }))
+            })
+
+            this.allPromises.push(promiseToSetDefaultValue)
         }
     })
 
