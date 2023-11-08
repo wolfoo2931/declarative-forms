@@ -1,0 +1,11 @@
+{
+  // Change this to match your project
+  "include": ["src/**/*.js"],
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outFile": "types/main.d.ts",
+    "declarationMap": true
+  }
+}

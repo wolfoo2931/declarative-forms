@@ -21,7 +21,7 @@ document.addEventListener("keydown", e => {
     }
 });
 
-function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButtonCaption) {
+export default function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButtonCaption) {
     var self = this;
     this.fields = attrs.fields
     this.dom = document.createElement('div')
@@ -486,6 +486,9 @@ DeclarativForm.prototype = {
         return false;
     },
 
+    /**
+     * @type {function(any, boolean | undefined, boolean | undefined): void}
+     */
     updateForm: function(triggerElement, forceFormUpdate, alsoWhenTabChanged) {
         var formData = this.getValues();
         var self = this
@@ -667,6 +670,9 @@ DeclarativForm.prototype = {
         return this.dom.outerHTML;
     },
 
+    /**
+     * @type {function(): void}
+     */
     openInModal: function(attr) {
         var self = this;
         modalDialogs.push(this);
@@ -700,6 +706,9 @@ DeclarativForm.prototype = {
         }
     },
 
+    /**
+     * @type {function(any, any): any}
+     */
     appendInElement: function(el, attr) {
         var self = this
         this.isEmbedded = true;
@@ -840,6 +849,9 @@ DeclarativForm.prototype = {
         }
     },
 
+    /**
+     * @type {function(string): void}
+     */
     setActiveTab: function(tab) {
         if(!tab) {
             tab = this.activeTab
@@ -880,6 +892,9 @@ DeclarativForm.prototype = {
         modalDialogs = modalDialogs.filter(dia => dia !== this)
     },
 
+    /**
+     * @type {function(): void}
+     */
     cancelModalIfCancelable: function() {
         if(this.onCancelCallback) {
             if(this.modalEl) {
@@ -897,6 +912,9 @@ DeclarativForm.prototype = {
         }
     },
 
+    /**
+     * @type {function((formData: object) => {}): void}
+     */
     closeModalIfOpen: function(callaback) {
         callaback = callaback || this.onChangeCallback
 
@@ -917,6 +935,9 @@ DeclarativForm.prototype = {
         }
     },
 
+    /**
+     * @type {function(): void}
+     */
     remove: function() {
         if(this.modalEl) {
             this.modalEl.remove()
@@ -931,6 +952,9 @@ DeclarativForm.prototype = {
         }
     },
 
+    /**
+     * @type {function(): any}
+     */
     getValues: function() {
         var result  = {}
 
@@ -1048,5 +1072,3 @@ DeclarativForm.prototype = {
         return modalWrapper
     }
 }
-
-export default DeclarativForm
