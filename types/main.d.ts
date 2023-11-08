@@ -64,7 +64,7 @@ declare module "declarativ_forms" {
         notifyOnInputSubscribers(formData: any): void;
         updateCalculatedFields(triggerFieldName: any, formData: any): any;
         getHTML: () => string;
-        openInModal: () => void;
+        openInModal: (arg0: attr) => any | undefined;
         appendInElement: (arg0: any, arg1: any) => any;
         hide: () => void;
         show: () => void;
@@ -76,7 +76,7 @@ declare module "declarativ_forms" {
         resetTooltip: (fieldName: any) => void;
         resetTooltips: (fieldNames: any) => void;
         updateTabs: () => void;
-        setActiveTab: (arg0: string) => void;
+        setActiveTab: (arg0: string | null) => void;
         deleteFromStack: () => void;
         cancelModalIfCancelable: () => void;
         closeModalIfOpen: (arg0: (formData: object) => {}) => void;

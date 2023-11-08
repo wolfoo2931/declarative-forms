@@ -671,7 +671,7 @@ DeclarativForm.prototype = {
     },
 
     /**
-     * @type {function(): void}
+     * @type {function(attr: any | undefined): HTMLElement}
      */
     openInModal: function(attr) {
         var self = this;
@@ -704,6 +704,8 @@ DeclarativForm.prototype = {
         if(modalDialogs.length >= 2) {
             modalDialogs[modalDialogs.length-2].hide()
         }
+
+        return this.modalEl;
     },
 
     /**
@@ -850,7 +852,7 @@ DeclarativForm.prototype = {
     },
 
     /**
-     * @type {function(string): void}
+     * @type {function(string?): void}
      */
     setActiveTab: function(tab) {
         if(!tab) {
