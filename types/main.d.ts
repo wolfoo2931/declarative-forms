@@ -40,7 +40,7 @@ declare class DlSelect extends HTMLElement {
     positionOptions: () => void;
     unfocus(): void;
 }
-declare module "declarativ_form" {
+declare module "declarativ_forms" {
     function DeclarativForm(attrs: any, onChangeCallback: any, onCancelCallback: any, confirmButtonCaption: any): void;
     class DeclarativForm {
         constructor(attrs: any, onChangeCallback: any, onCancelCallback: any, confirmButtonCaption: any);
