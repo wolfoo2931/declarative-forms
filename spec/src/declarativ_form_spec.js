@@ -1,4 +1,4 @@
-var DeclarativForm = require('./../../src/declarativ_form.js');
+var DeclarativForm = require('./../../src/declarativ_forms.js');
 
 describe('DeclarativForms Object', () => {
     describe('constructor Function', () => {
