@@ -852,7 +852,7 @@ DeclarativForm.prototype = {
     },
 
     /**
-     * @type {function(string?): void}
+     * @type {function(string | undefined): void}
      */
     setActiveTab: function(tab) {
         if(!tab) {
