@@ -41,14 +41,13 @@ declare class DlSelect extends HTMLElement {
     unfocus(): void;
 }
 declare module "declarativ_forms" {
-    function DeclarativForm(attrs: any, onChangeCallback: any, onCancelCallback: any, confirmButtonCaption: any): void;
+    function DeclarativForm(arg0: any, arg1: (any: any) => void | undefined, arg2: (any: any) => void | undefined, arg3: string | undefined): DeclarativForm;
     class DeclarativForm {
-        constructor(attrs: any, onChangeCallback: any, onCancelCallback: any, confirmButtonCaption: any);
         fields: any;
         dom: HTMLDivElement;
         formElement: HTMLFormElement;
         onChangeCallback: any;
-        onCancelCallback: any;
+        onCancelCallback: (any: any) => void | undefined;
         buttons: any;
         initPromises: {};
         allPromises: any[];
