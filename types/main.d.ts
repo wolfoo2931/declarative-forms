@@ -76,7 +76,7 @@ declare module "declarativ_forms" {
         resetTooltip: (fieldName: any) => void;
         resetTooltips: (fieldNames: any) => void;
         updateTabs: () => void;
-        setActiveTab: (arg0: string | null) => void;
+        setActiveTab: (arg0: string | undefined) => void;
         deleteFromStack: () => void;
         cancelModalIfCancelable: () => void;
         closeModalIfOpen: (arg0: (formData: object) => {}) => void;
