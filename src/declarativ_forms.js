@@ -21,10 +21,7 @@ document.addEventListener("keydown", e => {
     }
 });
 
-/**
- * @type {function(any, (any) => void | undefined, (any) => void | undefined, string | undefined): DeclarativForm}
- */
-export default function DeclarativForm(attrs, onChangeCallback, onCancelCallback, confirmButtonCaption) {
+export default function DeclarativForm(attrs, onChangeCallback = undefined, onCancelCallback = undefined, confirmButtonCaption = undefined) {
     var self = this;
     this.fields = attrs.fields
     this.dom = document.createElement('div')
