@@ -1035,6 +1035,8 @@ DeclarativForm.prototype = {
                     return
                 }
 
+                classes.add('loading-btn')
+
                 Promise.allSettled(this.allPromises).then(() => {
                     if(!classes.contains('disabled')) {
                         this.updateCalculatedFields().then(() => {
