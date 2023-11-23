@@ -925,7 +925,7 @@ DeclarativForm.prototype = {
             this.modalEl = null
         }
 
-        const callbackDone = Promise.resolve();
+        let callbackDone = Promise.resolve();
 
         if(callaback) {
             const callbackDoneTmp = callaback(this.getValues())
