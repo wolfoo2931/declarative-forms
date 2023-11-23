@@ -929,7 +929,7 @@ DeclarativForm.prototype = {
             }
         }
 
-        callbackDone.then(() => {
+        return callbackDone.then(() => {
             if(this.modalEl && !this.isEmbedded) {
                 this.modalEl.remove()
                 this.modalEl = null
@@ -1046,11 +1046,11 @@ DeclarativForm.prototype = {
 
                 Promise.allSettled(this.allPromises).then(() => {
                     if(!classes.contains('disabled')) {
-                        this.updateCalculatedFields().then(() => {
+                        this.updateCalculatedFields().then(async () => {
                             if(!this.buttons[btn].doNotCloseModal) {
-                                this.closeModalIfOpen(callback)
+                                await this.closeModalIfOpen(callback)
                             } else {
-                                const callbackResult = callback(this.getValues())
+                                await callback(this.getValues())
                             }
 
                             classes.remove('loading-btn')
