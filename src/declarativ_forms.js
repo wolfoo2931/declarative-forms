@@ -62,12 +62,13 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
         var confirmBtnEl = document.getElementById(confirmBtnElID)
 
         if(!field || !field.largetext) {
+            const confirmButton = self.modalEl.querySelectorAll('.btn')[0];
             if(!confirmBtnEl || !confirmBtnEl.classList.contains('disabled')) {
-                confirmBtnEl.classList.add('loading-btn')
+                confirmButton && confirmButton.classList.add('loading-btn')
                 Promise.allSettled(self.allPromises).then(() => {
                     self.updateCalculatedFields().then(async () => {
                         await self.closeModalIfOpen()
-                        confirmBtnEl.classList.remove('loading-btn')
+                        confirmButton && confirmButton.remove.add('loading-btn')
                     })
                 })
             }
