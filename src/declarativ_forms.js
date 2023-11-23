@@ -68,7 +68,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                 Promise.allSettled(self.allPromises).then(() => {
                     self.updateCalculatedFields().then(async () => {
                         await self.closeModalIfOpen()
-                        confirmButton && confirmButton.remove.add('loading-btn')
+                        confirmButton && confirmButton.remove('loading-btn')
                     })
                 })
             }
