@@ -920,11 +920,6 @@ DeclarativForm.prototype = {
     closeModalIfOpen: function(callaback) {
         callaback = callaback || this.onChangeCallback
 
-        if(this.modalEl && !this.isEmbedded) {
-            this.modalEl.remove()
-            this.modalEl = null
-        }
-
         let callbackDone = Promise.resolve();
 
         if(callaback) {
@@ -935,6 +930,11 @@ DeclarativForm.prototype = {
         }
 
         callbackDone.then(() => {
+            if(this.modalEl && !this.isEmbedded) {
+                this.modalEl.remove()
+                this.modalEl = null
+            }
+
             this.deleteFromStack()
 
             if(modalDialogs.length) {
