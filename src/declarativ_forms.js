@@ -929,7 +929,7 @@ DeclarativForm.prototype = {
 
         if(callaback) {
             const callbackDoneTmp = callaback(this.getValues())
-            if(callbackDoneTmp.then) {
+            if(callbackDoneTmp && callbackDoneTmp.then) {
                 callbackDone = callbackDoneTmp
             }
         }
