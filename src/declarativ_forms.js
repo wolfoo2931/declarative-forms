@@ -63,9 +63,11 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
 
         if(!field || !field.largetext) {
             if(!confirmBtnEl || !confirmBtnEl.classList.contains('disabled')) {
+                confirmBtnEl.classList.add('loading-btn')
                 Promise.allSettled(self.allPromises).then(() => {
-                    self.updateCalculatedFields().then(() => {
-                        self.closeModalIfOpen()
+                    self.updateCalculatedFields().then(async () => {
+                        await self.closeModalIfOpen()
+                        confirmBtnEl.classList.remove('loading-btn')
                     })
                 })
             }
