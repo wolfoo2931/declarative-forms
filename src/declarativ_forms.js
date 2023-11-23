@@ -925,16 +925,23 @@ DeclarativForm.prototype = {
             this.modalEl = null
         }
 
+        const callbackDone = Promise.resolve();
+
         if(callaback) {
-            callaback(this.getValues())
+            const callbackDoneTmp = callaback(this.getValues())
+            if(callbackDoneTmp.then) {
+                callbackDone = callbackDoneTmp
+            }
         }
 
-        this.deleteFromStack()
+        callbackDone.then(() => {
+            this.deleteFromStack()
 
-        if(modalDialogs.length) {
-            modalDialogs[modalDialogs.length-1].show()
-            modalDialogs[modalDialogs.length-1].setActiveTab()
-        }
+            if(modalDialogs.length) {
+                modalDialogs[modalDialogs.length-1].show()
+                modalDialogs[modalDialogs.length-1].setActiveTab()
+            }
+        })
     },
 
     /**
@@ -1043,7 +1050,7 @@ DeclarativForm.prototype = {
                             if(!this.buttons[btn].doNotCloseModal) {
                                 this.closeModalIfOpen(callback)
                             } else {
-                                callback(this.getValues())
+                                const callbackResult = callback(this.getValues())
                             }
 
                             classes.remove('loading-btn')
