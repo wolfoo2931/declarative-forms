@@ -1,6 +1,6 @@
 import './dl_select';
 import tippy from 'tippy.js';
-import equal from 'deep-equal';
+import { isEqual } from "@react-hookz/deep-equal";
 
 var tippyInstances = new Map();
 var modalDialogs = [];
@@ -473,13 +473,13 @@ DeclarativForm.prototype = {
         delete formDataCopyWithoutTab.activeTab;
 
         if(includeTab) {
-            if(!equal(this._lastFromUpdatSate, formDataCopy)) {
+            if(!isEqual(this._lastFromUpdatSate, formDataCopy)) {
                 this._lastFromUpdatSate = formDataCopy;
                 this._lastFromUpdatSateWithoutTab = formDataCopyWithoutTab;
                 return true;
             }
         } else {
-            if(!equal(this._lastFromUpdatSateWithoutTab, formDataCopyWithoutTab)) {
+            if(!isEqual(this._lastFromUpdatSateWithoutTab, formDataCopyWithoutTab)) {
                 this._lastFromUpdatSate = formDataCopy;
                 this._lastFromUpdatSateWithoutTab = formDataCopyWithoutTab;
                 return true;

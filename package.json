@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/wolfoo2931/declarativ-forms#readme",
   "dependencies": {
-    "deep-equal": "^2.2.2",
+    "@react-hookz/deep-equal": "^1.0.4",
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
