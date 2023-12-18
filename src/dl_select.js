@@ -90,7 +90,7 @@ style.textContent = `
     }
 
     dl-select .input-wrapper input::placeholder {
-        color: var(--dl-options-text-color, #545454);
+        color: var(--dl-options-inactive-text-color, #545454);
     }
 
     dl-select .input-wrapper svg {
