@@ -74,6 +74,7 @@ style.textContent = `
 
     dl-select .input-wrapper input {
         width: var(--dl-select-input-width);
+        color: var(--dl-options-text-color, #545454);
         outline-width: 0;
         margin-top: 2px;
         padding: 6px;
