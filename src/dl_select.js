@@ -23,6 +23,8 @@ style.textContent = `
         border-width: 2px;
         border-style: solid;
         border-color: var(--dl-line-color, #ddd);
+        background-color: var(--dl-options-background, #fff);
+        color: var(--dl-options-text-color, #545454);
         border-radius: 4px;
     }
 
