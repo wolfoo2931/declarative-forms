@@ -48,6 +48,7 @@ style.textContent = `
         overflow: scroll;
         box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.4);
         z-index: 100;
+        background-color: var(--dl-options-background, #fff);
     }
 
     dl-select .options-wrapper dl-option {
@@ -82,6 +83,11 @@ style.textContent = `
         float: left;
         cursor: pointer;
         box-sizing: content-box;
+        background: transparent;
+    }
+
+    dl-select .input-wrapper input::placeholder {
+        color: var(--dl-options-text-color, #545454);
     }
 
     dl-select .input-wrapper svg {
@@ -101,7 +107,8 @@ style.textContent = `
     dl-select .options-wrapper dl-option {
         display: block;
         padding: 5px;
-        color: var(--dl-options-background, #545454);
+        color: var(--dl-options-text-color, #545454);
+        background-color: var(--dl-options-background, #fff);
     }
 
     dl-select .options-wrapper dl-option[selected="true"] {
@@ -110,11 +117,11 @@ style.textContent = `
     }
 
     dl-select .options-wrapper dl-option:hover {
-        background-color: rgba(224, 240, 227, 0.4);
+        background-color: var(--dl-options-option-hover-color, rgba(224, 240, 227, 0.4));
     }
 
     dl-select .options-wrapper dl-option.dl-focused {
-        background-color: rgba(224, 240, 227, 0.4);
+        background-color: var(--dl-options-option-hover-color, rgba(224, 240, 227, 0.4));
     }
 
     dl-select .dl-option-tag {
