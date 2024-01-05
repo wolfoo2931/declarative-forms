@@ -162,8 +162,6 @@ style.textContent = `
     }
 
     dl-select {
-        --dl-select-loading-col1: #eee;
-        --dl-select-loading-col2: #ddd;
         --dl-select-input-width: 371px;
     }
 
@@ -178,7 +176,7 @@ style.textContent = `
         animation-iteration-count: infinite;
         animation-name: placeHolderShimmer;
         animation-timing-function: linear;
-        background: linear-gradient(to right, var(--dl-select-loading-col1) 10%, var(--dl-select-loading-col2) 18%, var(--dl-select-loading-col1) 33%);
+        background: linear-gradient(to right, var(--dl-select-loading-col1, #eee) 10%, var(--dl-select-loading-col2, #ddd) 18%, var(--dl-select-loading-col1, #eee) 33%);
         background-size: 800px 104px;
         position: relative;
         width: 412px;
