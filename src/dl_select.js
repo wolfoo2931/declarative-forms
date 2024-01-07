@@ -64,6 +64,7 @@ style.textContent = `
         border-right: 1px solid var(--dl-focused-line-color, #bbb);
         padding: 5px;
         font-style: italic;
+        color: var(--dl-options-text-color, #545454);
     }
 
     dl-select .options-wrapper {
