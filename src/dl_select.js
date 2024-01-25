@@ -163,7 +163,7 @@ style.textContent = `
     }
 
     dl-select {
-        --dl-select-input-width: 371px;
+        --dl-select-input-width: 370px;
     }
 
     body.dark-theme dl-select {
@@ -187,11 +187,11 @@ style.textContent = `
     }
 
     .dl-field-one-third input {
-        --dl-select-input-width: 128px;
+        --dl-select-input-width: 127px;
     }
 
     .dl-field-two-third input {
-        --dl-select-input-width: 128px;
+        --dl-select-input-width: 127px;
     }
 `
 
