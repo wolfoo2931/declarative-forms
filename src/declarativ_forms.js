@@ -153,6 +153,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
             fieldElement.classList.add('message')
             fieldElement.innerHTML = field.message
         } else if (field.arrayOf) {
+            const parentForm = self;
             fieldElement = document.createElement('div')
             fieldElement.classList.add('array-of')
             fieldElement.setValue = (value) => {
@@ -169,7 +170,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                     let suggestedContainer = document.createElement('div')
                     suggestedContainer.classList.add('dl-form-array-suggested-container')
                     let suggestedEntries = typeof field.suggested === 'function' ?
-                        field.suggested(formData, modalDialogs.map(d => d.getValues())) :
+                        field.suggested(formData, modalDialogs.map(d => d.getValues()), parentForm.getValues()) :
                         field.suggested;
 
                     (suggestedEntries || []).forEach((suggestedEntry, fieldIndex) => {
@@ -240,6 +241,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                         let editFieds = field.arrayOf.map(field => {
                             return {
                                 ...field,
+                                isActive: (formData, formDataStack) => field.isActive ? field.isActive(formData, formDataStack, parentForm.getValues()) : true,
                                 editArrayOfEntryMode: true,
                                 defaultValue: dom.value?.[editElBtn.dataset.ElIndex]?.[field.name] || field.defaultValue || ''
                             };
