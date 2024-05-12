@@ -21,8 +21,9 @@ document.addEventListener("keydown", e => {
     }
 });
 
-export default function DeclarativForm(attrs, onChangeCallback = undefined, onCancelCallback = undefined, confirmButtonCaption = undefined) {
+export default function DeclarativForm(attrs, onChangeCallback = undefined, onCancelCallback = undefined, confirmButtonCaption = undefined, parentForm) {
     var self = this;
+    this.parentForm = parentForm;
     this.fields = attrs.fields
     this.dom = document.createElement('div')
     this.dom.classList.add('dl-form')
@@ -153,7 +154,6 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
             fieldElement.classList.add('message')
             fieldElement.innerHTML = field.message
         } else if (field.arrayOf) {
-            const parentForm = self;
             fieldElement = document.createElement('div')
             fieldElement.classList.add('array-of')
             fieldElement.setValue = (value) => {
@@ -170,11 +170,11 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                     let suggestedContainer = document.createElement('div')
                     suggestedContainer.classList.add('dl-form-array-suggested-container')
                     let suggestedEntries = typeof field.suggested === 'function' ?
-                        field.suggested(formData, modalDialogs.map(d => d.getValues()), parentForm.getValues()) :
+                        field.suggested(formData, modalDialogs.map(d => d.getValues()), self.parentForm && self.parentForm.getValues()) :
                         field.suggested;
 
                     (suggestedEntries || []).forEach((suggestedEntry, fieldIndex) => {
-                        checkboxEl = document.createElement('span')
+                        let checkboxEl = document.createElement('span')
 
                         let cb = document.createElement('input')
                         cb.id = 'field-' + fieldIndex
@@ -241,7 +241,6 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                         let editFieds = field.arrayOf.map(field => {
                             return {
                                 ...field,
-                                isActive: (formData, formDataStack) => field.isActive ? field.isActive(formData, formDataStack, parentForm.getValues()) : true,
                                 editArrayOfEntryMode: true,
                                 defaultValue: dom.value?.[editElBtn.dataset.ElIndex]?.[field.name] || field.defaultValue || ''
                             };
@@ -256,7 +255,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                             if(field.onChange) {
                                 Promise.allSettled(this.allPromises).then(() => field.onChange(this.getValues()))
                             }
-                        }) }, () => {}, () => {}).openInModal()
+                        }) }, () => {}, () => {}, undefined, self).openInModal()
                     }
 
                     deleteElBtn.dataset.ElIndex = elIndex
@@ -284,7 +283,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                         if(field.onChange) {
                             Promise.all(this.allPromises).then(() => field.onChange(this.getValues()))
                         }
-                    })}, () => {}, () => {}).openInModal()
+                    })}, () => {}, () => {}, undefined, self).openInModal()
 
                     e.preventDefault()
                 }
@@ -818,6 +817,10 @@ DeclarativForm.prototype = {
     },
 
     updateTabs: function() {
+        if(!this.modalEl) {
+            return;
+        }
+
         var tabsWrapper = this.modalEl.querySelector('.tabWrapper'),
             self = this, tmpTabEl,
             tabs = this.fields
