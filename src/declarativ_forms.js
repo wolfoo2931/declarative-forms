@@ -241,7 +241,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                             return {
                                 ...field,
                                 editArrayOfEntryMode: true,
-                                defaultValue: dom.value[editElBtn.dataset.ElIndex][field.name] || field.defaultValue || ''
+                                defaultValue: dom.value?.[editElBtn.dataset.ElIndex]?.[field.name] || field.defaultValue || ''
                             };
                         })
 
