@@ -519,7 +519,7 @@ DeclarativForm.prototype = {
             }
 
             if(field.isActive) {
-                let tmpIsActive = field.isActive(formData, modalDialogs.map(d => d.getValues()), field)
+                let tmpIsActive = field.isActive(formData, modalDialogs.map(d => d.getValues()), field, self.parentForm && self.parentForm.getValues())
                 if(tmpIsActive) {
                     field.domElement.parentElement.classList.remove('inactive')
                     if(field.tab) {
@@ -607,7 +607,7 @@ DeclarativForm.prototype = {
 
                     buttonEl.classList.add('disabled')
 
-                    let isActiveCheckPrmise = btn.isActive(formData)
+                    let isActiveCheckPrmise = btn.isActive(formData, modalDialogs.map(d => d.getValues()), self.parentForm && self.parentForm.getValues())
                     this.allPromises.push(isActiveCheckPrmise)
 
                     Promise.resolve(isActiveCheckPrmise)
