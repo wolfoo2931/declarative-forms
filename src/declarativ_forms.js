@@ -513,7 +513,7 @@ DeclarativForm.prototype = {
         }
 
         this.fields.forEach(field => {
-            var shouldReload = (!triggerFieldName || (field.reloadOnChangeOf && field.reloadOnChangeOf.includes(triggerFieldName)))
+            var shouldReload = (triggerFieldName && (field.reloadOnChangeOf && field.reloadOnChangeOf.includes(triggerFieldName)))
             if(!field.domElement) {
                 return;
             }
