@@ -47,7 +47,7 @@ style.textContent = `
         background-color: #fff;
         width: 100%;
         max-height: 230px;
-        overflow: scroll;
+        overflow-y: scroll;
         box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.4);
         z-index: 100;
         background-color: var(--dl-options-background, #fff);
