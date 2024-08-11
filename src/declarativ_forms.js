@@ -780,6 +780,10 @@ DeclarativForm.prototype = {
         var tooltipSelector = `#dl-form-field-wrapper-for-${fieldName} .dl-tooltip`;
         var tooltipEl = document.querySelector(tooltipSelector);
 
+        if(!tooltipEl) {
+            return;
+        }
+
         if(tooltipEl.classList.value.includes('dl-tooltip-in-input')) {
             tooltipEl.classList.value = `dl-tooltip dl-tooltip-in-input ${className}`;
         } else {
