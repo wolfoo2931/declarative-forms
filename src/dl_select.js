@@ -110,7 +110,10 @@ style.textContent = `
 
     dl-select .options-wrapper dl-option {
         display: block;
-        padding: 5px;
+        padding-top: var(--dl-options-padding-top, 5px);
+        padding-right: var(--dl-options-padding-right, 5px);
+        padding-bottom: var(--dl-options-padding-bottom, 5px);
+        padding-left: var(--dl-options-padding-left, 5px);
         color: var(--dl-options-text-color, #545454);
         background-color: var(--dl-options-background, #fff);
     }
