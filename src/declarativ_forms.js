@@ -392,6 +392,14 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                 fieldElement.setAttribute('type', field.inputType);
             }
 
+            if(field.inputType) {
+                fieldElement.setAttribute('type', field.inputType);
+            }
+
+            if(field.acceptFileType) {
+                fieldElement.setAttribute('accept', field.acceptFileType);
+            }
+
             if(field.autocomplete) {
                 fieldElement.setAttribute('autocomplete', field.autocomplete);
             }
@@ -988,6 +996,7 @@ DeclarativForm.prototype = {
             return field.domElement && !field.domElement.parentElement.classList.contains('inactive')
         }).forEach(function(field) {
             if(!field.domElement) { return }
+
             result[field.name] = field.domElement.getAttribute('value') || field.domElement._value || field.domElement.value
 
             if(field.domElement.acceptedSuggestions) {
@@ -1007,6 +1016,10 @@ DeclarativForm.prototype = {
 
             if(field.check) {
                 result[field.name] = result[field.name] === 'true'
+            }
+
+            if(field.domElement.type === 'file') {
+                result[field.name] = field.domElement.files
             }
         })
 
