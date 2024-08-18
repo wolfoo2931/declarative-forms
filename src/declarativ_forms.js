@@ -385,7 +385,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
             }
 
             if(field.inputType) {
-                cb.setAttribute('type', field.inputType)
+                fieldElement.setAttribute('type', field.inputType)
             }
 
             if(field.inputType) {
