@@ -388,14 +388,6 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                 fieldElement.setAttribute('type', field.inputType)
             }
 
-            if(field.inputType) {
-                fieldElement.setAttribute('type', field.inputType);
-            }
-
-            if(field.inputType) {
-                fieldElement.setAttribute('type', field.inputType);
-            }
-
             if(field.acceptFileType) {
                 fieldElement.setAttribute('accept', field.acceptFileType);
             }
@@ -660,7 +652,7 @@ DeclarativForm.prototype = {
     },
 
     notifyOnInputSubscribers(formData) {
-        this.onInputChangeSubscribers.forEach((cb) => cb(JSON.parse(JSON.stringify(formData))))
+        this.onInputChangeSubscribers.forEach((cb) => cb(JSON.parse(JSON.stringify(formData)), formData))
     },
 
     updateCalculatedFields(triggerFieldName, formData) {
