@@ -64,7 +64,7 @@ declare module "declarativ_forms" {
         notifyOnInputSubscribers(formData: any): void;
         updateCalculatedFields(triggerFieldName: any, formData: any): any;
         getHTML: () => string;
-        openInModal: (arg0: attr) => any | undefined;
+        openInModal: (arg0: any) => any | undefined;
         appendInElement: (arg0: any, arg1: any) => any;
         hide: () => void;
         show: () => void;
