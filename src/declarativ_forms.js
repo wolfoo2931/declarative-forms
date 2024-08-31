@@ -37,6 +37,8 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
     this.nonEmptyTabs = new Set()
     this.onInputChangeSubscribers = []
 
+    this.formElement.setAttribute('autocomplete', 'off');
+
     if(Object.keys(this.buttons).length === 1) {
         this.onChangeCallback = Object.values(this.buttons)[0].action || Object.values(this.buttons)[0]
     }
