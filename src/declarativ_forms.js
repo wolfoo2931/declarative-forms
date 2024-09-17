@@ -1,5 +1,6 @@
 import './dl_select';
 import tippy from 'tippy.js';
+import { v1 as uuid } from 'uuid';
 import { isEqual } from "@react-hookz/deep-equal";
 
 var tippyInstances = new Map();
@@ -20,6 +21,32 @@ document.addEventListener("keydown", e => {
         }
     }
 });
+
+function replaceFileListValues(data, files = {}) {
+    console.log('replaceFileListValues')
+    function processValue(value, key) {
+      if (value instanceof FileList) {
+        const fileListKey = uuid();
+        files[fileListKey] = value;
+        return `$filelist:${fileListKey}`;
+      } else if (Array.isArray(value)) {
+        return value.map((item, index) => processValue(item, `${key}[${index}]`));
+      } else if (value !== null && typeof value === 'object') {
+        return processObject(value);
+      }
+      return value;
+    }
+
+    function processObject(obj) {
+      return Object.entries(obj).reduce((acc, [key, value]) => {
+        acc[key] = processValue(value, key);
+        return acc;
+      }, {});
+    }
+
+    const newFormData = processObject(data);
+    return [newFormData, files];
+}
 
 export default function DeclarativForm(attrs, onChangeCallback = undefined, onCancelCallback = undefined, confirmButtonCaption = undefined, parentForm) {
     var self = this;
@@ -654,7 +681,8 @@ DeclarativForm.prototype = {
     },
 
     notifyOnInputSubscribers(formData) {
-        this.onInputChangeSubscribers.forEach((cb) => cb(formData))
+        const [formDataWithFileListHandles, files] = replaceFileListValues(formData);
+        this.onInputChangeSubscribers.forEach((cb) => cb(formDataWithFileListHandles, files));
     },
 
     updateCalculatedFields(triggerFieldName, formData) {

@@ -29,7 +29,8 @@
   "homepage": "https://github.com/wolfoo2931/declarativ-forms#readme",
   "dependencies": {
     "@react-hookz/deep-equal": "^1.0.4",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "typescript": "^5.2.2"
