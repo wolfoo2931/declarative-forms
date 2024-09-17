@@ -23,7 +23,6 @@ document.addEventListener("keydown", e => {
 });
 
 function replaceFileListValues(data, files = {}) {
-    console.log('replaceFileListValues')
     function processValue(value, key) {
       if (value instanceof FileList) {
         const fileListKey = uuid();
