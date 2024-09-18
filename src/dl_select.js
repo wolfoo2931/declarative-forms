@@ -39,8 +39,8 @@ style.textContent = `
         fill: var(--dl-focused-line-color, #bbb);
     }
 
-    dl-select .options-wrapper {
-        position: fixed;
+    .options-wrapper {
+        position: absolute;
         left: 0px;
         top: 20px;
         font-size: var(--dl-font-size, 0.9em);
@@ -51,15 +51,16 @@ style.textContent = `
         box-shadow: 0px 0px 10px -2px rgba(0,0,0,0.4);
         z-index: 100;
         background-color: var(--dl-options-background, #fff);
+        font-family: var(--dl-font-family, 'Rubik');
     }
 
-    dl-select .options-wrapper dl-option {
+    .options-wrapper dl-option {
         border-left: 1px solid var(--dl-focused-line-color, #bbb);
         border-right: 1px solid var(--dl-focused-line-color, #bbb);
         cursor: pointer;
     }
 
-    dl-select .options-wrapper .noMatchesHint {
+    .options-wrapper .noMatchesHint {
         border-left: 1px solid var(--dl-focused-line-color, #bbb);
         border-right: 1px solid var(--dl-focused-line-color, #bbb);
         padding: 5px;
@@ -67,7 +68,7 @@ style.textContent = `
         color: var(--dl-options-text-color, #545454);
     }
 
-    dl-select .options-wrapper {
+    .options-wrapper {
         border-top: 1px solid var(--dl-focused-line-color, #bbb);
         border-bottom: 1px solid var(--dl-focused-line-color, #bbb);
         border-radius: 4px;
@@ -108,7 +109,7 @@ style.textContent = `
         cursor: pointer;
     }
 
-    dl-select .options-wrapper dl-option {
+    .options-wrapper dl-option {
         display: block;
         padding-top: var(--dl-options-padding-top, 5px);
         padding-right: var(--dl-options-padding-right, 5px);
@@ -118,16 +119,16 @@ style.textContent = `
         background-color: var(--dl-options-background, #fff);
     }
 
-    dl-select .options-wrapper dl-option[selected="true"] {
+    .options-wrapper dl-option[selected="true"] {
         opacity: 0.5;
         cursor: not-allowed;
     }
 
-    dl-select .options-wrapper dl-option:hover {
+    .options-wrapper dl-option:hover {
         background-color: var(--dl-options-option-hover-color, rgba(224, 240, 227, 0.4));
     }
 
-    dl-select .options-wrapper dl-option.dl-focused {
+    .options-wrapper dl-option.dl-focused {
         background-color: var(--dl-options-option-hover-color, rgba(224, 240, 227, 0.4));
     }
 
@@ -587,16 +588,19 @@ class DlSelect extends HTMLElement {
 
         this.filterOptions(this.inputField.value)
 
+        document.body.appendChild(this.optionsWrapper)
+
         this.positionOptions = () => {
             const inputRect = self.inputWrapper.getBoundingClientRect();
-            self.optionsWrapper.style.top = (inputRect.y + inputRect.height + 2) + 'px';
+            self.optionsWrapper.style.position = 'absolute';
+            self.optionsWrapper.style.top = (inputRect.y + inputRect.height + window.scrollY + 2) + 'px';
             self.optionsWrapper.style.left = inputRect.left + 'px';
             self.optionsWrapper.style.width = inputRect.width + 'px';
         }
 
         this.positionOptions();
 
-        attachScrollListenerToParents(this.optionsWrapper, this.positionOptions);
+        attachScrollListenerToParents(this.inputWrapper, this.positionOptions);
     }
 
     unfocus() {
@@ -604,6 +608,8 @@ class DlSelect extends HTMLElement {
         this.optionsWrapper.style.display = 'none'
         this.inputField.value = this.getDisplayedText()
         this.inputField.blur()
+
+        this.appendChild(this.optionsWrapper)
 
         removeScrollListenerFromParents(this.optionsWrapper, this.positionOptions);
     }
