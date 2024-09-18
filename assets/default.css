@@ -215,6 +215,50 @@ body {
     box-sizing: content-box;
 }
 
+.dl-form form > .dl-form-field-wrapper > div > input[type="file"] {
+    outline-width: 0;
+    width: 400px;
+    max-width: 400px;
+    min-width: 400px;
+    padding: 6px;
+    font-size: 0.9em;
+    font-weight: 300;
+    font-family: 'Rubik', sans-serif;
+    box-sizing: content-box;
+}
+
+.dl-form form > .dl-form-field-wrapper .file-field {
+    padding: 5px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+.dl-form form > .dl-form-field-wrapper .file-field .file-preview {
+    height: 50px;
+    margin: 5px;
+    margin-bottom: 16px;
+}
+
+.dl-form form > .dl-form-field-wrapper .file-field .file-preview.empty {
+    height: 0px;
+    margin: 0px;
+}
+
+.dl-form form > .dl-form-field-wrapper .file-field .file-preview.loading {
+    content: " ";
+    display: inline-block;
+    margin-left: 6px;
+    margin-bottom: -4px;
+    border: 2px solid #D1D0D8;
+    border-top: 2px solid #8e8e8e;
+    border-radius: 50% !important;
+    width: 16px;
+    height: 16px;
+    padding: 0px !important;
+    animation: loading-icon-spin 1s linear infinite;
+}
+
+
 .dl-form form > .dl-form-field-wrapper > input.dl-tooltip-inside {
     width: 369px;
     max-width: 369px;

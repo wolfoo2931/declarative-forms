@@ -21,54 +21,6 @@ document.addEventListener("keydown", e => {
         }
     }
 });
-
-function replaceFileListValues(data, persistBlob) {
-    if(!persistBlob) {
-        return data;
-    }
-
-    async function processValue(value, key) {
-      if (value instanceof FileList) {
-
-        if(value[0]) {
-            const cacheHit = filePersistencyCache.get(value[0]);
-
-            if(cacheHit) {
-                return cacheHit;
-            }
-
-            const fileUrl = await persistBlob(value[0]);
-
-            filePersistencyCache.set(value[0], fileUrl);
-
-            return fileUrl;
-        }
-
-        return;
-
-      } else if (Array.isArray(value)) {
-        return value.map((item, index) => processValue(item, `${key}[${index}]`));
-      } else if (value !== null && typeof value === 'object') {
-        return processObject(value);
-      }
-      return value;
-    }
-
-    async function processObject(obj) {
-        const result = {};
-        const entries = Object.entries(obj);
-
-        for (let index = 0; index < entries.length; index++) {
-            const [key, value] = entries[index];
-            result[key] = await processValue(value, key);
-        }
-
-        return result;
-    }
-
-    return processObject(data);
-}
-
 export default function DeclarativForm(attrs, onChangeCallback = undefined, onCancelCallback = undefined, confirmButtonCaption = undefined, parentForm) {
     var self = this;
     this.persistBlob = attrs.persistsFile;
@@ -429,18 +381,46 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
         } else if (field.calculate) {
             fieldElement = document.createElement('input')
             fieldElement.type = 'hidden'
+        } else if(field.inputType === 'file') {
+            fieldElement = document.createElement('div');
+            const inputEl = document.createElement('input');
+            const preview = document.createElement('div');
+
+            preview.classList.add('empty');
+            fieldElement.classList.add('file-field')
+            preview.classList.add('file-preview')
+
+            fieldElement.setValue = function(val) {
+                fieldElement.setAttribute('data-value', val);
+                preview.innerHTML = `<img class="file-preview" src="${val}"/>`;
+                preview.classList.remove('empty');
+                inputEl.value = val;
+            }
+
+            fieldElement.appendChild(preview);
+            fieldElement.appendChild(inputEl);
+
+            inputEl.setAttribute('type', 'file')
+
+            if(field.acceptFileType) {
+                inputEl.setAttribute('accept', field.acceptFileType);
+            }
+
+            inputEl.oninput = async () => {
+                preview.classList.remove('empty');
+                preview.innerHTML = '';
+                preview.classList.add('loading');
+                const fileURL = await this.getURLFromFileList(inputEl.files);
+                preview.classList.remove('loading');
+                fieldElement.setAttribute('data-value', fileURL);
+                preview.innerHTML = `<img class="file-preview" src="${fileURL}"/>`;
+
+                self.updateForm(fieldElement);
+            }
         } else {
             fieldElement = document.createElement('input')
             fieldElement.setValue = function(val) {
                 fieldElement.value = val;
-            }
-
-            if(field.inputType) {
-                fieldElement.setAttribute('type', field.inputType)
-            }
-
-            if(field.acceptFileType) {
-                fieldElement.setAttribute('accept', field.acceptFileType);
             }
 
             if(field.autocomplete) {
@@ -452,10 +432,7 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
             }
 
             fieldElement.oninput = () => self.updateForm(fieldElement);
-
-            if(field.inputType !== 'file') {
-                fieldElement.onchange = fieldElement.oninput;
-            }
+            fieldElement.onchange = fieldElement.oninput;
         }
 
         field.domElement = fieldElement
@@ -550,9 +527,7 @@ DeclarativForm.prototype = {
      * @type {function(any, boolean | undefined, boolean | undefined): void}
      */
     updateForm: async function(triggerElement, forceFormUpdate, alsoWhenTabChanged) {
-        var formDataWithFiles = this.getValues();
-        var formData = await replaceFileListValues(formDataWithFiles, this.persistBlob);
-        formData = formDataWithFiles;
+        var formData = this.getValues();
         var self = this
         var triggerFieldName = triggerElement && triggerElement.name;
         var dataUnchanged = !this.hasUpdatedSinceLastCompare(formData, alsoWhenTabChanged);
@@ -706,8 +681,7 @@ DeclarativForm.prototype = {
     },
 
     async notifyOnInputSubscribers(formData) {
-        const newFormData = await replaceFileListValues(formData, this.persistBlob);
-        this.onInputChangeSubscribers.forEach((cb) => cb(newFormData));
+        this.onInputChangeSubscribers.forEach((cb) => cb(formData));
     },
 
     updateCalculatedFields(triggerFieldName, formData) {
@@ -1044,7 +1018,10 @@ DeclarativForm.prototype = {
         }).forEach(function(field) {
             if(!field.domElement) { return }
 
-            result[field.name] = field.domElement.getAttribute('value') || field.domElement._value || field.domElement.value
+            result[field.name] = field.domElement.getAttribute('data-value')
+                || field.domElement.getAttribute('value')
+                || field.domElement._value
+                || field.domElement.value;
 
             if(field.domElement.acceptedSuggestions) {
                 result[field.name] = result[field.name] || [];
@@ -1063,10 +1040,6 @@ DeclarativForm.prototype = {
 
             if(field.check) {
                 result[field.name] = result[field.name] === 'true'
-            }
-
-            if(field.domElement.type === 'file') {
-                result[field.name] = field.domElement.files
             }
         })
 
@@ -1157,5 +1130,23 @@ DeclarativForm.prototype = {
         }
 
         return modalWrapper
+    },
+
+    getURLFromFileList: async function (value) {
+        if (value instanceof FileList) {
+            if(value[0]) {
+                const cacheHit = filePersistencyCache.get(value[0]);
+
+                if(cacheHit) {
+                    return cacheHit;
+                }
+
+                const fileUrl = await this.persistBlob(value[0]);
+
+                filePersistencyCache.set(value[0], fileUrl);
+
+                return fileUrl.toString();
+            }
+        }
     }
 }
