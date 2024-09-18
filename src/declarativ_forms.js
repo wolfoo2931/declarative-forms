@@ -1,9 +1,9 @@
 import './dl_select';
 import tippy from 'tippy.js';
-import { v1 as uuid } from 'uuid';
 import { isEqual } from "@react-hookz/deep-equal";
 
 var tippyInstances = new Map();
+var filePersistencyCache = new Map();
 var modalDialogs = [];
 
 document.addEventListener("keydown", e => {
@@ -22,12 +22,30 @@ document.addEventListener("keydown", e => {
     }
 });
 
-function replaceFileListValues(data, files = {}) {
-    function processValue(value, key) {
+function replaceFileListValues(data, persistBlob) {
+    if(!persistBlob) {
+        return data;
+    }
+
+    async function processValue(value, key) {
       if (value instanceof FileList) {
-        const fileListKey = uuid();
-        files[fileListKey] = value;
-        return `$filelist:${fileListKey}`;
+
+        if(value[0]) {
+            const cacheHit = filePersistencyCache.get(value[0]);
+
+            if(cacheHit) {
+                return cacheHit;
+            }
+
+            const fileUrl = await persistBlob(value[0]);
+
+            filePersistencyCache.set(value[0], fileUrl);
+
+            return fileUrl;
+        }
+
+        return;
+
       } else if (Array.isArray(value)) {
         return value.map((item, index) => processValue(item, `${key}[${index}]`));
       } else if (value !== null && typeof value === 'object') {
@@ -36,19 +54,24 @@ function replaceFileListValues(data, files = {}) {
       return value;
     }
 
-    function processObject(obj) {
-      return Object.entries(obj).reduce((acc, [key, value]) => {
-        acc[key] = processValue(value, key);
-        return acc;
-      }, {});
+    async function processObject(obj) {
+        const result = {};
+        const entries = Object.entries(obj);
+
+        for (let index = 0; index < entries.length; index++) {
+            const [key, value] = entries[index];
+            result[key] = await processValue(value, key);
+        }
+
+        return result;
     }
 
-    const newFormData = processObject(data);
-    return [newFormData, files];
+    return processObject(data);
 }
 
 export default function DeclarativForm(attrs, onChangeCallback = undefined, onCancelCallback = undefined, confirmButtonCaption = undefined, parentForm) {
     var self = this;
+    this.persistBlob = attrs.persistsFile;
     this.parentForm = parentForm;
     this.fields = attrs.fields
     this.dom = document.createElement('div')
@@ -428,8 +451,10 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                 fieldElement.placeholder = field.placeholder;
             }
 
-            fieldElement.oninput = fieldElement.onchange = function() {
-                self.updateForm(fieldElement);
+            fieldElement.oninput = () => self.updateForm(fieldElement);
+
+            if(field.inputType !== 'file') {
+                fieldElement.onchange = fieldElement.oninput;
             }
         }
 
@@ -476,7 +501,6 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
         if(field.defaultValue) {
             const promiseToSetDefaultValue = Promise.resolve(self.initPromises[field.name]).then(_ => {
                 let tmpDefaultValue = typeof field.defaultValue === 'function' ? field.defaultValue(self.formData) : field.defaultValue
-
                 if(fieldElement.setValue) {
                     fieldElement.setValue(tmpDefaultValue)
                 } else if (fieldElement.tagName === 'INPUT' || fieldElement.tagName === 'TEXTAREA') {
@@ -525,8 +549,10 @@ DeclarativForm.prototype = {
     /**
      * @type {function(any, boolean | undefined, boolean | undefined): void}
      */
-    updateForm: function(triggerElement, forceFormUpdate, alsoWhenTabChanged) {
-        var formData = this.getValues();
+    updateForm: async function(triggerElement, forceFormUpdate, alsoWhenTabChanged) {
+        var formDataWithFiles = this.getValues();
+        var formData = await replaceFileListValues(formDataWithFiles, this.persistBlob);
+        formData = formDataWithFiles;
         var self = this
         var triggerFieldName = triggerElement && triggerElement.name;
         var dataUnchanged = !this.hasUpdatedSinceLastCompare(formData, alsoWhenTabChanged);
@@ -679,9 +705,9 @@ DeclarativForm.prototype = {
         this.onInputChangeSubscribers.push(callback);
     },
 
-    notifyOnInputSubscribers(formData) {
-        const [formDataWithFileListHandles, files] = replaceFileListValues(formData);
-        this.onInputChangeSubscribers.forEach((cb) => cb(formDataWithFileListHandles, files));
+    async notifyOnInputSubscribers(formData) {
+        const newFormData = await replaceFileListValues(formData, this.persistBlob);
+        this.onInputChangeSubscribers.forEach((cb) => cb(newFormData));
     },
 
     updateCalculatedFields(triggerFieldName, formData) {
