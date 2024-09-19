@@ -390,10 +390,43 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
             fieldElement.classList.add('file-field')
             preview.classList.add('file-preview')
 
+            function getFilePreview(url) {
+                if(!url) {
+                    return;
+                }
+
+                const container = document.createElement('div');
+                const img = document.createElement('img');
+                const delButton = document.createElement('div');
+
+                container.classList.add('file-selection-container');
+                img.classList.add('file-preview');
+                delButton.classList.add('file-selection-delete-btn');
+
+                img.src= url;
+
+                container.appendChild(img);
+                container.appendChild(delButton);
+
+                delButton.onclick = () => {
+                    inputEl.value = null;
+                    inputEl.dispatchEvent(new Event('input'))
+                }
+
+                return container;
+            }
+
             fieldElement.setValue = function(val) {
                 fieldElement.setAttribute('data-value', val);
-                preview.innerHTML = `<img class="file-preview" src="${val}"/>`;
-                preview.classList.remove('empty');
+                const previewChild = getFilePreview(val);
+                if(previewChild) {
+                    preview.appendChild(previewChild);
+                    preview.classList.remove('empty');
+                } else {
+                    preview.innerHTML = '';
+                    preview.classList.add('empty');
+                }
+
                 inputEl.value = val;
             }
 
@@ -409,11 +442,17 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
             inputEl.oninput = async () => {
                 preview.classList.remove('empty');
                 preview.innerHTML = '';
-                preview.classList.add('loading');
-                const fileURL = await this.getURLFromFileList(inputEl.files);
-                preview.classList.remove('loading');
-                fieldElement.setAttribute('data-value', fileURL);
-                preview.innerHTML = `<img class="file-preview" src="${fileURL}"/>`;
+
+                if (inputEl.files.length) {
+                    preview.classList.add('loading');
+                    const fileURL = await this.getURLFromFileList(inputEl.files);
+                    preview.classList.remove('loading');
+                    fieldElement.setAttribute('data-value', fileURL);
+                    preview.appendChild(getFilePreview(fileURL));
+                } else {
+                    fieldElement.removeAttribute('data-value');
+                    preview.classList.add('empty');
+                }
 
                 self.updateForm(fieldElement);
             }

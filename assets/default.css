@@ -613,3 +613,14 @@ body {
     margin-left: 3px;
     padding-top: 8px !important;
 }
+
+.file-selection-container {
+    display: flex;
+}
+
+.file-selection-delete-btn {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background-color: red;
+}
