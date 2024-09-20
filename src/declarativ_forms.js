@@ -398,10 +398,14 @@ export default function DeclarativForm(attrs, onChangeCallback = undefined, onCa
                 const container = document.createElement('div');
                 const img = document.createElement('img');
                 const delButton = document.createElement('div');
+                const delButtonIcon = document.createElement('div');
 
                 container.classList.add('file-selection-container');
                 img.classList.add('file-preview');
                 delButton.classList.add('file-selection-delete-btn');
+
+                delButtonIcon.classList.add('file-selection-delete-btn-icon');
+                delButton.appendChild(delButtonIcon);
 
                 img.src= url;
 
