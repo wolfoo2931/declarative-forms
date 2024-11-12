@@ -825,7 +825,7 @@ DeclarativForm.prototype = {
     },
 
     updateTooltips: function(sel) {
-        sel = sel || '[data-tippy-content]';
+        sel = sel || '.dl-tooltip[data-tippy-content]';
 
         var domElements = document.querySelectorAll(sel);
 
