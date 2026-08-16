@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      # Required for npm Trusted Publishing (OIDC) and provenance.
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      # Trusted Publishing needs npm >= 11.5.1; Node 20 ships an older npm.
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Prerelease versions (2.0.0-alpha.0) must not land on the `latest`
+      # dist-tag, so derive the tag from the version in package.json.
+      - name: Determine dist-tag
+        id: disttag
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [[ "$version" == *-* ]]; then
+            tag="${version#*-}"   # 2.0.0-alpha.0 -> alpha.0
+            tag="${tag%%.*}"      # alpha.0       -> alpha
+          else
+            tag="latest"
+          fi
+          echo "Publishing $version under dist-tag: $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      # prepublishOnly runs typecheck + tests + build.
+      - name: Publish to npm
+        run: npm publish --access public --provenance --tag ${{ steps.disttag.outputs.tag }}
