@@ -390,6 +390,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     const view = this.ensureView();
     view.mount();
     view.content.appendChild(this.dom);
+    view.setStackDepth(this.stack.size);
     view.setVisible(true);
     view.addModalClasses(options?.classNames);
     view.addWrapperClasses(options?.wrapperClassNames);

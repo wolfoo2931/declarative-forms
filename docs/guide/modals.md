@@ -110,6 +110,27 @@ Opening a dialog while another is open **stacks** them. The covered dialog is
 hidden (class `dl-modal-hidden`, not removed) and is revealed again when the top
 one closes. Escape and Enter always address the topmost dialog only.
 
+The dialog on top also carries `dl-modal-stacked` plus `--dl-stack-depth` (how
+many dialogs are underneath it), and a dialog revealed again carries
+`dl-modal-restored`. Both classes mean "the backdrop was already on screen": a
+custom theme that animates `.dl-modal` in should skip the animation on these,
+or the page flashes through while one backdrop replaces the other.
+
+Under [the modern theme](/guide/theme), a stacked dialog draws the depth it sits
+on as card edges peeking out above it — one for a single dialog below, two for
+more. Size them with `--dl-stack-peek` (how far they peek, `8px`) and
+`--dl-stack-inset` (how much narrower each one is, `12px`), or drop the cue
+entirely:
+
+```css
+.dl-modal-stacked .modal::before,
+.dl-modal-stacked .modal::after {
+  display: none;
+}
+```
+
+The default stylesheet does not draw the cue at all.
+
 This is what makes [array entry dialogs](/guide/fields/array) work, and you can
 use it directly:
 
