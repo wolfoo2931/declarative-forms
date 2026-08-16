@@ -1,5 +1,5 @@
 {
-  "name": "declarativ-forms",
+  "name": "declarative-forms",
   "version": "2.0.0-alpha.0",
   "description": "Declarative, data-driven form dialogs for the web. Zero dependencies, framework agnostic, with async options, cross-field reactivity, tabs and modal stacking.",
   "type": "module",
@@ -47,7 +47,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wolfoo2931/declarativ-forms.git"
+    "url": "git+https://github.com/wolfoo2931/declarative-forms.git"
   },
   "keywords": [
     "forms",
@@ -64,9 +64,9 @@
   "author": "Oliver Wolf",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wolfoo2931/declarativ-forms/issues"
+    "url": "https://github.com/wolfoo2931/declarative-forms/issues"
   },
-  "homepage": "https://github.com/wolfoo2931/declarativ-forms#readme",
+  "homepage": "https://github.com/wolfoo2931/declarative-forms#readme",
   "engines": {
     "node": ">=18"
   },

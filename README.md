@@ -1,96 +1,179 @@
-# Simple JavaScript Boilerplate Project
+# declarative-forms
 
-This is a boilerplate project which configures:
+Declarative forms for the web that make front-end development less front-end development.
 
-- [Jasmine](https://jasmine.github.io/) as a testing framework (one example unit test can be found in `spec/src/project_name_spec.js`)
-- [Karma](https://karma-runner.github.io/latest/index.html) as a test runner
-- [Webdriver.io](https://webdriver.io/) for end to end tests (one example test can be found in `spec/features/hello_world_spec.js`)
-- [Browserify](http://browserify.org/) to bundle everything (no webpack but simple and functional)
-- [Google Closure Compiler](https://github.com/google/closure-compiler) for minimizing the bundled js file
+Whenever you need input from a user, you describe the data you need and the rules around it. `declarative-forms` takes care of the front-end work to ask for that information: rendering the fields, wiring updates, loading async option sets, managing nested structures, handling modal stacks, tabs, accessibility basics, and keeping the UI in sync as values change.
 
-It's intended for frontend projects which do not have server logic in the same code base.
+You do not have to build the front-end plumbing by hand just to collect structured input. Instead, you provide a schema-like description of the form and the library handles the rest.
 
-## Why this Boilerplate?
+This is especially useful for complex forms, complex data structures, and workflows where the interface is mostly there to collect and validate user input rather than to render bespoke product UI.
 
-While having a JavaScript break for 5 years a lot changed in this world. Two years ago, I wanted to start a new JavaScript project, not for learning purposes but to get a problem solved. This is the stack which worked for me after spending a few days of research.
+## What it is
 
-There might be more modern solutions out there, but it seems to me that one have to spend quite a time to understand them. __Done is better than perfect.__
+At its core, `declarative-forms` is a framework-agnostic form engine.
 
-## Usage
+You define a form like this:
 
-### 1. Checkout the Project
+```ts
+import 'declarative-forms/styles.css';
+import { DeclarativeForm } from 'declarative-forms';
 
-```bash
-git clone git@github.com:wolfoo2931/js-kick-off.git
-mv js-kick-off [project-name]
-cd [project-name]
+const form = new DeclarativeForm({
+  fields: [
+    { name: 'title', displayName: 'Title' },
+    {
+      name: 'language',
+      kind: 'select',
+      displayName: 'Language',
+      options: [
+        { value: 'en', label: 'English' },
+        { value: 'de', label: 'German' },
+      ],
+      defaultValue: 'en',
+    },
+    {
+      name: 'repo',
+      kind: 'select',
+      displayName: 'Repository',
+      reloadOnChangeOf: ['language'],
+      options: async ({ data }) => {
+        const lang = String(data['language'] ?? 'en');
+        return [{ value: `repo-${lang}`, label: `Repo (${lang})` }];
+      },
+    },
+  ],
+  onConfirm: (values) => console.log(values),
+  onCancel: () => {},
+});
+
+form.openInModal();
 ```
 
-### 2. Rename the Project
+This is not a generated UI package or a full application framework. It is a runtime for declarative form behavior: you describe the data model and form rules, and it turns that into a working user flow with the UI concerns handled for you.
 
-When you check out the project, the app is named "project-name". The following
-commands will replace all occurrences of this name with `your-project-name` or `your_project_name`. Mind the `-` and `_` when putting in your favorit name.
+## What makes it different
 
-```bash
-sed -i '' 's/project-name/your-project-name/g' package.json
-sed -i '' 's/project-name/your-project-name/g' package-lock.json
+The library is built around a few real strengths that show up in the codebase:
 
-sed -i '' 's/project_name/your_project_name/g' package.json
-sed -i '' 's/project_name/your_project_name/g' karma.conf.js
-sed -i '' 's/project_name/your_project_name/g' spec/src/declarativ_forms_spec.js
+- Data-first form definitions instead of manual DOM creation
+- Cross-field reactivity via `reloadOnChangeOf`, `isActive`, `defaultValue`, and `onFormChange`
+- Async option loading and async button predicates
+- Built-in modal stack support for nested dialogs and wizards
+- Tabbed forms and array-of-record editing
+- Automatic handling of many front-end concerns: layout, state sync, stacking, dialog behavior, and reusable field logic
+- Zero runtime dependencies
+- Works in plain JavaScript or TypeScript, not just React/Vue/Svelte
 
-mv ./spec/src/project_name_spec.js ./spec/src/your_project_name_spec.js
-mv ./src/project_name.js ./src/your_project_name.js
-```
-### 3. Package your App into a single JS File
+The library also includes a few opinionated features that are especially useful for interactive tools:
 
-There are predefined tasks which package the code base into a single JS file. Just
-execute:
+- computed fields that recalculate before confirmation
+- file fields that require a `persistFile` callback to convert a local file into a stored URL
+- custom render fields for embedding arbitrary DOM or widget logic inside a form
+- message, cards, and custom field types for dynamic UI without a separate component library
 
-```bash
-npm run package
-```
+## When to use this library
 
-You will find the packaged file in `assets/`. I am usally checking the packaged file into the git repository. This way users can try out the app by simply open the assets/index.html file in their browser. They do not have to deal with the build process.
+Use `declarative-forms` when the form is more like an application workflow than a static input form.
 
-When executing:
+It fits especially well for:
 
-```bash
-npm run package:min
-```
+- admin panels and settings dialogs
+- configuration flows with conditions and dependencies
+- modal-based wizards with step logic
+- forms whose options depend on other fields
+- array/list editing with nested record forms
+- internal tools that need compact, data-driven UI without a UI framework dependency
 
-A minimized version of packaged file will be produced.
+## Core ideas in the codebase
 
+The library is centered on a few runtime concepts:
 
-When executing:
+- `DeclarativeForm`: the main runtime that owns rendering, values, tabs, and modal behavior
+- `FieldDescriptor`: a plain object describing each field (`name`, `kind`, `options`, `tab`, `isActive`, etc.)
+- `FormValues`: the current data dictionary keyed by field name
+- `subscribeOnInput`: a way to observe form updates without wiring lots of DOM listeners
+- `ButtonDescriptor`: supports async enable/disable logic and “do not close” actions for wizards
 
-```bash
-npm run package:watch
-```
+This is why the project feels more like a small “form engine” than a typical form component library.
 
-The packaged file will be updated whenever something in the code base changes.
-
-### 4. Run Unit Tests
-
-While I am developing, I always run `npm run package:watch` in one terminal window. This will update the packaged file everytime I change something in the code base. The unit as well as the end to end tests will only test the packaged file.
-
-Once `npm run package:watch` is running you simple have to execute:
-
-```bash
-npm test
-```
-
-### 5. Run End to End Tests
-
-Ensure `npm run package:watch` and `npm run webdriver:start` are running before executing the e2e test suite by typing:
+## Install
 
 ```bash
-npm run test:browser
+npm install declarative-forms
 ```
 
-This boilerplate project includes an example e2e tests, so you can execute the command above and see the test running.
+And include the default CSS:
 
-### 6. Open the App
+```ts
+import 'declarative-forms/styles.css';
+```
 
-The idea is to just open `assets/index.hml` in the browser. Ensure `npm run package`
-has been executed.
+## Example: modal form
+
+```ts
+import { DeclarativeForm } from 'declarative-forms';
+
+const form = new DeclarativeForm({
+  fields: [
+    { name: 'name', displayName: 'Name' },
+    {
+      name: 'role',
+      kind: 'select',
+      displayName: 'Role',
+      options: ['Admin', 'Editor', 'Viewer'],
+      defaultValue: 'Editor',
+    },
+  ],
+  onConfirm: (values) => {
+    console.log('submitted', values);
+  },
+  onCancel: () => {
+    console.log('cancelled');
+  },
+});
+
+form.openInModal();
+```
+
+## Example: reactive field logic
+
+```ts
+const form = new DeclarativeForm({
+  fields: [
+    {
+      name: 'source',
+      kind: 'select',
+      displayName: 'Source',
+      options: ['GitHub', 'GitLab'],
+      defaultValue: 'GitHub',
+    },
+    {
+      name: 'token',
+      displayName: 'Token',
+      type: 'password',
+      isActive: ({ data }) => data['source'] === 'GitLab',
+    },
+    {
+      name: 'repo',
+      kind: 'select',
+      displayName: 'Repository',
+      reloadOnChangeOf: ['source'],
+      options: async ({ data }) => {
+        const source = String(data['source'] ?? 'GitHub');
+        return [{ value: `${source}-repo`, label: `${source} repo` }];
+      },
+    },
+  ],
+  onConfirm: (values) => console.log(values),
+});
+```
+
+This is the sort of behavior the library is designed to make practical without building a lot of custom event wiring.
+
+## Summary
+
+`declarative-forms` is best thought of as a declarative form runtime for web dialogs and tool-like workflows.
+
+It is for the cases where the main job is not “build another UI component,” but “ask the user for structured data.” You define what needs to be collected, and the library handles the front-end work to gather it: field rendering, behavior, defaults, dynamic changes, nested records, modal stacking, and workflow handling.
+
+That is the core difference: instead of writing front-end code for every form interaction, you describe the data and rules, and the runtime takes care of the responsibilities that usually consume most of the work in form-heavy interfaces.

@@ -62,7 +62,7 @@ describe('html', () => {
   });
 
   it('recognises SafeHtml across module instances via a global symbol', () => {
-    const foreign = { [Symbol.for('declarativ-forms.SafeHtml')]: true, value: 'x' };
+    const foreign = { [Symbol.for('declarative-forms.SafeHtml')]: true, value: 'x' };
     expect(isSafeHtml(foreign)).toBe(true);
     expect(isSafeHtml(new SafeHtml('x'))).toBe(true);
     expect(isSafeHtml('<b>x</b>')).toBe(false);

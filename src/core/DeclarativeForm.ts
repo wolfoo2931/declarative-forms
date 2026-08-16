@@ -132,7 +132,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     for (const descriptor of this.options.fields) {
       if (this.fieldsByName.has(descriptor.name)) {
         throw new Error(
-          `declarativ-forms: duplicate field name "${descriptor.name}". ` +
+          `declarative-forms: duplicate field name "${descriptor.name}". ` +
             'Field names must be unique within a form.',
         );
       }
@@ -213,7 +213,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     const persist = this.options.persistFile;
     if (!persist) {
       throw new Error(
-        'declarativ-forms: a file field needs a `persistFile` handler on the form ' +
+        'declarative-forms: a file field needs a `persistFile` handler on the form ' +
           'to turn the picked File into a storable URL.',
       );
     }

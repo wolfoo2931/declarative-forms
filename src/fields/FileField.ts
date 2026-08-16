@@ -103,7 +103,7 @@ export class FileField extends Field<FileFieldDescriptor> {
 
     if (this.element.dispatchEvent(event)) {
       console.error(
-        `declarativ-forms: persistFile failed for field "${this.descriptor.name}".`,
+        `declarative-forms: persistFile failed for field "${this.descriptor.name}".`,
         error,
       );
     }
