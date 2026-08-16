@@ -52,7 +52,10 @@ export class SelectField extends Field<SelectFieldDescriptor> {
 
   override onFormUpdate(_ctx: FormChangeContext, triggerName: string | undefined): void {
     if (typeof this.descriptor.placeholder === 'function') {
-      this.select.setAttribute('placeholder', this.resolve(this.descriptor.placeholder) ?? '');
+      this.select.setAttribute(
+        'placeholder',
+        this.resolve(this.descriptor.placeholder) ?? '',
+      );
     }
 
     const dependsOnTrigger =

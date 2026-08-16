@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { defineDlSelect, type DlOption, type DlSelect } from '../src/components/DlSelect.js';
+import {
+  defineDlSelect,
+  type DlOption,
+  type DlSelect,
+} from '../src/components/DlSelect.js';
 import { press } from './helpers.js';
 
 defineDlSelect();
@@ -148,7 +152,10 @@ describe('dl-select', () => {
     });
 
     it('reports the value attribute rather than the label', () => {
-      const s = makeSelect([['en', 'English'], ['de', 'German']]);
+      const s = makeSelect([
+        ['en', 'English'],
+        ['de', 'German'],
+      ]);
       s.setValue('en');
       expect(s.getValue()).toBe('en');
     });
@@ -197,7 +204,13 @@ describe('dl-select', () => {
 
   describe('multiple selection', () => {
     it('collects values into a JSON array', () => {
-      const s = makeSelect([['a', 'Alpha'], ['b', 'Beta']], { multiple: '' });
+      const s = makeSelect(
+        [
+          ['a', 'Alpha'],
+          ['b', 'Beta'],
+        ],
+        { multiple: '' },
+      );
       s.setValue(['a', 'b']);
       expect(s.getValue()).toEqual(['a', 'b']);
     });
@@ -216,7 +229,13 @@ describe('dl-select', () => {
     });
 
     it('removes a value when its tag is dismissed', () => {
-      const s = makeSelect([['a', 'Alpha'], ['b', 'Beta']], { multiple: '' });
+      const s = makeSelect(
+        [
+          ['a', 'Alpha'],
+          ['b', 'Beta'],
+        ],
+        { multiple: '' },
+      );
       s.setValue(['a', 'b']);
 
       const remove = s.selectedContainer.querySelector(

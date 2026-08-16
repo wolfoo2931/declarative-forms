@@ -83,7 +83,10 @@ describe('file field picking', () => {
   it('uploads the same File only once', async () => {
     const persistFile = vi.fn(async () => 'https://cdn.example.com/logo.png');
     const form = await makeForm({
-      fields: [{ name: 'a', kind: 'file' }, { name: 'b', kind: 'file' }],
+      fields: [
+        { name: 'a', kind: 'file' },
+        { name: 'b', kind: 'file' },
+      ],
       persistFile,
     });
 
@@ -160,7 +163,10 @@ describe('file field picking', () => {
 
     expect(form.getValues()['logo']).toBe('');
     expect(
-      form.field('logo')!.element.querySelector('.file-preview')?.classList.contains('empty'),
+      form
+        .field('logo')!
+        .element.querySelector('.file-preview')
+        ?.classList.contains('empty'),
     ).toBe(true);
   });
 });

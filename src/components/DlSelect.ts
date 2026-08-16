@@ -78,7 +78,10 @@ export class DlSelect extends HTMLElement {
 
     this.inputWrapper.classList.add('input-wrapper');
     this.optionsWrapper.classList.add('options-wrapper');
-    this.optionsWrapper.setAttribute('data-for-dl-select', this.getAttribute('name') ?? '');
+    this.optionsWrapper.setAttribute(
+      'data-for-dl-select',
+      this.getAttribute('name') ?? '',
+    );
     this.selectedContainer.classList.add('selected-container');
     this.optionsWrapper.style.display = 'none';
 

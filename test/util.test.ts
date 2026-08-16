@@ -48,9 +48,7 @@ describe('html', () => {
 
   it('escapes interpolations in the tagged-template form', () => {
     const evil = '<img src=x onerror=alert(1)>';
-    expect(html`<b>${evil}</b>`.value).toBe(
-      '<b>&lt;img src=x onerror=alert(1)&gt;</b>',
-    );
+    expect(html`<b>${evil}</b>`.value).toBe('<b>&lt;img src=x onerror=alert(1)&gt;</b>');
   });
 
   it('passes nested SafeHtml through unescaped', () => {
