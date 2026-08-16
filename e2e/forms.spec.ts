@@ -152,7 +152,7 @@ test.describe('reactivity', () => {
     await page.fill('.dl-form input[name=owner]', 'torvalds');
     await expect(
       page.locator('.options-wrapper[data-for-dl-select=repo] dl-option').first(),
-    ).toHaveText('torvalds/declarativ-forms', { timeout: 5000 });
+    ).toHaveText('torvalds/declarative-forms', { timeout: 5000 });
   });
 
   test('hides and reveals a field through isActive', async ({ page }) => {
@@ -175,7 +175,7 @@ test.describe('reactivity', () => {
 
     await expect(
       page.locator('.options-wrapper[data-for-dl-select=repo] dl-option').first(),
-    ).toHaveText('third/declarativ-forms', { timeout: 5000 });
+    ).toHaveText('third/declarative-forms', { timeout: 5000 });
   });
 });
 
