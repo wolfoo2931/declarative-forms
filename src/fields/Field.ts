@@ -97,7 +97,7 @@ export abstract class Field<D extends BaseFieldDescriptor = FieldDescriptor>
   /** The control element — an `<input>`, `<textarea>`, `<dl-select>`, … */
   get element(): HTMLElement {
     if (!this.control) {
-      throw new Error('declarativ-forms: field.build() must run before use.');
+      throw new Error('declarative-forms: field.build() must run before use.');
     }
     return this.control;
   }

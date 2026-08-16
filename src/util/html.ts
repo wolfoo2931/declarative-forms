@@ -6,7 +6,7 @@
  * select option — wrap it in {@link html} to say so explicitly.
  */
 
-const SAFE_HTML = Symbol.for('declarativ-forms.SafeHtml');
+const SAFE_HTML = Symbol.for('declarative-forms.SafeHtml');
 
 /** A string the caller has explicitly marked as trusted HTML. */
 export class SafeHtml {

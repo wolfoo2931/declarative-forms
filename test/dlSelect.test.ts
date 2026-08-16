@@ -299,6 +299,6 @@ describe('dl-select', () => {
   it('injects its stylesheet once, lazily', () => {
     makeSelect(['a']);
     makeSelect(['b']);
-    expect(document.querySelectorAll('style[data-declarativ-forms]')).toHaveLength(1);
+    expect(document.querySelectorAll('style[data-declarative-forms]')).toHaveLength(1);
   });
 });

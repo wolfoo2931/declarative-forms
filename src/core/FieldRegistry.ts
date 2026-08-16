@@ -51,7 +51,7 @@ export class FieldRegistry {
 
     if (!Ctor) {
       throw new Error(
-        `declarativ-forms: unknown field kind "${kind}" on field "${descriptor.name}". ` +
+        `declarative-forms: unknown field kind "${kind}" on field "${descriptor.name}". ` +
           `Known kinds: ${[...this.kinds.keys()].sort().join(', ')}.`,
       );
     }
