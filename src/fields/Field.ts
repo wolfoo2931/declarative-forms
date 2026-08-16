@@ -187,6 +187,22 @@ export abstract class Field<
   }
 
   /**
+   * Apply a plainly declared default value straight away.
+   *
+   * {@link applyDefaultValue} is awaited during initialisation, so a value it
+   * applies cannot be seen by the first layout pass. A default that is neither a
+   * function nor a promise needs no awaiting, so it is applied at build time and
+   * `isActive` predicates reading it are right from the first paint. The async
+   * pass runs afterwards regardless and simply sets the same value again.
+   */
+  applyStaticDefaultValue(): void {
+    const value = this.descriptor.defaultValue;
+    if (value === undefined || typeof value === 'function') return;
+    if (value instanceof Promise) return;
+    this.setValue(value);
+  }
+
+  /**
    * Hook for setup that cannot happen in {@link build} — loading select
    * options, or a first render that needs the form context. May be synchronous.
    */

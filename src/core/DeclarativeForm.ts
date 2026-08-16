@@ -110,6 +110,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     });
 
     this.buildFields();
+    this.applyInitialLayout();
     this.ready = this.initialize();
   }
 
@@ -138,11 +139,44 @@ export class DeclarativeForm implements SubForm, StackableDialog {
       }
 
       const field = this.registry.create(descriptor, context);
+      field.applyStaticDefaultValue();
       this.fieldList.push(field);
       this.fieldsByName.set(descriptor.name, field);
       this.tooltips.register(descriptor.name, field.tooltipMarker);
       this.formElement.appendChild(field.wrapper);
     }
+  }
+
+  /**
+   * Decide field visibility and build the tab strip synchronously, before the
+   * caller gets the form back.
+   *
+   * {@link initialize} is async — it awaits option loads and default values —
+   * but `openInModal()` normally runs in the same tick as the constructor.
+   * Without this pass the dialog paints every field of every tab, then collapses
+   * to the active tab once that first async update lands, which is a visible
+   * layout shift as soon as any field loads its options over the network.
+   *
+   * Only visibility is decided here: no `onFormChange`, no `onFormUpdate`, and
+   * the value model is left untouched, so the regular update cycle still sees
+   * the first real change and refreshes the buttons.
+   */
+  private applyInitialLayout(): void {
+    const values = this.getValues();
+    const activeTabs = new Set<string>();
+
+    for (const field of this.fieldList) {
+      const active =
+        field.descriptor.isActive?.({
+          ...this.contextFor(field.descriptor),
+          data: values,
+        }) ?? true;
+
+      field.setActive(active);
+      if (active) for (const tab of field.tabs()) activeTabs.add(tab);
+    }
+
+    this.renderTabs(activeTabs);
   }
 
   private async initialize(): Promise<void> {

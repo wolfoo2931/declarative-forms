@@ -203,6 +203,57 @@ describe('tabs', () => {
     expect(modal.querySelector('.dl-tab-btn')?.textContent).toBe('Edit');
   });
 
+  it('lays out tabs before any async setup resolves', async () => {
+    // Without a synchronous first layout pass the dialog paints every field of
+    // every tab until the slow options load lets the first update run, and then
+    // collapses to the active tab — a visible jump for the user.
+    const form = trackForm(
+      new DeclarativeForm(
+        {
+          fields: [
+            { name: 'title', tab: 'Notes' },
+            { name: 'mode', defaultValue: 'simple', tab: 'Notes' },
+            {
+              name: 'detail',
+              tab: 'Notes',
+              isActive: ({ data }) => data['mode'] === 'full',
+            },
+            {
+              name: 'reviewers',
+              kind: 'select',
+              tab: 'Audience',
+              options: async () => {
+                await new Promise((resolve) => setTimeout(resolve, 20));
+                return ['Ada'];
+              },
+            },
+          ],
+          onCancel: () => {},
+        },
+        { stack: new ModalStack() },
+      ),
+    );
+
+    const modal = form.openInModal();
+    const inTab = (): string[] =>
+      form.fields
+        .filter(
+          (f) =>
+            !f.wrapper.classList.contains('notInTab') &&
+            !f.wrapper.classList.contains('inactive'),
+        )
+        .map((f) => f.name);
+
+    expect([...modal.querySelectorAll('.dl-tab-btn')].map((t) => t.textContent)).toEqual([
+      'Notes',
+      'Audience',
+    ]);
+    expect(inTab()).toEqual(['title', 'mode']);
+
+    await form.whenReady();
+    expect(inTab()).toEqual(['title', 'mode']);
+  });
+
   it('re-syncs when setActiveTab is called with no argument', async () => {
     const form = await makeForm({
       fields: [{ name: 'a', tab: 'One' }],
