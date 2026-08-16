@@ -36,16 +36,33 @@ worrying about keystroke-rate churn.
 
 ## `isActive`: conditional fields
 
-Return `false` and the field is hidden **and dropped from `getValues()`**:
+Return `false` and the field is hidden **and dropped from `getValues()`**.
+Switch the source below to GitLab and watch the token field appear — and the
+`token` key appear with it:
+
+<LiveForm>
 
 ```ts
 {
-  name: 'token',
-  displayName: 'Access token',
-  type: 'password',
-  isActive: ({ data }) => data['source'] === 'GitLab',
+  fields: [
+    {
+      name: 'source',
+      kind: 'select',
+      displayName: 'Source',
+      options: ['GitHub', 'GitLab'],
+      defaultValue: 'GitHub',
+    },
+    {
+      name: 'token',
+      displayName: 'Access token',
+      type: 'password',
+      isActive: ({ data }) => data['source'] === 'GitLab',
+    },
+  ],
 }
 ```
+
+</LiveForm>
 
 ```ts
 form.getValues();
@@ -68,18 +85,32 @@ field and branch on that.
 
 ## `reloadOnChangeOf`: dependent async data
 
-List the field names whose changes should re-run this field's async work:
+List the field names whose changes should re-run this field's async work.
+Edit the owner below and the repository list reloads — with a deliberate delay
+so you can see the loading state:
+
+<LiveForm>
 
 ```ts
-{ name: 'owner', displayName: 'Owner' },
 {
-  name: 'repo',
-  kind: 'select',
-  displayName: 'Repository',
-  reloadOnChangeOf: ['owner'],
-  options: async ({ data }) => fetchRepos(String(data['owner'])),
+  fields: [
+    { name: 'owner', displayName: 'Owner', defaultValue: 'wolfoo2931' },
+    {
+      name: 'repo',
+      kind: 'select',
+      displayName: 'Repository',
+      reloadOnChangeOf: ['owner'],
+      options: async ({ data }) => {
+        await new Promise((r) => setTimeout(r, 600));
+        const owner = String(data['owner'] || 'nobody');
+        return [`${owner}/declarative-forms`, `${owner}/notes`];
+      },
+    },
+  ],
 }
 ```
+
+</LiveForm>
 
 Without `reloadOnChangeOf`, an options function runs **once** at construction.
 With it, the list reloads whenever a named dependency changes — and only then,

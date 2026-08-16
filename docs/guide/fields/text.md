@@ -3,9 +3,18 @@
 A single-line `<input>`. This is the **default kind** — omit `kind` entirely
 and you get one.
 
+<LiveForm>
+
 ```ts
-{ name: 'title', displayName: 'Title' }
+{
+  fields: [
+    { name: 'title', displayName: 'Title' },
+    { name: 'subtitle', displayName: 'Subtitle', placeholder: 'Optional' },
+  ],
+}
 ```
+
+</LiveForm>
 
 ## Options
 

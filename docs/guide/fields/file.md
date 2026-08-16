@@ -2,9 +2,26 @@
 
 A file picker with an image preview.
 
+Pick an image below. This demo's `persistFile` just makes a local object URL
+rather than uploading anywhere.
+
+<LiveForm>
+
 ```ts
-{ name: 'cover', kind: 'file', displayName: 'Cover image', accept: 'image/png, image/jpeg' }
+{
+  fields: [
+    {
+      name: 'cover',
+      kind: 'file',
+      displayName: 'Cover image',
+      accept: 'image/png, image/jpeg',
+    },
+  ],
+  persistFile: async (file) => URL.createObjectURL(file),
+}
 ```
+
+</LiveForm>
 
 ## Options
 

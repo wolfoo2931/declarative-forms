@@ -1,6 +1,26 @@
 # Modals & stacking
 
-A form can be shown as a floating dialog or embedded inline in the page.
+A form can be shown as a floating dialog or embedded inline in the page. Every
+other demo on this site is embedded; this one is a real dialog, and opening a
+second one from inside it shows the stack in action.
+
+<LiveForm mode="modal" open="Open a stacked dialog">
+
+```ts
+{
+  fields: [
+    { name: 'title', displayName: 'Title', defaultValue: 'Parent dialog' },
+    {
+      name: 'people',
+      kind: 'array',
+      displayName: 'People (opens a second dialog)',
+      of: [{ name: 'name', displayName: 'Name' }],
+    },
+  ],
+}
+```
+
+</LiveForm>
 
 ## As a modal
 

@@ -1,0 +1,137 @@
+/*
+ * Styling for the live demo blocks, plus the handful of overrides needed to fit
+ * a form designed for a 416px dialog into a documentation column.
+ */
+
+.live-form {
+  margin: 1.5rem 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.live-form__code > div[class*='language-'] {
+  margin: 0;
+  border-radius: 0;
+}
+
+.live-form__stage {
+  padding: 1rem 1.25rem 1.25rem;
+  background: var(--vp-c-bg-soft);
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.live-form__label {
+  margin: 0 0 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-3);
+}
+
+.live-form__label:not(:first-child) {
+  margin-top: 1rem;
+}
+
+.live-form__values {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.live-form__values--ok {
+  border-color: var(--vp-c-success-1, #3dd68c);
+}
+
+.live-form__error {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background: var(--vp-c-danger-soft);
+  color: var(--vp-c-danger-1);
+  font-size: 0.85rem;
+}
+
+.live-form__open {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--vp-c-brand-1);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--vp-c-brand-1);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.live-form__open:hover {
+  background: var(--vp-c-brand-soft);
+}
+
+/*
+ * The shipped theme targets a fixed-width dialog. Inside a docs column the
+ * fields need to be fluid, so the demo scope re-points the width tokens and
+ * relaxes the few rules that hard-code pixel widths.
+ */
+.live-form__host,
+.dl-modal {
+  --dl-field-width: 100%;
+  --dl-select-input-width: 100%;
+  --dl-font-family: inherit;
+}
+
+.live-form__host .dl-modal {
+  position: static;
+  background: transparent;
+  height: auto;
+}
+
+.live-form__host .dl-modal .modal {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.live-form__host .dl-form label {
+  width: auto;
+  margin-top: 1rem;
+  color: var(--vp-c-text-1);
+}
+
+.live-form__host .dl-form form > .dl-form-field-wrapper > input,
+.live-form__host .dl-form form > .dl-form-field-wrapper > textarea,
+.live-form__host .dl-form form .render,
+.live-form__host .dl-form form .array-of {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.live-form__host .dl-form form > .dl-form-field-wrapper > textarea {
+  min-height: 5rem;
+}
+
+.live-form__host .dl-modal .low-bar {
+  margin: 1rem 0 0;
+  background: transparent;
+  height: auto;
+  overflow: hidden;
+}
+
+.live-form__host .dl-modal .tabWrapper:empty {
+  display: none;
+}
+
+/* The combobox popup is portalled to <body>, so it is sized outside the scope. */
+.options-wrapper {
+  box-sizing: border-box;
+}

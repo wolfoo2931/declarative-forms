@@ -5,28 +5,40 @@ covers the patterns that go beyond the basic setup.
 
 ## The shape
 
+<LiveForm>
+
 ```ts
 {
-  name: 'authors',
-  kind: 'array',
-  displayName: 'Authors',
-  newButtonLabel: 'Add Author',
-  of: [
-    { name: 'preName', displayName: 'First name' },
-    { name: 'lastName', displayName: 'Last name' },
+  fields: [
     {
-      name: 'role',
-      kind: 'select',
-      displayName: 'Role',
-      options: ['Author', 'Editor', 'Reviewer'],
-      defaultValue: 'Author',
+      name: 'authors',
+      kind: 'array',
+      displayName: 'Authors',
+      newButtonLabel: 'Add Author',
+      of: [
+        { name: 'preName', displayName: 'First name' },
+        { name: 'lastName', displayName: 'Last name' },
+        {
+          name: 'role',
+          kind: 'select',
+          displayName: 'Role',
+          options: ['Author', 'Editor', 'Reviewer'],
+          defaultValue: 'Author',
+        },
+      ],
+      renderEntry: (entry) =>
+        `${String(entry['preName'])} ${String(entry['lastName'])} (${String(entry['role'])})`,
+      isValidRecord: (entry) => String(entry['lastName'] ?? '').trim().length > 0,
+      suggested: [
+        { preName: 'Ada', lastName: 'Lovelace', role: 'Author' },
+        { preName: 'Grace', lastName: 'Hopper', role: 'Reviewer' },
+      ],
     },
   ],
-  renderEntry: (entry) =>
-    `${String(entry['preName'])} ${String(entry['lastName'])} (${String(entry['role'])})`,
-  isValidRecord: (entry) => String(entry['lastName'] ?? '').trim().length > 0,
 }
 ```
+
+</LiveForm>
 
 The rendered list is: optional suggestions, then one row per entry with **Edit**
 and **Remove**, then the add button.

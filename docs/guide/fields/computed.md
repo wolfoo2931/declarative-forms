@@ -3,13 +3,25 @@
 A value derived from the rest of the form. It renders nothing visible — a
 hidden input, with the wrapper marked `dl-form-hidden-field`.
 
+Computed fields render nothing, so watch the **Submitted** panel: press OK and
+`domain` appears, derived from whatever you typed.
+
+<LiveForm>
+
 ```ts
 {
-  name: 'domain',
-  kind: 'computed',
-  compute: ({ data }) => String(data['email'] ?? '').split('@')[1] ?? '',
+  fields: [
+    { name: 'email', displayName: 'Email', defaultValue: 'ada@example.com' },
+    {
+      name: 'domain',
+      kind: 'computed',
+      compute: ({ data }) => String(data['email'] ?? '').split('@')[1] ?? '',
+    },
+  ],
 }
 ```
+
+</LiveForm>
 
 ## Options
 

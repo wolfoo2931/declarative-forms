@@ -14,17 +14,17 @@ npx playwright install chromium   # for the end-to-end suite
 
 ## The commands
 
-| Command              | What it does                                                     |
-| -------------------- | ---------------------------------------------------------------- |
-| `npm run example`    | Vite playground at `examples/` — the fastest way to see a change |
-| `npm test`           | Unit and component tests (Vitest + happy-dom)                    |
-| `npm run test:watch` | The same, in watch mode                                          |
-| `npm run test:e2e`   | Browser tests (Playwright), driven against the playground        |
-| `npm run typecheck`  | `tsc --noEmit`, strict                                           |
-| `npm run lint`       | ESLint, type-aware                                               |
-| `npm run format`     | Prettier                                                         |
-| `npm run build`      | ESM + CJS + type declarations, via tsup                          |
-| `npm run docs:dev`   | The documentation site                                           |
+| Command              | What it does                                                                              |
+| -------------------- | ----------------------------------------------------------------------------------------- |
+| `npm run example`    | Vite playground at `examples/` — the fastest way to see a change                          |
+| `npm test`           | Unit and component tests (Vitest + happy-dom)                                             |
+| `npm run test:watch` | The same, in watch mode                                                                   |
+| `npm run test:e2e`   | Browser tests (Playwright): the library against the playground, plus every live docs demo |
+| `npm run typecheck`  | `tsc --noEmit`, strict                                                                    |
+| `npm run lint`       | ESLint, type-aware                                                                        |
+| `npm run format`     | Prettier                                                                                  |
+| `npm run build`      | ESM + CJS + type declarations, via tsup                                                   |
+| `npm run docs:dev`   | The documentation site                                                                    |
 
 Before opening a pull request:
 
@@ -84,8 +84,11 @@ a class in `src/fields/`, an entry in `defaultFieldRegistry`, an export from
 - Fixing a bug? **Add a regression test that fails without the fix.** Every
   defect carried over from v1 has one.
 
-Documentation examples should be lifted from `examples/main.ts` or the test
-suite wherever possible, so published snippets are known to run.
+Documentation pages carry **live demos**: `<LiveForm>` evaluates the exact code
+block shown on the page, so the snippet and the running form cannot drift apart.
+The trade-off is that a broken snippet only fails in a browser — `e2e/docs.spec.ts`
+loads every demo page and asserts each one compiles and mounts, so run
+`npm run test:e2e` after editing a demo.
 
 ## Commit messages
 

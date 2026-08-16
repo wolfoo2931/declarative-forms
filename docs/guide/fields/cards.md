@@ -4,19 +4,25 @@ A row of clickable option cards — a richer alternative to a
 [`select`](/guide/fields/select) when there are few choices and each deserves a
 description or an icon.
 
-```ts
-import { html } from 'declarative-forms';
+<LiveForm>
 
+```ts
 {
-  name: 'format',
-  kind: 'cards',
-  displayName: 'Export format',
-  cards: [
-    { value: 'pdf', content: html('<b>PDF</b><br>Print ready') },
-    { value: 'html', content: html('<b>HTML</b><br>For the web') },
+  fields: [
+    {
+      name: 'format',
+      kind: 'cards',
+      displayName: 'Export format',
+      cards: [
+        { value: 'pdf', content: html('<b>PDF</b><br>Print ready') },
+        { value: 'html', content: html('<b>HTML</b><br>For the web') },
+      ],
+    },
   ],
 }
 ```
+
+</LiveForm>
 
 ::: tip Formerly `detailedOptions`
 This kind was called `detailedOptions` in v1. The rendered DOM and CSS classes

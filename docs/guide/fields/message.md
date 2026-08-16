@@ -3,13 +3,30 @@
 A paragraph of explanatory text. It is **presentational only** — it collects
 nothing.
 
+Type in the field below and watch the message follow it — then note that
+`note` and `echo` never appear in the values.
+
+<LiveForm>
+
 ```ts
 {
-  name: 'note',
-  kind: 'message',
-  message: 'Changes take effect the next time the document is exported.',
+  fields: [
+    { name: 'pages', displayName: 'Pages', defaultValue: '12' },
+    {
+      name: 'note',
+      kind: 'message',
+      message: 'Changes take effect the next time the document is exported.',
+    },
+    {
+      name: 'echo',
+      kind: 'message',
+      message: ({ data }) => `Exporting ${String(data['pages'] || 0)} pages.`,
+    },
+  ],
 }
 ```
+
+</LiveForm>
 
 ## Options
 

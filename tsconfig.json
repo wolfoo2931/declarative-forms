@@ -30,6 +30,7 @@
     "e2e/**/*.ts",
     "examples/**/*.ts",
     "docs/.vitepress/*.ts",
+    "docs/.vitepress/theme/*.ts",
     "*.config.ts"
   ],
   "exclude": ["node_modules", "dist", "docs/.vitepress/cache", "docs/.vitepress/dist"]

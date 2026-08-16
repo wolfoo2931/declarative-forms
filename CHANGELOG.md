@@ -73,6 +73,9 @@ keep working. See the [migration guide](https://wolfoo2931.github.io/declarative
 - Option values containing a quote threw a `DOMException`.
 - A keydown listener and a stylesheet were installed as import side effects,
   breaking server-side rendering.
+- `class DlSelect extends HTMLElement` was evaluated at module load, so simply
+  importing the package threw `HTMLElement is not defined` in Node and broke
+  any server-rendered or prerendered app.
 - `classList.remove` was written as `Element.remove()`, deleting the confirm
   button whenever it showed its loading state.
 - `<dl-option>` was never registered as a custom element.

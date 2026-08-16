@@ -4,16 +4,38 @@ The escape hatch: **you render the content, the form manages the value.** Use
 it for a colour picker, a map, a live preview, or any widget the built-in kinds
 do not cover.
 
+<LiveForm>
+
 ```ts
 {
-  name: 'preview',
-  kind: 'custom',
-  displayName: 'Preview',
-  render: (ctx) => {
-    ctx.element.textContent = `Exporting as ${String(ctx.data['format'])}`;
-  },
+  fields: [
+    { name: 'format', displayName: 'Format', defaultValue: 'pdf' },
+    {
+      name: 'colour',
+      kind: 'custom',
+      displayName: 'Accent colour',
+      render: (ctx) => {
+        ctx.element.replaceChildren();
+
+        for (const colour of ['#e5484d', '#30a46c', '#0091ff']) {
+          const swatch = document.createElement('button');
+          swatch.type = 'button';
+          swatch.setAttribute('aria-label', colour);
+          swatch.style.cssText =
+            'width:28px;height:28px;margin-right:6px;border-radius:4px;cursor:pointer;background:' +
+            colour +
+            ';border:' +
+            (ctx.data['colour'] === colour ? '3px solid #333' : '1px solid #999');
+          swatch.onclick = () => ctx.setValue(colour);
+          ctx.element.appendChild(swatch);
+        }
+      },
+    },
+  ],
 }
 ```
+
+</LiveForm>
 
 ## Options
 

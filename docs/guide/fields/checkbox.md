@@ -2,9 +2,25 @@
 
 A single checkbox with a caption.
 
+<LiveForm>
+
 ```ts
-{ name: 'agree', kind: 'checkbox', label: 'Send me release notes' }
+{
+  fields: [
+    { name: 'agree', kind: 'checkbox', label: 'Send me release notes' },
+    {
+      name: 'terms',
+      kind: 'checkbox',
+      label: html('I accept the <a href="#" onclick="return false">terms</a>'),
+    },
+  ],
+}
 ```
+
+</LiveForm>
+
+Note the value is a real boolean, and the second caption is wrapped in
+[`html()`](/guide/security) so its link renders as markup.
 
 ## Options
 
