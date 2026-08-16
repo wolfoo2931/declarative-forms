@@ -1,0 +1,740 @@
+/*!
+ * declarativ-forms — default theme
+ *
+ * Import with:  @import "declarativ-forms/styles.css";
+ *
+ * This is the v1 `assets/default.css` with every hardcoded value lifted into a
+ * `--dl-*` custom property. The selectors and the cascade are unchanged, and
+ * each `var()` carries v1's value as its fallback, so an existing consumer
+ * stylesheet keeps rendering identically — but you can now retheme by setting
+ * tokens instead of overriding rules.
+ *
+ * Tokens are declared at zero specificity via `:where(:root)`, so setting any
+ * of them anywhere wins without `!important`.
+ *
+ * `<dl-select>` ships its own structural styles from JS; the tokens it reads
+ * are listed under "combobox" below.
+ */
+
+:where(:root) {
+  /* typography */
+  --dl-font-family: 'Rubik', sans-serif;
+  --dl-font-size: 0.9em;
+
+  /* palette */
+  --dl-accent: #1ea6a3;
+  --dl-accent-hover: #22bb8b;
+  --dl-danger: #fe070b;
+  --dl-surface: #fff;
+  --dl-surface-muted: #f8f8f8;
+  --dl-surface-sunken: #eee;
+  --dl-overlay: rgba(0, 0, 0, 0.6);
+  --dl-text-color: #545454;
+  --dl-label-color: #58565c;
+  --dl-line-color: #ddd;
+  --dl-focused-line-color: #bbb;
+  --dl-border-muted: #e7e6e6;
+
+  /* metrics */
+  --dl-radius: 4px;
+  --dl-field-width: 400px;
+  --dl-modal-width: 416px;
+  --dl-large-modal-width: 800px;
+
+  /* tooltip marker + bubble */
+  --dl-tooltip-background: #e6e6e6;
+  --dl-tooltip-color: #88858e;
+  --dl-tooltip-bubble-background: #413e48;
+  --dl-tooltip-bubble-color: #d1cfd8;
+  --dl-tooltip-success-background: #d1e7dd;
+  --dl-tooltip-success-color: #12b568;
+  --dl-tooltip-warning-background: #ffecb5;
+  --dl-tooltip-warning-color: #664d03;
+  --dl-tooltip-error-background: #f8d7da;
+  --dl-tooltip-error-color: #842029;
+
+  /* combobox — also read by the styles <dl-select> injects itself */
+  --dl-options-background: var(--dl-surface, #fff);
+  --dl-options-text-color: var(--dl-text-color, #545454);
+  --dl-options-inactive-text-color: var(--dl-text-color, #545454);
+  --dl-options-option-hover-color: rgba(224, 240, 227, 0.4);
+}
+
+/* ------------------------------------------------------------------ modal */
+
+.dl-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--dl-overlay, rgba(0, 0, 0, 0.6));
+  overflow-y: auto;
+}
+
+.dl-modal.noModalDialog {
+  position: static;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--dl-surface, #fff);
+}
+
+.dl-modal-hidden {
+  display: none !important;
+}
+
+.dl-modal .modal {
+  display: block;
+  padding: 30px 10px 10px 10px;
+  width: var(--dl-modal-width, 416px);
+  margin: 50px auto;
+  border-radius: var(--dl-radius, 4px);
+  background-color: var(--dl-surface, #fff);
+  box-shadow: 0 0 23px -2px rgba(0, 0, 0, 0.06);
+}
+
+.dl-modal.noModalDialog .modal {
+  box-shadow: none;
+  border-radius: 0;
+  width: auto;
+  padding-top: 0;
+}
+
+.dl-modal .largeModal {
+  width: var(--dl-large-modal-width, 800px);
+}
+
+.dl-modal .largeModal .dl-form label {
+  width: auto;
+}
+
+.largeModal .dl-form form > .dl-form-field-wrapper > input,
+.largeModal .dl-form form > .dl-form-field-wrapper > textarea,
+.largeModal .dl-form form .render {
+  width: var(--dl-large-modal-width, 800px);
+  max-width: var(--dl-large-modal-width, 800px);
+  min-width: var(--dl-large-modal-width, 800px);
+}
+
+.dl-modal .low-bar {
+  margin: 40px -10px -10px -10px;
+  height: 45px;
+  background-color: var(--dl-surface-muted, #f8f8f8);
+  border-bottom-left-radius: var(--dl-radius, 4px);
+  border-bottom-right-radius: var(--dl-radius, 4px);
+}
+
+.dl-modal.dl-full-height .low-bar {
+  bottom: 11px;
+  width: 100%;
+  position: absolute;
+}
+
+.dl-modal .up-bar {
+  margin: -20px 0 -10px -50px;
+}
+
+/* -------------------------------------------------------------------- tabs */
+
+.dl-modal .tabWrapper {
+  text-align: center;
+}
+
+.dl-modal .dl-tab-btn {
+  border: 1px solid var(--dl-accent, #1ea6a3);
+  border-left: none;
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+  font-weight: lighter;
+  font-size: var(--dl-font-size, 0.9em);
+  padding: 6px 8px 4px 8px;
+  display: inline-block;
+  color: var(--dl-accent, #1ea6a3);
+  cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+
+.dl-modal .dl-tab-btn.active {
+  color: var(--dl-surface, #fff);
+  background: var(--dl-accent, #1ea6a3);
+  cursor: default;
+}
+
+.dl-modal .dl-tab-btn:first-child {
+  border-left: 1px solid var(--dl-accent, #1ea6a3);
+  border-top-left-radius: var(--dl-radius, 4px);
+  border-bottom-left-radius: var(--dl-radius, 4px);
+}
+
+.dl-modal .dl-tab-btn:last-child {
+  border-top-right-radius: var(--dl-radius, 4px);
+  border-bottom-right-radius: var(--dl-radius, 4px);
+}
+
+/* ----------------------------------------------------------------- buttons */
+
+/*
+ * v2 renders these as <button> rather than <div> so they are focusable and
+ * keyboard-operable. The first three declarations neutralise the UA button
+ * styles that <div> did not have, keeping the rendering identical to v1.
+ */
+.dl-modal .btn {
+  font-size: inherit;
+  line-height: normal;
+  text-align: center;
+  float: right;
+  padding: 5px 10px 5px 10px;
+  margin-top: 6px;
+  margin-right: 10px;
+  border: 2px solid var(--dl-accent, #1ea6a3);
+  border-radius: var(--dl-radius, 4px);
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+  color: var(--dl-accent, #1ea6a3);
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.dl-modal .btn:hover {
+  border: 2px solid var(--dl-accent-hover, #22bb8b);
+  box-shadow: 0 0 19px -1px rgba(34, 187, 139, 0.1);
+}
+
+.dl-modal .btn.disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.dl-modal .btn.disabled:hover {
+  border: 2px solid var(--dl-accent, #1ea6a3);
+  box-shadow: none;
+}
+
+.dl-modal .btn.invisible {
+  display: none;
+}
+
+.dl-modal .btn.loading-btn {
+  cursor: default;
+}
+
+.dl-modal .btn.loading-btn::after {
+  content: ' ';
+  display: inline-block;
+  margin-left: 6px;
+  margin-bottom: -4px;
+  border: 2px solid #d1d0d8;
+  border-top: 2px solid var(--dl-accent, #1ea6a3);
+  border-radius: 50% !important;
+  width: 16px;
+  height: 16px;
+  padding: 0 !important;
+  animation: loading-icon-spin 1s linear infinite;
+}
+
+/* Also a <button> in v2; reset the UA chrome so the ✕ glyph is all that shows. */
+.cancelBtn {
+  float: right;
+  width: 12px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  position: relative;
+  transform: rotate(45deg);
+  opacity: 0.3;
+  cursor: pointer;
+}
+
+.cancelBtn:hover {
+  opacity: 0.6;
+}
+
+.cancelBtn:before,
+.cancelBtn:after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  background: currentColor;
+}
+
+.cancelBtn:before {
+  left: 6px;
+  width: 2px;
+  margin-left: -1px;
+  height: 12px;
+}
+
+.cancelBtn:after {
+  top: 6px;
+  height: 2px;
+  margin-top: -1px;
+  width: 12px;
+}
+
+/* -------------------------------------------------------------------- form */
+
+.dl-form {
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+}
+
+.dl-form label {
+  display: block;
+  width: 409px;
+  margin-bottom: 7px;
+  margin-left: 2px;
+  margin-top: 25px;
+  font-size: var(--dl-font-size, 0.9em);
+  color: var(--dl-label-color, #58565c);
+  font-weight: 500;
+}
+
+.dl-form .withoutLabel {
+  position: relative;
+  margin-top: 9px;
+}
+
+.dl-form form > .dl-form-field-wrapper {
+  position: relative;
+}
+
+.dl-form form > .dl-form-field-wrapper.notInTab,
+.dl-form form > .dl-form-field-wrapper.inactive,
+.dl-form-hidden-field {
+  display: none;
+}
+
+.dl-form form > .dl-form-field-wrapper.dl-select-wrapper {
+  margin-bottom: -4px;
+}
+
+.dl-form form > .dl-form-field-wrapper > input,
+.dl-form form > .dl-form-field-wrapper > textarea {
+  outline-width: 0;
+  border: 2px solid var(--dl-line-color, #ddd);
+  border-radius: var(--dl-radius, 4px);
+  width: var(--dl-field-width, 400px);
+  max-width: var(--dl-field-width, 400px);
+  min-width: var(--dl-field-width, 400px);
+  padding: 6px;
+  font-size: var(--dl-font-size, 0.9em);
+  font-weight: 300;
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+  box-sizing: content-box;
+}
+
+.dl-form form > .dl-form-field-wrapper > input:focus,
+.dl-form form > .dl-form-field-wrapper > textarea:focus {
+  border: 2px solid var(--dl-focused-line-color, #bbb);
+}
+
+.dl-form form > .dl-form-field-wrapper > textarea {
+  min-height: 200px;
+}
+
+.dl-form form > .dl-form-field-wrapper > input.dl-tooltip-inside {
+  width: 369px;
+  max-width: 369px;
+  min-width: 369px;
+  padding-right: 37px;
+  box-sizing: content-box;
+}
+
+.dl-form form > p {
+  border: none;
+  max-width: 360px;
+  min-width: 360px;
+  padding: 6px;
+  padding-top: 20px;
+  line-height: 150%;
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+}
+
+/* ---------------------------------------------------------------- checkbox */
+
+.dl-form form .check {
+  display: flex;
+  margin-top: 8px;
+}
+
+.dl-form form .check label {
+  display: inline;
+  font-weight: 100;
+  margin-top: 0;
+  margin-left: 4px;
+}
+
+.dl-form form .check input {
+  visibility: hidden;
+  margin: 0 12px 0 0;
+}
+
+.dl-form form input[type='checkbox']:before {
+  visibility: visible;
+  content: '';
+  display: inline-block;
+  top: -3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  position: relative;
+  border: 1px solid #828282;
+  background-color: #f4f4f4;
+  background-image: none;
+  background-size: 1rem;
+  background-position: center center;
+  background-repeat: no-repeat;
+  transition:
+    border 0.25s ease-out,
+    background 0.25s ease-out;
+}
+
+.dl-form form input[type='checkbox']:checked:before {
+  border: 0.0625rem solid var(--dl-accent, #1ea6a3);
+  background-color: var(--dl-accent, #1ea6a3);
+  background-image: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M33.8%2081.1c-1.3%200-2.5-.5-3.3-1.4L2.1%2051.3c-1.8-1.8-1.8-4.8%200-6.7%201.8-1.8%204.8-1.8%206.7%200l25.1%2025.1%2053.5-53.5c1.8-1.8%204.8-1.8%206.7%200%201.8%201.8%201.8%204.8%200%206.7l-57%2056.8c-.8.9-2%201.4-3.3%201.4z%22%2F%3E%3C%2Fsvg%3E);
+}
+
+/* ------------------------------------------------------------------- cards */
+
+.dl-form form .detailed-options {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.dl-form form .detailed-option {
+  background: var(--dl-surface-muted, #f8f8f8);
+  border: 2px solid #dedddd;
+  cursor: pointer;
+  margin: 5px;
+  padding: 10px;
+  border-radius: var(--dl-radius, 4px);
+  width: 232px;
+}
+
+.dl-form form .detailed-option.active {
+  border: 2px solid var(--dl-accent, #1ea6a3);
+}
+
+/* -------------------------------------------------------- custom + arrays */
+
+.dl-form form .render,
+.dl-form form .array-of {
+  width: var(--dl-field-width, 400px);
+  max-width: var(--dl-field-width, 400px);
+  min-width: var(--dl-field-width, 400px);
+  padding: 6px;
+  font-size: var(--dl-font-size, 0.9em);
+  font-weight: 300;
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+  text-align: center;
+}
+
+.largeModal .dl-form form .render,
+.dl-form form .array-of {
+  width: auto;
+  max-width: initial;
+  min-width: auto;
+}
+
+.dl-form-array-of-entry {
+  text-align: left;
+  background-color: var(--dl-surface-muted, #f8f8f8);
+  padding: 8px;
+  border-radius: var(--dl-radius, 4px);
+  border: 1px solid var(--dl-border-muted, #e7e6e6);
+  margin-top: 4px;
+  min-height: 17px;
+}
+
+.dl-form-array-of-entry span {
+  width: 275px;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.dl-form-array-of-entry button {
+  float: right;
+  margin-top: -1px;
+  border: 1px solid color-mix(in srgb, var(--dl-danger, #fe070b) 35%, transparent);
+  color: color-mix(in srgb, var(--dl-danger, #fe070b) 62%, transparent);
+  border-radius: var(--dl-radius, 4px);
+  background: transparent;
+  cursor: pointer;
+}
+
+.dl-form-array-of-entry button.edit-array-of-btn {
+  border: 1px solid var(--dl-accent, #1ea6a3);
+  color: var(--dl-accent, #1ea6a3);
+  margin-left: 3px;
+}
+
+.dl-form-array-of-add-entry {
+  float: right;
+  width: 100%;
+  border: 1px solid var(--dl-border-muted, #e7e6e6);
+  border-radius: var(--dl-radius, 4px);
+  color: var(--dl-accent, #1ea6a3);
+  background: var(--dl-surface-muted, #f8f8f8);
+  cursor: pointer;
+  padding: 8px;
+  margin-top: 4px;
+  outline: none;
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+  font-size: 1.05em;
+}
+
+.dl-form-array-of-suggestion {
+  text-align: left;
+  background-color: var(--dl-surface-muted, #f8f8f8);
+  padding: 8px 8px 3px 8px;
+  border-radius: var(--dl-radius, 4px);
+  border: 1px solid var(--dl-border-muted, #e7e6e6);
+  margin-top: 4px !important;
+  min-height: 17px;
+}
+
+.dl-form-array-of-suggestion label {
+  text-align: left;
+}
+
+.dl-form-array-suggested-container {
+  margin-bottom: 15px;
+}
+
+/* ------------------------------------------------------------- multiselect */
+
+.multiselect-tag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 9px;
+  margin: 2px;
+  border-radius: 3px;
+  background-color: var(--dl-surface-sunken, #eee);
+}
+
+.multiselect-tag:last-child {
+  margin-bottom: 6px;
+}
+
+/* The "muliselect" spelling is a v1 typo kept for compatibility. */
+.dl-muliselect-selected-remove-container {
+  margin: 9px 6px -5px 0;
+}
+
+.dl-muliselect-selected-remove {
+  display: inline-block;
+  width: 12px;
+  height: 35px;
+  position: relative;
+  transform: rotate(45deg);
+  opacity: 0.3;
+  cursor: pointer;
+  margin-right: 3px;
+}
+
+.dl-muliselect-selected-remove:hover {
+  opacity: 0.6;
+}
+
+.dl-muliselect-selected-remove:before,
+.dl-muliselect-selected-remove:after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  background: currentColor;
+}
+
+.dl-muliselect-selected-remove:before {
+  left: 6px;
+  width: 2px;
+  margin-left: -1px;
+  height: 12px;
+}
+
+.dl-muliselect-selected-remove:after {
+  top: 6px;
+  height: 2px;
+  margin-top: -1px;
+  width: 12px;
+}
+
+/* -------------------------------------------------------------------- file */
+
+.dl-form form > .dl-form-field-wrapper > div > input[type='file'] {
+  outline-width: 0;
+  width: var(--dl-field-width, 400px);
+  max-width: var(--dl-field-width, 400px);
+  min-width: var(--dl-field-width, 400px);
+  padding: 6px;
+  font-size: var(--dl-font-size, 0.9em);
+  font-weight: 300;
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+  box-sizing: content-box;
+}
+
+.dl-form form > .dl-form-field-wrapper .file-field {
+  padding: 5px;
+  border: 2px solid var(--dl-line-color, #ddd);
+  border-radius: var(--dl-radius, 4px);
+}
+
+.dl-form form > .dl-form-field-wrapper .file-field .file-preview {
+  height: 50px;
+  margin: 5px 5px 16px 5px;
+}
+
+.dl-form form > .dl-form-field-wrapper .file-field .file-preview.empty {
+  height: 0;
+  margin: 0;
+}
+
+.dl-form form > .dl-form-field-wrapper .file-field .file-preview.loading {
+  display: inline-block;
+  margin-left: 6px;
+  margin-bottom: -4px;
+  border: 2px solid #d1d0d8;
+  border-top: 2px solid #8e8e8e;
+  border-radius: 50% !important;
+  width: 16px;
+  height: 16px;
+  padding: 0 !important;
+  animation: loading-icon-spin 1s linear infinite;
+}
+
+.file-selection-container {
+  display: flex;
+}
+
+.file-selection-delete-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background-color: var(--dl-danger, red);
+}
+
+/* ---------------------------------------------------------------- tooltips */
+
+.dl-form .dl-tooltip {
+  padding: 1px 6px;
+  background: var(--dl-tooltip-background, #e6e6e6);
+  color: var(--dl-tooltip-color, #88858e);
+  border-radius: 10px;
+  float: right;
+  margin-right: 3px;
+}
+
+.dl-tooltip-in-input {
+  position: absolute;
+  right: 5px;
+  bottom: 6px;
+}
+
+.tooltip-loading {
+  border: 2px solid #d1d0d8;
+  border-top: 2px solid var(--dl-tooltip-color, #88858e);
+  border-radius: 50% !important;
+  width: 16px;
+  height: 16px;
+  padding: 0 !important;
+  animation: loading-icon-spin 1s linear infinite;
+}
+
+.tooltip-success {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  background-color: var(--dl-tooltip-success-background, #d1e7dd) !important;
+  color: var(--dl-tooltip-success-color, #12b568) !important;
+}
+
+.tooltip-warning {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  background-color: var(--dl-tooltip-warning-background, #ffecb5) !important;
+  color: var(--dl-tooltip-warning-color, #664d03) !important;
+}
+
+.tooltip-error {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+  background-color: var(--dl-tooltip-error-background, #f8d7da) !important;
+  color: var(--dl-tooltip-error-color, #842029) !important;
+}
+
+/*
+ * The bubble drawn by NativeTooltipProvider. v1 used tippy.js and shipped its
+ * stylesheet inline here; this replaces `.tippy-box` and `.tippy-arrow`.
+ */
+.dl-tooltip-bubble {
+  position: absolute;
+  z-index: 1000;
+  max-width: min(300px, calc(100vw - 20px));
+  padding: 5px 9px;
+  border-radius: var(--dl-radius, 4px);
+  background: var(--dl-tooltip-bubble-background, #413e48);
+  color: var(--dl-tooltip-bubble-color, #d1cfd8);
+  font-family: var(--dl-font-family, 'Rubik', sans-serif);
+  font-weight: lighter;
+  font-size: 14px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------- utilities */
+
+.dl-field-two-third input {
+  width: 194px !important;
+  min-width: 128px !important;
+}
+
+.left-side {
+  float: left;
+}
+
+.right-side {
+  margin-left: 173px;
+}
+
+.right-side input {
+  margin-left: 3px;
+  padding-top: 8px !important;
+}
+
+@keyframes loading-icon-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* -------------------------------------------------------------- dark theme */
+
+/*
+ * Opt in by adding `dark-theme` to <body>, or copy these declarations under
+ * your own `@media (prefers-color-scheme: dark)` block. v1 had a single ad-hoc
+ * `body.dark-theme dl-select` rule; this covers the whole surface.
+ */
+body.dark-theme {
+  --dl-surface: #282727;
+  --dl-surface-muted: #322f2f;
+  --dl-surface-sunken: #3a3838;
+  --dl-text-color: #d1cfd8;
+  --dl-label-color: #b9b7c0;
+  --dl-line-color: #4a4747;
+  --dl-focused-line-color: #6d6a6a;
+  --dl-border-muted: #4a4747;
+  --dl-tooltip-background: #413e48;
+  --dl-tooltip-color: #d1cfd8;
+  --dl-select-loading-col1: #282727;
+  --dl-select-loading-col2: #505656;
+}

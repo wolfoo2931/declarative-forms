@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>declarativ-forms — examples</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Rubik:300,500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 3rem 1.5rem;
+        font-family: 'Rubik', system-ui, sans-serif;
+        color: #333;
+      }
+      main {
+        max-width: 46rem;
+        margin: 0 auto;
+      }
+      h1 {
+        font-weight: 500;
+      }
+      p.lede {
+        color: #666;
+        line-height: 1.6;
+      }
+      .demos {
+        display: grid;
+        gap: 0.75rem;
+        margin: 2rem 0;
+      }
+      .demos button {
+        font: inherit;
+        text-align: left;
+        padding: 0.9rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fafafa;
+        cursor: pointer;
+      }
+      .demos button:hover {
+        border-color: #1ea6a3;
+      }
+      .demos b {
+        display: block;
+        font-weight: 500;
+      }
+      .demos span {
+        color: #666;
+        font-size: 0.9em;
+      }
+      #output {
+        white-space: pre-wrap;
+        background: #f4f4f4;
+        border-radius: 6px;
+        padding: 1rem;
+        min-height: 3rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.85em;
+      }
+      #embedded {
+        border: 1px dashed #ccc;
+        border-radius: 6px;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>declarativ-forms</h1>
+      <p class="lede">
+        Each button opens a dialog built from a plain array of field
+        descriptors. Confirmed values appear below.
+      </p>
+
+      <div class="demos">
+        <button id="demo-basic">
+          <b>Basic fields</b>
+          <span>text, textarea, checkbox, select, message</span>
+        </button>
+        <button id="demo-reactive">
+          <b>Cross-field reactivity</b>
+          <span>isActive, reloadOnChangeOf, computed, async options</span>
+        </button>
+        <button id="demo-tabs">
+          <b>Tabs and buttons</b>
+          <span>grouped fields, wizard buttons, async validity</span>
+        </button>
+        <button id="demo-array">
+          <b>Repeating entries</b>
+          <span>array-of sub-forms with suggestions</span>
+        </button>
+        <button id="demo-embedded">
+          <b>Embedded, not modal</b>
+          <span>appendInElement into the box below</span>
+        </button>
+      </div>
+
+      <h2>Result</h2>
+      <pre id="output">—</pre>
+      <div id="embedded"></div>
+    </main>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

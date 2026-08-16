@@ -1,9 +1,11 @@
-node_modules/*
-coverage/*
-assets/declarativ-forms.packaged.js
-assets/declarativ_form.packaged.js
-.errorShots/*
+node_modules/
+dist/
+coverage/
+test-results/
+playwright-report/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
 npm-debug.log
 npm-debug.log.*
-assets/declarativ-forms.packaged.min.js
 .DS_Store
+.claude
