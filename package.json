@@ -17,6 +17,7 @@
       "require": "./dist/index.cjs"
     },
     "./styles.css": "./styles/declarative-forms.css",
+    "./theme.css": "./styles/theme.css",
     "./assets/default.css": "./styles/declarative-forms.css",
     "./package.json": "./package.json"
   },

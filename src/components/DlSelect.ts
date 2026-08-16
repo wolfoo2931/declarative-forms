@@ -15,13 +15,27 @@ const MIN_LOADING_MS = 1500;
 const LOADING_DELAY_MS = 100;
 
 /**
+ * Base class for the custom elements.
+ *
+ * `class X extends HTMLElement` is evaluated as soon as the module loads, which
+ * throws outright in Node — breaking any server-rendered or prerendered app
+ * that so much as imports the package. Falling back to an empty class keeps the
+ * module importable; the stand-in is never instantiated, because custom
+ * elements are only registered when `customElements` exists.
+ */
+const CustomElementBase: typeof HTMLElement =
+  typeof HTMLElement === 'undefined'
+    ? (class {} as unknown as typeof HTMLElement)
+    : HTMLElement;
+
+/**
  * An option inside a {@link DlSelect}.
  *
  * v1 never registered this element, leaving it an `HTMLUnknownElement`.
  * Registering it gives it a stable prototype and somewhere to hang the option
  * semantics the accessibility work needs.
  */
-export class DlOption extends HTMLElement {
+export class DlOption extends CustomElementBase {
   /** The value this option contributes, falling back to its text. */
   get optionValue(): string {
     return this.getAttribute('value') ?? this.innerText;
@@ -40,7 +54,7 @@ export class DlOption extends HTMLElement {
  * `.options-wrapper`, `dl-option`) and the options popup is reparented to
  * `document.body` while open so it can escape a scrolling container.
  */
-export class DlSelect extends HTMLElement {
+export class DlSelect extends CustomElementBase {
   readonly optionsWrapper: HTMLDivElement;
   readonly inputWrapper: HTMLSpanElement;
   readonly noMatchesHint: HTMLSpanElement;

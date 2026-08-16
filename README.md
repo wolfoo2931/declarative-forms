@@ -2,7 +2,9 @@
 
 Declarative forms for the web that make front-end development less front-end development.
 
-Whenever you need input from a user, you describe the data you need and the rules around it. `declarative-forms` takes care of the front-end work to ask for that information: rendering the fields, wiring updates, loading async option sets, managing nested structures, handling modal stacks, tabs, accessibility basics, and keeping the UI in sync as values change.
+Whenever you need input from a user, you describe the data you need and the rules around it. `declarative-forms` takes care of the front-end work to ask for that information: rendering the fields, wiring updates, loading async option sets, managing nested structures, handling modal stacks, tabs, and keeping the UI in sync as values change.
+
+📖 **[Read the documentation](https://wolfoo2931.github.io/declarative-forms/)**
 
 You do not have to build the front-end plumbing by hand just to collect structured input. Instead, you provide a schema-like description of the form and the library handles the rest.
 
@@ -169,6 +171,24 @@ const form = new DeclarativeForm({
 ```
 
 This is the sort of behavior the library is designed to make practical without building a lot of custom event wiring.
+
+## Documentation
+
+Full documentation is at **[wolfoo2931.github.io/declarative-forms](https://wolfoo2931.github.io/declarative-forms/)**:
+
+- [Getting started](https://wolfoo2931.github.io/declarative-forms/guide/getting-started)
+- [Field kinds](https://wolfoo2931.github.io/declarative-forms/guide/fields/) — the ten built-in kinds
+- [Reactivity](https://wolfoo2931.github.io/declarative-forms/guide/reactivity) — `isActive`, `reloadOnChangeOf`, computed fields
+- [API reference](https://wolfoo2931.github.io/declarative-forms/reference/api)
+- [Migrating from v1](https://wolfoo2931.github.io/declarative-forms/migration-v1)
+
+## Status and limitations
+
+Worth knowing before you adopt it:
+
+- **Accessibility is a work in progress.** Labels, ids and focusable buttons are correct; dialog semantics, combobox ARIA and keyboard-reachable checkboxes are not there yet. The [accessibility page](https://wolfoo2931.github.io/declarative-forms/accessibility) lists every known gap.
+- **There is no validation framework.** `isActive` handles conditional fields and button predicates gate submission, but there is no rule engine or error-message system.
+- **The rendered DOM is a frozen contract.** Class names, ids and structure are stable across the v1 → v2 rewrite, so existing stylesheets keep working. See the [DOM contract](https://wolfoo2931.github.io/declarative-forms/dom-contract).
 
 ## Summary
 

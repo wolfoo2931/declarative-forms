@@ -1,0 +1,174 @@
+/*
+ * Chrome around the live demo blocks.
+ *
+ * The job here is separation: a reader has to be able to tell, at a glance,
+ * which pixels are the library's output and which are documentation. So a demo
+ * reads as three stacked bands — the source, a framed canvas holding the real
+ * form, and the resulting values — each on a visibly different surface.
+ */
+
+.live-form {
+  /*
+   * The canvas has to sit *behind* the form card in both modes: lighter card on
+   * a darker canvas in light mode, and the same relationship preserved rather
+   * than inverted in dark. Relying on VitePress's own surface variables put the
+   * two within a couple of percent of each other, so these are explicit.
+   */
+  --demo-canvas: #f1f3f6;
+  --demo-dot: #d5dae1;
+
+  margin: 1.75rem 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dark .live-form {
+  --demo-canvas: #0e1013;
+  --demo-dot: #272b32;
+}
+
+/* ── band 1: the source ─────────────────────────────────────────────────── */
+
+.live-form__code > div[class*='language-'] {
+  margin: 0;
+  border-radius: 0;
+}
+
+/* ── band 2 + 3: the stage ──────────────────────────────────────────────── */
+
+.live-form__stage {
+  padding: 1.25rem;
+  background: var(--vp-c-bg-soft);
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+/*
+ * The canvas. A recessed, faintly dotted panel — the convention for "this is a
+ * rendered preview" — so the form sitting on it reads as a separate object
+ * rather than as more page content.
+ */
+.live-form__canvas {
+  position: relative;
+  padding: 2rem 1.25rem 1.5rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  background-color: var(--demo-canvas);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    var(--demo-dot) 1px,
+    transparent 0
+  );
+  background-size: 14px 14px;
+  box-shadow: inset 0 1px 4px rgb(0 0 0 / 6%);
+}
+
+.dark .live-form__canvas {
+  box-shadow: inset 0 1px 4px rgb(0 0 0 / 40%);
+}
+
+.live-form__canvas-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.25rem 0.6rem;
+  border-right: 1px solid var(--vp-c-divider);
+  border-bottom: 1px solid var(--vp-c-divider);
+  border-radius: 10px 0 8px 0;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-3);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+/*
+ * The form itself sits on the library's own surface token, so the card is
+ * exactly the colour it would be in a real application — including in dark
+ * mode, where the canvas behind it is darker still.
+ */
+.live-form__host {
+  padding: 1.25rem;
+  border: 1px solid var(--dl-line-color);
+  border-radius: var(--dl-radius, 9px);
+  background: var(--dl-surface);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 6%),
+    0 6px 16px -6px rgb(0 0 0 / 12%);
+}
+
+.dark .live-form__host {
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 40%),
+    0 6px 16px -6px rgb(0 0 0 / 50%);
+}
+
+.live-form__host .dl-modal.noModalDialog {
+  padding: 0;
+  background: transparent;
+}
+
+/* A modal demo has nothing to embed, so the canvas holds only its trigger. */
+.live-form__canvas--trigger {
+  display: grid;
+  place-items: center;
+  min-height: 7rem;
+}
+
+.live-form__open {
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--vp-c-brand-1);
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-brand-1);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.live-form__open:hover {
+  background: var(--vp-c-brand-1);
+  color: var(--vp-c-bg);
+}
+
+/* ── band 3: the values ─────────────────────────────────────────────────── */
+
+.live-form__label {
+  margin: 1.25rem 0 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vp-c-text-3);
+}
+
+.live-form__values {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.live-form__values--ok {
+  border-color: var(--vp-c-success-1, #3dd68c);
+}
+
+.live-form__error {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: var(--vp-c-danger-soft);
+  color: var(--vp-c-danger-1);
+  font-size: 0.85rem;
+}
