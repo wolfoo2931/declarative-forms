@@ -103,7 +103,10 @@ on('demo-reactive', () => {
       {
         name: 'slug',
         kind: 'computed',
-        compute: ({ data }) => String(data['repo'] ?? '').split('/').pop() ?? '',
+        compute: ({ data }) =>
+          String(data['repo'] ?? '')
+            .split('/')
+            .pop() ?? '',
       },
       {
         name: 'preview',

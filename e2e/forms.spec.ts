@@ -42,16 +42,19 @@ test.describe('basic dialog', () => {
     await expect(page.locator('.dl-modal')).toHaveCount(0);
   });
 
-  test('renders a checkbox caption marked with html() as a real link', async ({ page }) => {
+  test('renders a checkbox caption marked with html() as a real link', async ({
+    page,
+  }) => {
     await expect(page.locator('.dl-form .check a')).toHaveText('terms');
   });
 
   test('gives every labelled control a working label association', async ({ page }) => {
     // Regression: v1 pointed label[for] at the field name, which was never an id.
-    const orphans = await page.evaluate(() =>
-      [...document.querySelectorAll('.dl-form label[for]')].filter(
-        (label) => !document.getElementById(label.getAttribute('for') as string),
-      ).length,
+    const orphans = await page.evaluate(
+      () =>
+        [...document.querySelectorAll('.dl-form label[for]')].filter(
+          (label) => !document.getElementById(label.getAttribute('for') as string),
+        ).length,
     );
     expect(orphans).toBe(0);
   });
@@ -126,7 +129,9 @@ test.describe('combobox', () => {
 
   test('adds and removes multi-select tags', async ({ page }) => {
     await page.click('dl-select[name=tags] input');
-    await page.click('.options-wrapper[data-for-dl-select=tags] dl-option:has-text("docs")');
+    await page.click(
+      '.options-wrapper[data-for-dl-select=tags] dl-option:has-text("docs")',
+    );
     await expect(page.locator('dl-select[name=tags] .multiselect-tag')).toHaveCount(1);
 
     await page.click('dl-select[name=tags] .dl-muliselect-selected-remove');
@@ -160,7 +165,9 @@ test.describe('reactivity', () => {
     await expect(token).toBeHidden();
 
     await page.click('dl-select[name=source] input');
-    await page.click('.options-wrapper[data-for-dl-select=source] dl-option:has-text("GitLab")');
+    await page.click(
+      '.options-wrapper[data-for-dl-select=source] dl-option:has-text("GitLab")',
+    );
 
     await expect(token).toBeVisible();
   });
@@ -195,7 +202,9 @@ test.describe('tabs and buttons', () => {
     await expect(page.locator('.dl-tab-btn.Delivery')).toHaveClass(/active/);
   });
 
-  test('navigates tabs through sibling order, as monsterwriter does', async ({ page }) => {
+  test('navigates tabs through sibling order, as monsterwriter does', async ({
+    page,
+  }) => {
     await page.click('#nextBtn');
     await expect(page.locator('.dl-tab-btn.Export')).toHaveClass(/active/);
 

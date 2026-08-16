@@ -35,9 +35,9 @@ export interface FieldHandle {
  * class owns the wrapper, label, tooltip marker and active state — i.e. all the
  * parts of the frozen DOM contract that are the same for every kind.
  */
-export abstract class Field<D extends BaseFieldDescriptor = FieldDescriptor>
-  implements FieldHandle
-{
+export abstract class Field<
+  D extends BaseFieldDescriptor = FieldDescriptor,
+> implements FieldHandle {
   readonly wrapper: HTMLElement;
 
   protected label: HTMLLabelElement | undefined;
@@ -142,7 +142,9 @@ export abstract class Field<D extends BaseFieldDescriptor = FieldDescriptor>
   /** Resolve a value that may have been given as a function of the form context. */
   protected resolve<T>(value: Reactive<T> | undefined): T | undefined {
     if (typeof value === 'function') {
-      return (value as (ctx: FieldContext) => T)(this.context.contextFor(this.descriptor));
+      return (value as (ctx: FieldContext) => T)(
+        this.context.contextFor(this.descriptor),
+      );
     }
     return value;
   }
@@ -178,7 +180,9 @@ export abstract class Field<D extends BaseFieldDescriptor = FieldDescriptor>
    */
   async applyDefaultValue(): Promise<void> {
     if (this.descriptor.defaultValue === undefined) return;
-    const value: unknown = await Promise.resolve(this.resolve(this.descriptor.defaultValue));
+    const value: unknown = await Promise.resolve(
+      this.resolve(this.descriptor.defaultValue),
+    );
     if (value !== undefined) this.setValue(value);
   }
 

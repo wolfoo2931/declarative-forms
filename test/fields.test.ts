@@ -61,7 +61,7 @@ describe('value round-trips (regression: v1 lost falsy values)', () => {
     expect(form.getValues()['v']).toBe(String(value));
   });
 
-  it('keeps a computed field\'s falsy value with its original type', async () => {
+  it("keeps a computed field's falsy value with its original type", async () => {
     const form = await makeForm({
       fields: [{ name: 'count', kind: 'computed', compute: () => 0 }],
     });
@@ -119,7 +119,11 @@ describe('checkbox field', () => {
   it('renders a caption containing markup only when marked with html()', async () => {
     const form = await makeForm({
       fields: [
-        { name: 'a', kind: 'checkbox', label: html('I accept the <a href="#">terms</a>') },
+        {
+          name: 'a',
+          kind: 'checkbox',
+          label: html('I accept the <a href="#">terms</a>'),
+        },
         { name: 'b', kind: 'checkbox', label: 'plain <b>text</b>' },
       ],
     });
@@ -142,9 +146,7 @@ describe('checkbox field', () => {
 
   it('accepts a boolean default value', async () => {
     const form = await makeForm({
-      fields: [
-        { name: 'agree', kind: 'checkbox', label: 'Agree', defaultValue: true },
-      ],
+      fields: [{ name: 'agree', kind: 'checkbox', label: 'Agree', defaultValue: true }],
     });
     expect(form.getValues()['agree']).toBe(true);
   });
@@ -362,13 +364,17 @@ describe('file field', () => {
     });
 
     form.field('cover')?.setValue('https://cdn.example.com/x.png');
-    (form.field('cover')!.element.querySelector('.file-selection-delete-btn') as HTMLElement).click();
+    (
+      form
+        .field('cover')!
+        .element.querySelector('.file-selection-delete-btn') as HTMLElement
+    ).click();
     await form.whenReady();
 
     expect(form.getValues()['cover']).toBe('');
-    expect(form.field('cover')!.element.querySelector('.file-preview')?.className).toContain(
-      'empty',
-    );
+    expect(
+      form.field('cover')!.element.querySelector('.file-preview')?.className,
+    ).toContain('empty');
   });
 
   it('explains itself when no persistFile handler is configured', async () => {
@@ -377,8 +383,9 @@ describe('file field', () => {
 
     await expect(
       // Reach past the input, which cannot be populated programmatically.
-      (field as unknown as { context: { persistFile(f: File): Promise<string> } }).context
-        .persistFile(new File([''], 'x.png')),
+      (
+        field as unknown as { context: { persistFile(f: File): Promise<string> } }
+      ).context.persistFile(new File([''], 'x.png')),
     ).rejects.toThrow(/needs a `persistFile` handler/);
   });
 });
@@ -404,7 +411,9 @@ describe('field wrapper (frozen DOM contract)', () => {
 
     expect(label.getAttribute('for')).toBe(field.element.id);
     expect(field.element.id).not.toBe('');
-    expect(field.wrapper.querySelector(`#${label.getAttribute('for')}`)).toBe(field.element);
+    expect(field.wrapper.querySelector(`#${label.getAttribute('for')}`)).toBe(
+      field.element,
+    );
   });
 
   it('adds className entries to the wrapper', async () => {
@@ -425,9 +434,9 @@ describe('field wrapper (frozen DOM contract)', () => {
   });
 
   it('rejects duplicate field names', async () => {
-    await expect(
-      makeForm({ fields: [{ name: 'a' }, { name: 'a' }] }),
-    ).rejects.toThrow(/duplicate field name "a"/);
+    await expect(makeForm({ fields: [{ name: 'a' }, { name: 'a' }] })).rejects.toThrow(
+      /duplicate field name "a"/,
+    );
   });
 });
 
@@ -443,9 +452,7 @@ describe('tooltips', () => {
 
   it('puts the marker in the wrapper when inInput is set', async () => {
     const form = await makeForm({
-      fields: [
-        { name: 'a', displayName: 'A', tooltip: { text: 'Help', inInput: true } },
-      ],
+      fields: [{ name: 'a', displayName: 'A', tooltip: { text: 'Help', inInput: true } }],
     });
 
     const field = form.field('a')!;
@@ -476,9 +483,7 @@ describe('tooltips', () => {
 
   it('keeps the in-input class when the state changes', async () => {
     const form = await makeForm({
-      fields: [
-        { name: 'a', displayName: 'A', tooltip: { text: 'Help', inInput: true } },
-      ],
+      fields: [{ name: 'a', displayName: 'A', tooltip: { text: 'Help', inInput: true } }],
     });
 
     form.setTooltipWarning('a', 'Careful');

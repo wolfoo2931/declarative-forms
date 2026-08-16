@@ -43,7 +43,12 @@ export class CardsField extends Field<CardsFieldDescriptor> {
   }
 
   private select(value: string): void {
-    const target = findByAttribute(this.element, '.detailed-option', 'data-value', value)[0];
+    const target = findByAttribute(
+      this.element,
+      '.detailed-option',
+      'data-value',
+      value,
+    )[0];
     if (!target) return;
 
     this.value = value;
