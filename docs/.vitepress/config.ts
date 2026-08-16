@@ -63,7 +63,9 @@ export default defineConfig({
         text: 'Reference',
         items: [
           { text: 'API', link: '/reference/api' },
-          { text: '<dl-select>', link: '/reference/dl-select' },
+          // VitePress renders sidebar labels with `v-html`, so a literal
+          // `<dl-select>` would be upgraded into an actual (empty) combobox.
+          { text: '&lt;dl-select&gt;', link: '/reference/dl-select' },
           { text: 'DOM contract', link: '/dom-contract' },
           { text: 'Accessibility', link: '/accessibility' },
         ],
