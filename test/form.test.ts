@@ -544,6 +544,29 @@ describe('modal stacking', () => {
     expect(outerModal.className).not.toContain('dl-modal-hidden');
   });
 
+  it('marks the covering dialog stacked and the revealed one restored', async () => {
+    const stack = new ModalStack();
+    const outer = trackForm(
+      new DeclarativeForm({ fields: [{ name: 'a' }], onCancel: () => {} }, { stack }),
+    );
+    const inner = trackForm(
+      new DeclarativeForm({ fields: [{ name: 'b' }], onCancel: () => {} }, { stack }),
+    );
+    await Promise.all([outer.whenReady(), inner.whenReady()]);
+
+    const outerModal = outer.openInModal();
+    const innerModal = inner.openInModal();
+
+    // The entrance animation of a stacked backdrop would show the page through
+    // the gap left by the dialog it covers.
+    expect(outerModal.className).not.toContain('dl-modal-stacked');
+    expect(innerModal.className).toContain('dl-modal-stacked');
+    expect(outerModal.className).not.toContain('dl-modal-restored');
+
+    inner.cancel();
+    expect(outerModal.className).toContain('dl-modal-restored');
+  });
+
   it('routes Escape to the topmost dialog only', async () => {
     const stack = new ModalStack();
     const outerCancel = vi.fn();
