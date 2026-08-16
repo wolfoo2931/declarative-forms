@@ -1,7 +1,7 @@
 /*!
- * declarativ-forms — default theme
+ * declarative-forms — default theme
  *
- * Import with:  @import "declarativ-forms/styles.css";
+ * Import with:  @import "declarative-forms/styles.css";
  *
  * This is the v1 `assets/default.css` with every hardcoded value lifted into a
  * `--dl-*` custom property. The selectors and the cascade are unchanged, and

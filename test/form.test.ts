@@ -11,7 +11,9 @@ describe('values', () => {
 
   it('applies a literal default value', async () => {
     const form = await makeForm({
-      fields: [{ name: 'lang', kind: 'select', options: ['en', 'de'], defaultValue: 'de' }],
+      fields: [
+        { name: 'lang', kind: 'select', options: ['en', 'de'], defaultValue: 'de' },
+      ],
     });
     expect(form.getValues()['lang']).toBe('de');
   });
@@ -82,28 +84,32 @@ describe('isActive', () => {
 
   it('sees the values of the enclosing modal stack', async () => {
     const stack = new ModalStack();
-    const outer = trackForm(new DeclarativeForm(
-      { fields: [{ name: 'outer', defaultValue: 'yes' }], onCancel: () => {} },
-      { stack },
-    ));
+    const outer = trackForm(
+      new DeclarativeForm(
+        { fields: [{ name: 'outer', defaultValue: 'yes' }], onCancel: () => {} },
+        { stack },
+      ),
+    );
     await outer.whenReady();
     outer.openInModal();
 
     const seen: unknown[] = [];
-    const inner = trackForm(new DeclarativeForm(
-      {
-        fields: [
-          {
-            name: 'inner',
-            isActive: ({ stackData }) => {
-              seen.push(stackData);
-              return true;
+    const inner = trackForm(
+      new DeclarativeForm(
+        {
+          fields: [
+            {
+              name: 'inner',
+              isActive: ({ stackData }) => {
+                seen.push(stackData);
+                return true;
+              },
             },
-          },
-        ],
-      },
-      { stack },
-    ));
+          ],
+        },
+        { stack },
+      ),
+    );
     await inner.whenReady();
     inner.openInModal();
     await inner.whenReady();
@@ -130,7 +136,7 @@ describe('tabs', () => {
     expect(tabs.map((t) => t.textContent)).toEqual(['General Settings', 'Special']);
   });
 
-  it('shows only the active tab\'s fields', async () => {
+  it("shows only the active tab's fields", async () => {
     const form = await makeForm({
       fields: [
         { name: 'a', tab: 'One' },
@@ -522,14 +528,12 @@ describe('modal lifecycle', () => {
 describe('modal stacking', () => {
   it('hides the covered dialog and restores it on close', async () => {
     const stack = new ModalStack();
-    const outer = trackForm(new DeclarativeForm(
-      { fields: [{ name: 'a' }], onCancel: () => {} },
-      { stack },
-    ));
-    const inner = trackForm(new DeclarativeForm(
-      { fields: [{ name: 'b' }], onCancel: () => {} },
-      { stack },
-    ));
+    const outer = trackForm(
+      new DeclarativeForm({ fields: [{ name: 'a' }], onCancel: () => {} }, { stack }),
+    );
+    const inner = trackForm(
+      new DeclarativeForm({ fields: [{ name: 'b' }], onCancel: () => {} }, { stack }),
+    );
     await Promise.all([outer.whenReady(), inner.whenReady()]);
 
     const outerModal = outer.openInModal();
@@ -545,14 +549,12 @@ describe('modal stacking', () => {
     const outerCancel = vi.fn();
     const innerCancel = vi.fn();
 
-    const outer = trackForm(new DeclarativeForm(
-      { fields: [{ name: 'a' }], onCancel: outerCancel },
-      { stack },
-    ));
-    const inner = trackForm(new DeclarativeForm(
-      { fields: [{ name: 'b' }], onCancel: innerCancel },
-      { stack },
-    ));
+    const outer = trackForm(
+      new DeclarativeForm({ fields: [{ name: 'a' }], onCancel: outerCancel }, { stack }),
+    );
+    const inner = trackForm(
+      new DeclarativeForm({ fields: [{ name: 'b' }], onCancel: innerCancel }, { stack }),
+    );
     await Promise.all([outer.whenReady(), inner.whenReady()]);
 
     outer.openInModal();
@@ -567,10 +569,9 @@ describe('modal stacking', () => {
     const stack = new ModalStack();
     const spy = vi.spyOn(document, 'addEventListener');
 
-    const form = trackForm(new DeclarativeForm(
-      { fields: [{ name: 'a' }], onCancel: () => {} },
-      { stack },
-    ));
+    const form = trackForm(
+      new DeclarativeForm({ fields: [{ name: 'a' }], onCancel: () => {} }, { stack }),
+    );
     await form.whenReady();
     expect(spy).not.toHaveBeenCalledWith('keydown', expect.anything());
 
@@ -581,10 +582,9 @@ describe('modal stacking', () => {
 
   it('detaches the key listener once the last dialog closes', async () => {
     const stack = new ModalStack();
-    const form = trackForm(new DeclarativeForm(
-      { fields: [{ name: 'a' }], onCancel: () => {} },
-      { stack },
-    ));
+    const form = trackForm(
+      new DeclarativeForm({ fields: [{ name: 'a' }], onCancel: () => {} }, { stack }),
+    );
     await form.whenReady();
 
     const spy = vi.spyOn(document, 'removeEventListener');

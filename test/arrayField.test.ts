@@ -72,9 +72,9 @@ describe('array field', () => {
     const form = await makeAuthorsForm();
     await addAuthor(form, 'Ada', 'Lovelace');
 
-    const rows = form.field('authors')!.element.querySelectorAll(
-      '.dl-form-array-of-entry',
-    );
+    const rows = form
+      .field('authors')!
+      .element.querySelectorAll('.dl-form-array-of-entry');
     expect(rows).toHaveLength(1);
     expect(rows[0]?.querySelector('span')?.textContent).toBe('Ada, Lovelace');
     expect(form.getValues()['authors']).toEqual([
@@ -132,7 +132,9 @@ describe('array field', () => {
     await flush();
 
     const dialog = entryDialog();
-    expect((dialog.querySelector('[name=preName]') as HTMLInputElement).value).toBe('Ada');
+    expect((dialog.querySelector('[name=preName]') as HTMLInputElement).value).toBe(
+      'Ada',
+    );
 
     type(dialog.querySelector('[name=preName]') as HTMLElement, 'Augusta');
     click(dialog.querySelector('.low-bar .btn'));
@@ -253,9 +255,9 @@ describe('array field', () => {
         { suggested: [{ preName: 'Ada', lastName: 'Lovelace' }] },
       );
 
-      const container = form.field('authors')!.element.querySelector(
-        '.dl-form-array-suggested-container',
-      )!;
+      const container = form
+        .field('authors')!
+        .element.querySelector('.dl-form-array-suggested-container')!;
       const item = container.querySelector('.dl-form-array-of-suggestion')!;
 
       expect(item.className).toContain('check');
@@ -268,9 +270,9 @@ describe('array field', () => {
         { suggested: [{ preName: 'Ada', lastName: 'Lovelace' }] },
       );
 
-      const checkbox = form.field('authors')!.element.querySelector(
-        '.dl-form-array-of-suggestion input',
-      ) as HTMLInputElement;
+      const checkbox = form
+        .field('authors')!
+        .element.querySelector('.dl-form-array-of-suggestion input') as HTMLInputElement;
       checkbox.checked = true;
       checkbox.dispatchEvent(new Event('change'));
       await flush();
@@ -287,12 +289,16 @@ describe('array field', () => {
       );
 
       const el = form.field('authors')!.element;
-      let checkbox = el.querySelector('.dl-form-array-of-suggestion input') as HTMLInputElement;
+      let checkbox = el.querySelector(
+        '.dl-form-array-of-suggestion input',
+      ) as HTMLInputElement;
       checkbox.checked = true;
       checkbox.dispatchEvent(new Event('change'));
       await flush();
 
-      checkbox = el.querySelector('.dl-form-array-of-suggestion input') as HTMLInputElement;
+      checkbox = el.querySelector(
+        '.dl-form-array-of-suggestion input',
+      ) as HTMLInputElement;
       checkbox.checked = false;
       checkbox.dispatchEvent(new Event('change'));
       await flush();
@@ -314,19 +320,21 @@ describe('array field', () => {
       });
 
       expect(
-        form.field('authors')!.element.querySelector(
-          '.dl-form-array-of-suggestion label',
-        )?.textContent,
+        form.field('authors')!.element.querySelector('.dl-form-array-of-suggestion label')
+          ?.textContent,
       ).toBe('Ada');
     });
 
     it('does not duplicate a suggestion that was also added by hand', async () => {
-      const form = await makeAuthorsForm({}, { suggested: [{ preName: 'Ada', lastName: 'Lovelace' }] });
+      const form = await makeAuthorsForm(
+        {},
+        { suggested: [{ preName: 'Ada', lastName: 'Lovelace' }] },
+      );
       await addAuthor(form, 'Ada', 'Lovelace');
 
-      const checkbox = form.field('authors')!.element.querySelector(
-        '.dl-form-array-of-suggestion input',
-      ) as HTMLInputElement;
+      const checkbox = form
+        .field('authors')!
+        .element.querySelector('.dl-form-array-of-suggestion input') as HTMLInputElement;
       checkbox.checked = true;
       checkbox.dispatchEvent(new Event('change'));
       await flush();

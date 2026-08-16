@@ -134,10 +134,7 @@ describe('FieldRegistry', () => {
 
   it('names the offending field and the known kinds when a kind is unknown', () => {
     expect(() =>
-      defaultFieldRegistry.create(
-        { name: 'oops', kind: 'nope' } as never,
-        {} as never,
-      ),
+      defaultFieldRegistry.create({ name: 'oops', kind: 'nope' } as never, {} as never),
     ).toThrow(/unknown field kind "nope" on field "oops"/);
   });
 

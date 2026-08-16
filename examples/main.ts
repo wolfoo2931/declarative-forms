@@ -1,4 +1,4 @@
-// In your own app this is `import 'declarativ-forms/styles.css'`.
+// In your own app this is `import 'declarative-forms/styles.css'`.
 import '../styles/declarative-forms.css';
 import { DeclarativeForm, html } from '../src/index.js';
 import type { FormValues } from '../src/index.js';
@@ -87,7 +87,7 @@ on('demo-reactive', () => {
         options: async ({ data }) => {
           await new Promise((r) => setTimeout(r, 400));
           const owner = String(data['owner'] || 'nobody');
-          return [`${owner}/declarativ-forms`, `${owner}/notes`].map((value) => ({
+          return [`${owner}/declarative-forms`, `${owner}/notes`].map((value) => ({
             value,
             label: value,
           }));
@@ -103,7 +103,10 @@ on('demo-reactive', () => {
       {
         name: 'slug',
         kind: 'computed',
-        compute: ({ data }) => String(data['repo'] ?? '').split('/').pop() ?? '',
+        compute: ({ data }) =>
+          String(data['repo'] ?? '')
+            .split('/')
+            .pop() ?? '',
       },
       {
         name: 'preview',
