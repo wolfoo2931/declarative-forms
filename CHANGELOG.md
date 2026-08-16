@@ -21,7 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Two wrapper classes for stacked dialogs: `dl-modal-stacked` on a dialog opened
   on top of another, and `dl-modal-restored` on one revealed again after being
   covered. Both mark a backdrop that is already on screen, so a theme can skip
-  its entrance animation.
+  its entrance animation. A stacked wrapper also carries `--dl-stack-depth`, the
+  number of dialogs underneath it.
+- Under the modern theme, a stacked dialog now **shows the stack**: the dialogs
+  below it, which are hidden, are drawn as card edges peeking out above the
+  dialog on top — one edge for a single dialog below, two for more. Sized with
+  `--dl-stack-peek` and `--dl-stack-inset`. The default stylesheet is unchanged.
 
 ### Fixed
 

@@ -83,15 +83,19 @@ export class ModalView {
   }
 
   /**
-   * Mark the dialog as opened on top of another one.
+   * Record how many dialogs this one was opened on top of.
    *
    * A stacked dialog inherits a backdrop that is already on screen: the dialog
    * below is hidden in the same frame this one appears. Fading this backdrop in
    * would leave the page uncovered for the length of the animation, so themes
-   * suppress it on this class.
+   * suppress it on the `dl-modal-stacked` class. The depth also goes on the
+   * wrapper as `--dl-stack-depth`, so a theme can show how deep the stack is.
    */
-  setStacked(stacked: boolean): void {
-    this.wrapper.classList.toggle('dl-modal-stacked', stacked);
+  setStackDepth(depth: number): void {
+    this.wrapper.classList.toggle('dl-modal-stacked', depth > 0);
+
+    if (depth > 0) this.wrapper.style.setProperty('--dl-stack-depth', String(depth));
+    else this.wrapper.style.removeProperty('--dl-stack-depth');
   }
 
   /** Mark the dialog as embedded rather than floating. */

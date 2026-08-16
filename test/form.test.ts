@@ -563,6 +563,10 @@ describe('modal stacking', () => {
     expect(innerModal.className).toContain('dl-modal-stacked');
     expect(outerModal.className).not.toContain('dl-modal-restored');
 
+    // How many dialogs are underneath, for the stacked-card cue.
+    expect(outerModal.style.getPropertyValue('--dl-stack-depth')).toBe('');
+    expect(innerModal.style.getPropertyValue('--dl-stack-depth')).toBe('1');
+
     inner.cancel();
     expect(outerModal.className).toContain('dl-modal-restored');
   });
