@@ -79,6 +79,8 @@
   --dl-modal-width: 30rem;
   --dl-large-modal-width: 52rem;
   --dl-modal-padding: 1.5rem;
+  --dl-stack-peek: 8px;
+  --dl-stack-inset: 12px;
   --dl-control-padding-y: 0.55rem;
   --dl-control-padding-x: 0.75rem;
 
@@ -258,6 +260,39 @@
 .dl-modal.dl-modal-restored,
 .dl-modal.dl-modal-restored .modal {
   animation: none;
+}
+
+/* The dialogs underneath are hidden, so the depth of the stack is drawn as two
+   card edges peeking out above the dialog on top. They sit entirely above the
+   box — never over its content — and the second one only appears once there are
+   two dialogs below, which `--dl-stack-depth` (set by the library) reports. */
+.dl-modal.dl-modal-stacked .modal {
+  position: relative;
+}
+
+.dl-modal.dl-modal-stacked .modal::before,
+.dl-modal.dl-modal-stacked .modal::after {
+  content: '';
+  position: absolute;
+  height: var(--dl-stack-peek);
+  border: 1px solid var(--dl-line-strong);
+  border-bottom: none;
+  border-radius: var(--dl-radius-lg) var(--dl-radius-lg) 0 0;
+}
+
+.dl-modal.dl-modal-stacked .modal::before {
+  right: var(--dl-stack-inset);
+  bottom: 100%;
+  left: var(--dl-stack-inset);
+  background: var(--dl-surface-muted);
+}
+
+.dl-modal.dl-modal-stacked .modal::after {
+  right: calc(var(--dl-stack-inset) * 2);
+  bottom: calc(100% + var(--dl-stack-peek));
+  left: calc(var(--dl-stack-inset) * 2);
+  background: var(--dl-surface-sunken);
+  opacity: clamp(0, calc(var(--dl-stack-depth, 1) - 1), 1);
 }
 
 .dl-modal .modal {

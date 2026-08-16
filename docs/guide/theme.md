@@ -83,20 +83,21 @@ setting one anywhere wins without `!important`:
 The modern theme adds these on top of the
 [shared token set](/guide/theming#the-tokens):
 
-| Token                                  | Purpose                                                |
-| -------------------------------------- | ------------------------------------------------------ |
-| `--dl-accent-contrast`                 | Text colour on a filled accent button                  |
-| `--dl-accent-soft`                     | Tinted background for hover and selected states        |
-| `--dl-accent-ring`                     | Focus-ring colour                                      |
-| `--dl-surface-raised`                  | Inputs and popups, distinct from the dialog surface    |
-| `--dl-text-muted`                      | Secondary text, placeholders, help                     |
-| `--dl-line-strong`                     | Borders that need more presence than `--dl-line-color` |
-| `--dl-radius-sm` / `-lg` / `-pill`     | The rest of the radius scale                           |
-| `--dl-shadow-sm` / `-modal` / `-popup` | The elevation scale                                    |
-| `--dl-overlay-blur`                    | Backdrop blur radius                                   |
-| `--dl-gap`                             | Vertical rhythm between fields                         |
-| `--dl-control-padding-y` / `-x`        | Input padding                                          |
-| `--dl-transition`                      | Shared transition timing                               |
+| Token                                  | Purpose                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------ |
+| `--dl-accent-contrast`                 | Text colour on a filled accent button                                    |
+| `--dl-accent-soft`                     | Tinted background for hover and selected states                          |
+| `--dl-accent-ring`                     | Focus-ring colour                                                        |
+| `--dl-surface-raised`                  | Inputs and popups, distinct from the dialog surface                      |
+| `--dl-text-muted`                      | Secondary text, placeholders, help                                       |
+| `--dl-line-strong`                     | Borders that need more presence than `--dl-line-color`                   |
+| `--dl-radius-sm` / `-lg` / `-pill`     | The rest of the radius scale                                             |
+| `--dl-shadow-sm` / `-modal` / `-popup` | The elevation scale                                                      |
+| `--dl-overlay-blur`                    | Backdrop blur radius                                                     |
+| `--dl-stack-peek` / `--dl-stack-inset` | Size of the card edges behind a [stacked](/guide/modals#stacking) dialog |
+| `--dl-gap`                             | Vertical rhythm between fields                                           |
+| `--dl-control-padding-y` / `-x`        | Input padding                                                            |
+| `--dl-transition`                      | Shared transition timing                                                 |
 
 Redefine them under your own dark rules too, if you add tokens of your own:
 
