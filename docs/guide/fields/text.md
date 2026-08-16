@@ -1,7 +1,7 @@
 # `text`
 
-A single-line `<input>`. This is the **default kind** — omit `kind` entirely
-and you get one.
+A single-line `<input>`. This is the **default kind**: leave `kind` out and you
+get one.
 
 <LiveForm>
 
@@ -33,8 +33,8 @@ Plus everything in [the shared options](/guide/fields/#options-every-kind-accept
 { name: 'count', displayName: 'Copies', type: 'number' }
 ```
 
-The value is always read back as a **string**, including for `type: 'number'`.
-Convert at the boundary:
+The value is always read back as a **string**, even for `type: 'number'`.
+Convert it where you use it:
 
 ```ts
 onConfirm: (values) => save({ copies: Number(values['count']) }),
@@ -42,8 +42,8 @@ onConfirm: (values) => save({ copies: Number(values['count']) }),
 
 ## Reactive placeholders
 
-A placeholder given as a function is recomputed on every form update, so it can
-follow another field:
+If the placeholder is a function, it is calculated again on every form update,
+so it can follow another field:
 
 ```ts
 {
@@ -56,9 +56,9 @@ follow another field:
 
 ## Autocomplete
 
-The `<form>` element is created with `autocomplete="off"`, so browser
-autofill is disabled by default. Re-enable it per field when you actually want
-it — for example on a genuine address or name field:
+The `<form>` element is created with `autocomplete="off"`, so the browser does
+not fill fields in automatically. Turn it back on for the single fields where
+you really want it, such as a real name or address field:
 
 ```ts
 { name: 'email', displayName: 'Email', autocomplete: 'email' }
@@ -66,9 +66,10 @@ it — for example on a genuine address or name field:
 
 ## Values
 
-`getValue()` returns the input's current string; the empty value is `''`.
-Setting a non-string coerces it sensibly (`0` becomes `'0'`, `null` and
-`undefined` become `''`, objects are JSON-encoded).
+`getValue()` returns the current text of the input, and the empty value is `''`.
+If you set something that is not a string, it is converted in a sensible way:
+`0` becomes `'0'`, `null` and `undefined` become `''`, and objects are converted
+to JSON.
 
 ```ts
 form.field('title')?.setValue('Field notes');

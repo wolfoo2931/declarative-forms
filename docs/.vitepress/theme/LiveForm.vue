@@ -15,8 +15,13 @@ const props = withDefaults(
     open?: string;
     /** Hide the live values panel for demos where it adds nothing. */
     values?: boolean;
+    /**
+     * Where the running form sits relative to its source. `top` puts the result
+     * first, for demos that are meant to be played with before they are read.
+     */
+    stage?: 'top' | 'bottom';
   }>(),
-  { mode: 'inline', open: 'Open dialog', values: true },
+  { mode: 'inline', open: 'Open dialog', values: true, stage: 'bottom' },
 );
 
 const codeHost = ref<HTMLElement>();
@@ -210,8 +215,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="live-form">
-    <div ref="codeHost" class="live-form__code">
+  <div class="live-form" :class="{ 'live-form--stage-top': stage === 'top' }">
+    <!--
+      The source moves rather than the stage, and it moves in the DOM rather
+      than with `order`, so reading order and tab order stay in step — the code
+      block carries a focusable copy button.
+    -->
+    <div v-if="stage === 'bottom'" ref="codeHost" class="live-form__code">
       <slot />
     </div>
 
@@ -247,6 +257,10 @@ onBeforeUnmount(() => {
         <p class="live-form__label">Submitted on confirm</p>
         <pre class="live-form__values live-form__values--ok">{{ submitted }}</pre>
       </template>
+    </div>
+
+    <div v-if="stage === 'top'" ref="codeHost" class="live-form__code">
+      <slot />
     </div>
   </div>
 </template>

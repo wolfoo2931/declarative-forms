@@ -23,6 +23,12 @@
   overflow: hidden;
 }
 
+/* `stage="top"`: the stage leads, so its divider faces the source below it. */
+.live-form--stage-top .live-form__stage {
+  border-top: 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
 .dark .live-form {
   --demo-canvas: #0e1013;
   --demo-dot: #272b32;

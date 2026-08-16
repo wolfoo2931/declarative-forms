@@ -1,9 +1,9 @@
 # `message`
 
-A paragraph of explanatory text. It is **presentational only** — it collects
-nothing.
+A paragraph of explanatory text. It **only displays something**; it collects no
+value.
 
-Type in the field below and watch the message follow it — then note that
+Type in the field below and watch the message follow what you type. Note that
 `note` and `echo` never appear in the values.
 
 <LiveForm>
@@ -38,19 +38,19 @@ Plus everything in [the shared options](/guide/fields/#options-every-kind-accept
 
 ## It holds no value
 
-::: warning Absent from `getValues()`
-A `message` field does not appear in `getValues()` at all — not even as an
-empty string. In v1 it contributed `''`, so code that iterated over form values
-may need adjusting. See [Migrating from v1](/migration-v1).
+::: warning Not part of `getValues()`
+A `message` field does not appear in `getValues()` at all — not even as an empty
+string. In v1 it returned `''`, so code that loops over all values may need a
+change. See [Migrating from v1](/migration-v1).
 :::
 
-It still needs a `name`, because names are how fields are addressed
-(`form.field('note')`) and must be unique.
+It still needs a `name`, because the name is how you address a field
+(`form.field('note')`), and names must be unique.
 
 ## Reactive messages
 
-Given a function, the message is re-rendered on every form update — useful for
-live summaries and contextual warnings:
+If the message is a function, it is rendered again on every form update. This is
+useful for live summaries and for warnings that depend on the current values:
 
 ```ts
 {
@@ -61,7 +61,7 @@ live summaries and contextual warnings:
 }
 ```
 
-Combine with `isActive` to show a warning only when it applies:
+Combine it with `isActive` to show a warning only when it applies:
 
 ```ts
 {
@@ -74,7 +74,7 @@ Combine with `isActive` to show a warning only when it applies:
 
 ## Markup
 
-Text by default; wrap in `html()` for markup:
+The message is plain text by default. Wrap it in `html()` if you need markup:
 
 ```ts
 import { html } from 'declarative-forms';

@@ -31,34 +31,35 @@ Plus everything in [the shared options](/guide/fields/#options-every-kind-accept
 
 ## `allowNewlines` and the Enter key
 
-This is the one option worth understanding properly, because the default is
-probably not what you would guess.
+This is the one option you should read carefully, because the default is
+probably not what you expect.
 
-In a dialog, <kbd>Enter</kbd> normally confirms. A textarea competes for that
-key, so the behaviour is explicit:
+In a dialog, <kbd>Enter</kbd> normally confirms. A textarea needs the same key,
+so the rule is written out:
 
-| `allowNewlines`     | <kbd>Enter</kbd> inside the textarea                                            |
-| ------------------- | ------------------------------------------------------------------------------- |
-| `true`              | Inserts a newline                                                               |
-| `false` _(default)_ | **Does nothing** — the newline is suppressed, and the dialog is _not_ confirmed |
+| `allowNewlines`     | <kbd>Enter</kbd> inside the textarea                                              |
+| ------------------- | --------------------------------------------------------------------------------- |
+| `true`              | Inserts a line break                                                              |
+| `false` _(default)_ | **Nothing happens**: no line break is inserted, and the dialog is _not_ confirmed |
 
-The default deliberately does nothing rather than confirming. A textarea
-usually means the user is mid-thought, and confirming a dialog out from under
-someone who pressed Enter while writing is worse than ignoring the key.
+The default does nothing on purpose, instead of confirming. A textarea usually
+means the user is in the middle of writing. Closing the dialog under their hands
+because they pressed <kbd>Enter</kbd> while writing is worse than ignoring the
+key.
 
 ```ts
 // Long-form prose: let Enter do the obvious thing.
 { name: 'notes', kind: 'textarea', allowNewlines: true }
 
-// A one-line-ish field that just needs room to wrap.
+// A mostly one-line field that only needs room to wrap.
 { name: 'summary', kind: 'textarea' }
 ```
 
 Note that <kbd>Enter</kbd> only ever confirms a dialog that has **exactly one
-button**. In a multi-button dialog it is ignored everywhere, textarea or not —
-see [Buttons](/guide/buttons#the-enter-key).
+button**. In a dialog with several buttons it is ignored everywhere, inside a
+textarea or not. See [Buttons](/guide/buttons#the-enter-key).
 
 ## Values
 
-`getValue()` returns the current string, newlines included; the empty value is
+`getValue()` returns the current text, including line breaks. The empty value is
 `''`.

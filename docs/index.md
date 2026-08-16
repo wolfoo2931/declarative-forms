@@ -1,23 +1,34 @@
 # declarative-forms
 
-A **declarative form runtime** for the web. You describe the data you need and
-the rules around it; the library renders the dialog, wires the updates, loads
-async option sets, manages nested records, tabs and modal stacks, and keeps
-everything in sync as values change.
+**`window.prompt()` on steroids** — the same idea, without the one-string limit.
 
-The snippet below is a **complete program** — the imports, the descriptors and
-the call that opens the dialog, nothing omitted — and it is running live on this
-page. Press the button and work through it: three tabs, an option list that
-reloads when the team changes, a credits list, and a schedule dialog that stacks
-on top with a dialog of its own on top of that.
+`prompt()` is the one form API the browser gives you for free: you ask for a
+value, the browser draws the dialog, and you get the answer back. No markup, no
+state, no layout. But it can only ask for a single string.
 
-<LiveForm mode="program" open="Open the release dialog">
+`declarative-forms` keeps that simplicity and removes the limit. You describe the
+**record** you want — its fields, their kinds, and the rules between them — in a
+descriptor that reads like JSON Schema, and you get a plain object back. In
+between, the library draws the dialog, keeps every field up to date, loads
+options from your API, manages nested records, tabs and stacked dialogs, and
+re-evaluates everything as the values change. You never write a `<div>`, a piece
+of form state, an `onChange` handler, or a line of layout.
+
+Press the button below and try it: three tabs, an option list that reloads when
+the team changes, a credits list, and a _Schedule…_ dialog that opens on top of
+the first, with a third on top of that. **Values** shows the object you would
+receive, updated as you type. Below the panel is the code that produces all of
+it: the imports, the descriptors, and the call that opens the dialog, with
+nothing left out. The button runs exactly that code, and none of it describes
+rendering.
+
+<LiveForm mode="program" stage="top" open="Open the release dialog">
 
 ```ts
 import 'declarative-forms/theme.css';
 import { DeclarativeForm, html } from 'declarative-forms';
 
-// Stands in for your API. Any options function may be async.
+// Pretend this is your API. Any options function may be async.
 const reviewersOf = async (team) => {
   await new Promise((resolve) => setTimeout(resolve, 500));
   return (
@@ -28,8 +39,8 @@ const reviewersOf = async (team) => {
   );
 };
 
-// Opened from a button of the dialog below it, so it stacks on top of it — and
-// its own list opens a third dialog on top of that.
+// A button in the dialog below opens this one, so it appears on top of it.
+// Its own list then opens a third dialog on top of that.
 const openSchedule = (release) =>
   new DeclarativeForm({
     fields: [
@@ -65,7 +76,7 @@ const openSchedule = (release) =>
       {
         name: 'recap',
         kind: 'message',
-        // Every open dialog's values, outermost first.
+        // The values of every open dialog, outermost first.
         message: ({ data, stackData }) =>
           html(`Publishing <b>${stackData[0]['title'] || 'this release'}</b>
                 ${data['when'] === 'now' ? 'as soon as you confirm' : 'later'}.`),
@@ -86,8 +97,8 @@ const openSchedule = (release) =>
 
 const release = new DeclarativeForm({
   fields: [
-    // `tab` groups fields. The strip renders itself, and hides a tab that has
-    // no active fields left.
+    // `tab` groups fields. The tab bar builds itself, and hides a tab when
+    // none of its fields is active.
     {
       name: 'title',
       displayName: 'Release title',
@@ -97,8 +108,8 @@ const release = new DeclarativeForm({
     },
     { name: 'notes', kind: 'textarea', displayName: 'What changed', tab: 'Notes' },
     {
-      // Derived and invisible; recomputed before any button action runs.
-      // Watch `slug` in the values panel below.
+      // Derived, and never shown. Recalculated before any button action runs.
+      // Watch `slug` in the values panel above.
       name: 'slug',
       kind: 'computed',
       compute: ({ data }) =>
@@ -135,7 +146,7 @@ const release = new DeclarativeForm({
         { value: 'design', label: 'Design' },
         { value: 'infra', label: 'Infrastructure' },
       ],
-      // Hidden fields drop out of getValues() entirely.
+      // A hidden field disappears from getValues() completely.
       isActive: ({ data }) => data['visibility'] === 'team',
     },
     {
@@ -145,7 +156,7 @@ const release = new DeclarativeForm({
       displayName: 'Sign-off from',
       tab: 'Audience',
       isActive: ({ data }) => data['visibility'] === 'team',
-      reloadOnChangeOf: ['team'], // refetches, and drops stale responses
+      reloadOnChangeOf: ['team'], // reloads, and ignores out-of-date answers
       options: ({ data }) => reviewersOf(data['team']),
     },
     {
@@ -178,7 +189,7 @@ const release = new DeclarativeForm({
   buttons: {
     Publish: {
       id: 'publish',
-      // Disabled until this holds. May return a promise.
+      // The button stays disabled until this returns true. May be async.
       isActive: ({ data }) => Boolean(data['title']) && data['credits']?.length > 0,
       action: (values) => console.log(values),
     },
@@ -197,84 +208,87 @@ release.openInModal();
 
 </LiveForm>
 
-Every behaviour in there is declared, not wired:
+Every behaviour above is declared in that object. You implement none of it:
 
-- **[Tabs](/guide/tabs)** — one `tab` key per field. The strip renders itself and
-  hides a tab once nothing in it is active.
+- **[Tabs](/guide/tabs)** — one `tab` key per field. The tab bar builds itself,
+  and hides a tab when none of its fields is active.
 - **[Conditional fields](/guide/reactivity#isactive-conditional-fields)** —
-  `isActive` drops _Which team_ and _Sign-off from_ for a public release, and
-  removes them from the values.
+  `isActive` hides _Which team_ and _Sign-off from_ when the release is public,
+  and removes them from the values.
 - **[Async, dependent options](/guide/reactivity#reloadonchangeof-dependent-async-data)** —
-  `reloadOnChangeOf: ['team']` refetches the reviewer list, and stale responses
-  are discarded for you.
-- **[Derived values](/guide/fields/computed)** — `slug` follows the title and is
-  recomputed before any action runs.
-- **[Nested records](/guide/fields/array)** — the credits list opens a dialog per
-  entry, with a suggestion you can tick.
+  `reloadOnChangeOf: ['team']` reloads the reviewer list. If an older request
+  answers after a newer one, the library throws the older answer away.
+- **[Derived values](/guide/fields/computed)** — `slug` follows the title, and is
+  recalculated before any button action runs.
+- **[Nested records](/guide/fields/array)** — the credits list opens one dialog
+  per entry, and offers a ready-made entry you can accept with a checkbox.
 - **[Stacked dialogs](/guide/modals)** — _Schedule…_ opens a second dialog and
-  keeps the first one open under it; its blackout list opens a third. `stackData`
-  reads the title from the dialog at the bottom of the stack.
+  leaves the first one open behind it; the _Never publish during_ list opens a
+  third. With `stackData`, a dialog can read the values of the dialogs below it:
+  the recap message reads the title from the very first one.
 - **[Button state](/guide/buttons)** — _Publish_ stays disabled until there is a
   title and at least one credit.
 
-Not in the demo, but built the same way: [file](/guide/fields/file) uploads and
-[custom](/guide/fields/custom) fields that render whatever you like.
-
-No markup, no state to hold, no framework to adopt.
+Two kinds are not in the demo but work the same way:
+[file](/guide/fields/file) uploads, and [custom](/guide/fields/custom) fields
+that render anything you write.
 
 ## How it differs from other form libraries
 
-**vs. React Hook Form, Formik, VeeValidate.** Those are _state_ libraries bound
-to one framework — you still write every input, label and layout yourself.
-`declarative-forms` renders the whole dialog and is framework-agnostic: it is
-plain DOM plus one web component, usable from React, Vue, Svelte, or a
-`<script>` tag.
+**vs. React Hook Form, Formik, VeeValidate.** Those are _state_ libraries, and
+each one is tied to a single framework. You still write every input, label and
+layout yourself. `declarative-forms` renders the whole dialog and needs no
+framework: it is plain DOM plus one web component, so you can use it from React,
+Vue, Svelte, or a plain `<script>` tag.
 
 **vs. JSON-Schema renderers (react-jsonschema-form, JSONForms, formily).**
-Those derive a form from a _static_ data schema. Here the descriptor is **live**:
+Those build a form from a _static_ data schema. Here the descriptor is **live**:
 `options`, `isActive`, `defaultValue`, `placeholder`, `message`, `tab` and
 `compute` may each be a function of the current form data, and
-[`reloadOnChangeOf`](/guide/reactivity) declares the dependency edges between
-fields. Cross-field reactivity and async option loading are the core feature,
-not an escape hatch.
+[`reloadOnChangeOf`](/guide/reactivity) says which field depends on which.
+Fields that react to other fields, and options loaded from a server, are the
+main feature here — not something bolted on afterwards.
 
-**vs. `<dialog>` plus a UI kit.** Modal stacking with parent data visible to
-child dialogs, tabs that hide themselves when empty, buttons whose
-enabled/visible state is an async predicate of form data, and repeating
-sub-forms with accept/reject suggestions are all built in.
+**vs. `<dialog>` plus a UI kit.** With those you would build the following
+yourself. Here they are included: stacked dialogs, where a child dialog can read
+its parent's data; tabs that disappear once they are empty; buttons whose
+enabled and visible state is a function of the form data, and may be async; and
+repeating sub-forms with suggestions the user can accept or reject.
 
-**Zero runtime dependencies.** No build step required.
+**No runtime dependencies.** No build step required.
 
 ## Where it fits best
 
-Its real specialisation is **settings and metadata dialogs for document-centric
-apps**: many optional fields, grouped into tabs, where the available choices
-depend on what else is selected. Concretely:
+It fits best in **settings and metadata dialogs for document-based apps**: many
+optional fields, grouped into tabs, where the available choices depend on what
+the user has already selected. For example:
 
 - admin panels and settings dialogs
 - configuration flows with conditions and dependencies
-- modal wizards with step logic
-- forms whose options are fetched and depend on other fields
-- list editing with nested record forms
-- internal tools that need data-driven UI without a framework dependency
+- modal wizards with several steps
+- forms whose options are loaded from a server and depend on other fields
+- editing lists whose entries are records of their own
+- internal tools that need a data-driven UI without depending on a framework
 
 ## Where it does not fit
 
-Worth saying plainly, so you can rule it out quickly:
+Said plainly, so you can rule it out quickly:
 
-- It is **not a general-purpose form library**. It renders one opinionated
-  layout. If you need full control of markup, use a state library instead.
-- It has **no validation framework**. There is `isActive` for conditional
-  fields and `isValidRecord`/button `isActive` for gating submission, but no
-  rule engine, no error-message system, no schema validation.
-- **Accessibility is a work in progress.** Labels, ids and focusable buttons
-  are correct; dialog semantics, combobox ARIA and keyboard-reachable
-  checkboxes are not there yet. See [Accessibility](/accessibility) for the
-  full, honest list before adopting it somewhere that requires conformance.
+- It is **not a general-purpose form library**. It renders one fixed layout. If
+  you need full control over the markup, use a state library instead.
+- It has **no validation framework**. `isActive` hides fields, and
+  `isValidRecord` and a button's `isActive` control when the form can be
+  submitted — but there are no validation rules, no error messages, and no
+  schema validation.
+- **Accessibility is not finished.** Labels, ids and focusable buttons are
+  correct. Dialog semantics, ARIA for the combobox, and checkboxes you can reach
+  with the keyboard are still missing. Read [Accessibility](/accessibility) for
+  the full list before you use it where accessibility conformance is required.
 
 ## Next
 
 - [Getting started](/guide/getting-started) — install and build your first form
 - [Field kinds](/guide/fields/) — the ten built-in kinds
 - [Reactivity](/guide/reactivity) — the part that makes this library worth using
-- [Migrating from v1](/migration-v1) — if you are on the pre-TypeScript version
+- [Migrating from v1](/migration-v1) — if you still use the pre-TypeScript
+  version
