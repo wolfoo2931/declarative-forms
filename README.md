@@ -1,102 +1,109 @@
 # declarative-forms
 
-Declarative forms for the web that make front-end development less front-end development.
+**Ask the user for an object, the way `prompt()` asks for a string.**
 
-Whenever you need input from a user, you describe the data you need and the rules around it. `declarative-forms` takes care of the front-end work to ask for that information: rendering the fields, wiring updates, loading async option sets, managing nested structures, handling modal stacks, tabs, and keeping the UI in sync as values change.
-
-📖 **[Read the documentation](https://wolfoo2931.github.io/declarative-forms/)**
-
-You do not have to build the front-end plumbing by hand just to collect structured input. Instead, you provide a schema-like description of the form and the library handles the rest.
-
-This is especially useful for complex forms, complex data structures, and workflows where the interface is mostly there to collect and validate user input rather than to render bespoke product UI.
-
-## What it is
-
-At its core, `declarative-forms` is a framework-agnostic form engine.
-
-You define a form like this:
+Every other form library gives you a *component to mount*. This one gives you a
+*function to call*. There is no component, no form state, no mount point, and no
+place in your tree where the form has to live. You ask a question from wherever
+you happen to be standing in your code, and you get the answer back.
 
 ```ts
-import 'declarative-forms/styles.css';
-import { DeclarativeForm } from 'declarative-forms';
+const release = await ask([
+  { name: 'title', displayName: 'Release title' },
+  { name: 'notes', kind: 'textarea', displayName: 'What changed' },
+  {
+    name: 'reviewers',
+    kind: 'select',
+    multiple: true,
+    displayName: 'Sign-off from',
+    options: () => fetchReviewers(),
+  },
+]);
 
-const form = new DeclarativeForm({
-  fields: [
-    { name: 'title', displayName: 'Title' },
-    {
-      name: 'language',
-      kind: 'select',
-      displayName: 'Language',
-      options: [
-        { value: 'en', label: 'English' },
-        { value: 'de', label: 'German' },
-      ],
-      defaultValue: 'en',
-    },
-    {
-      name: 'repo',
-      kind: 'select',
-      displayName: 'Repository',
-      reloadOnChangeOf: ['language'],
-      options: async ({ data }) => {
-        const lang = String(data['language'] ?? 'en');
-        return [{ value: `repo-${lang}`, label: `Repo (${lang})` }];
-      },
-    },
-  ],
-  onConfirm: (values) => console.log(values),
-  onCancel: () => {},
-});
-
-form.openInModal();
+// { title: 'Sunrise 2.0', notes: '…', reviewers: ['Ada', 'Grace'] }
 ```
 
-This is not a generated UI package or a full application framework. It is a runtime for declarative form behavior: you describe the data model and form rules, and it turns that into a working user flow with the UI concerns handled for you.
+That is the whole integration. No `<Form>`, no `useForm`, no `onChange`, no
+`useState`, no layout, no `<div>`. The dialog draws itself, loads its own
+options, keeps every field in sync, and resolves.
 
-## What makes it different
+`ask` is nine lines you write once on top of the public API —
+[here it is](https://wolfoo2931.github.io/declarative-forms/guide/asking-for-data#the-ask-helper).
 
-The library is built around a few real strengths that show up in the codebase:
+📖 **[Read the documentation](https://wolfoo2931.github.io/declarative-forms/)** ·
+🎛 **[Try the live demo](https://wolfoo2931.github.io/declarative-forms/#demo)**
 
-- Data-first form definitions instead of manual DOM creation
-- Cross-field reactivity via `reloadOnChangeOf`, `isActive`, `defaultValue`, and `onFormChange`
-- Async option loading and async button predicates
-- Built-in modal stack support for nested dialogs and wizards
-- Tabbed forms and array-of-record editing
-- Automatic handling of many front-end concerns: layout, state sync, stacking, dialog behavior, and reusable field logic
-- Zero runtime dependencies
-- Works in plain JavaScript or TypeScript, not just React/Vue/Svelte
+## Why a call and not a component
 
-The library also includes a few opinionated features that are especially useful for interactive tools:
+`window.prompt()` is the one form API the browser gives you for free. You ask,
+the browser draws the dialog, you get the answer. No markup, no state, no
+layout, no lifecycle. Its only flaw is that it can ask for exactly one string.
 
-- computed fields that recalculate before confirmation
-- file fields that require a `persistFile` callback to convert a local file into a stored URL
-- custom render fields for embedding arbitrary DOM or widget logic inside a form
-- message, cards, and custom field types for dynamic UI without a separate component library
+Everything the industry built to replace it went the other way — into the
+component tree:
 
-## When to use this library
+```jsx
+// The component model: the form is a thing that lives somewhere.
+const { register, handleSubmit } = useForm();
+return (
+  <Modal open={open} onClose={() => setOpen(false)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('title')} />
+      …
+    </form>
+  </Modal>
+);
+```
 
-Use `declarative-forms` when the form is more like an application workflow than a static input form.
+Now the form has a *location*. It needs a parent, a piece of `open` state, a
+close handler, a submit handler, and a route from the answer back to the code
+that wanted it. For a product's signup page, that is fine — you were going to
+lay that page out anyway. For the two hundredth settings dialog in an internal
+tool, it is all overhead: you did not want a form, you wanted an answer.
 
-It fits especially well for:
+`declarative-forms` keeps `prompt()`'s shape and removes its one-string limit.
+The form is not a thing that lives somewhere. It is a question, asked and
+answered:
 
-- admin panels and settings dialogs
-- configuration flows with conditions and dependencies
-- modal-based wizards with step logic
-- forms whose options depend on other fields
-- array/list editing with nested record forms
-- internal tools that need compact, data-driven UI without a UI framework dependency
+```ts
+if (await confirmDetails()) { … }
 
-## Core ideas in the codebase
+const filters = await ask(filterFields);
+const entry   = await ask(entryFields, { confirmLabel: 'Add' });
+```
 
-The library is centered on a few runtime concepts:
+## What that model gives you that a component cannot
 
-- `DeclarativeForm`: the main runtime that owns rendering, values, tabs, and modal behavior
-- `FieldDescriptor`: a plain object describing each field (`name`, `kind`, `options`, `tab`, `isActive`, etc.)
-- `FormValues`: the current data dictionary keyed by field name
-- `subscribeOnInput`: a way to observe form updates without wiring lots of DOM listeners
-- `ButtonDescriptor`: supports async enable/disable logic and “do not close” actions for wizards
+**Dialogs stack, and the inner one can read the outer ones.** Because a form is
+a call and not a node, opening one from inside another is just... calling it.
+The library keeps the stack, and any field in any dialog can read the values of
+every dialog beneath it through `stackData` — with no lifted state, no context
+provider, and no prop drilling, because there is no tree to lift through.
 
-This is why the project feels more like a small “form engine” than a typical form component library.
+```ts
+{
+  name: 'recap',
+  kind: 'message',
+  // stackData[0] is the outermost dialog, still open behind this one.
+  message: ({ data, stackData }) =>
+    `Publishing ${stackData[0]['title']} ${data['when'] === 'now' ? 'now' : 'later'}.`,
+}
+```
+
+**Lists of records are just the same call again.** An `array` field opens one
+dialog per entry, which is the natural shape for a record, and awkward to do
+inline.
+
+**Works anywhere, because it needs nothing.** Plain DOM plus one web component,
+no runtime dependencies. Call it from React, Vue, Svelte, Angular, an Electron
+main-window script, or a `<script type="module">` tag in a static page. It never
+touches your render tree, so there is nothing to integrate.
+
+**The descriptor is live, not static.** `options`, `isActive`, `defaultValue`,
+`placeholder`, `message`, `tab` and `compute` may each be a *function of the
+current values*, and `reloadOnChangeOf` declares which field depends on which.
+Options loaded from your API that change when another field changes are the
+core feature, not an extension point.
 
 ## Install
 
@@ -104,101 +111,88 @@ This is why the project feels more like a small “form engine” than a typical
 npm install declarative-forms
 ```
 
-And include the stylesheet:
-
 ```ts
 import 'declarative-forms/styles.css';
 ```
 
-That is the default look — a modern theme that follows the operating system's
-light/dark setting. The v1 look is still shipped as
-`declarative-forms/classic.css` for installations with overrides written
-against it.
+That is the default look, and it follows the operating system's light/dark
+setting on its own. The v1 look ships as `declarative-forms/classic.css`.
 
-## Example: modal form
+No build step is required — the ESM build loads directly in a `<script type="module">`.
+
+## The full API, if you want the object instead of the promise
+
+`ask` is a convenience you own. Underneath, a form is a normal object you can
+hold on to, embed in a page instead of a dialog, subscribe to, and drive from
+code:
 
 ```ts
 import { DeclarativeForm } from 'declarative-forms';
 
 const form = new DeclarativeForm({
-  fields: [
-    { name: 'name', displayName: 'Name' },
-    {
-      name: 'role',
-      kind: 'select',
-      displayName: 'Role',
-      options: ['Admin', 'Editor', 'Viewer'],
-      defaultValue: 'Editor',
-    },
-  ],
-  onConfirm: (values) => {
-    console.log('submitted', values);
-  },
-  onCancel: () => {
-    console.log('cancelled');
-  },
+  fields: [...],
+  onConfirm: (values) => save(values),
+  onCancel: () => {},
 });
 
-form.openInModal();
+form.openInModal();                       // …or:
+form.appendInElement(document.querySelector('#panel'));
+
+form.subscribeOnInput((values) => renderPreview(values));
+form.field('role')?.setValue('Admin');
 ```
 
-## Example: reactive field logic
+See [the API reference](https://wolfoo2931.github.io/declarative-forms/reference/api).
 
-```ts
-const form = new DeclarativeForm({
-  fields: [
-    {
-      name: 'source',
-      kind: 'select',
-      displayName: 'Source',
-      options: ['GitHub', 'GitLab'],
-      defaultValue: 'GitHub',
-    },
-    {
-      name: 'token',
-      displayName: 'Token',
-      type: 'password',
-      isActive: ({ data }) => data['source'] === 'GitLab',
-    },
-    {
-      name: 'repo',
-      kind: 'select',
-      displayName: 'Repository',
-      reloadOnChangeOf: ['source'],
-      options: async ({ data }) => {
-        const source = String(data['source'] ?? 'GitHub');
-        return [{ value: `${source}-repo`, label: `${source} repo` }];
-      },
-    },
-  ],
-  onConfirm: (values) => console.log(values),
-});
-```
+## The ten field kinds
 
-This is the sort of behavior the library is designed to make practical without building a lot of custom event wiring.
+`text` · `textarea` · `select` (single, multiple, async, searchable) ·
+`checkbox` · `message` · `file` · `computed` · `cards` · `custom` · `array`
+
+Full descriptions in **[Field kinds](https://wolfoo2931.github.io/declarative-forms/guide/fields/)**.
+
+## Where it fits
+
+Best in **settings and metadata dialogs for tool-like apps**: many optional
+fields, grouped into tabs, where the available choices depend on what the user
+already picked.
+
+- admin panels and settings dialogs
+- configuration flows with conditions and dependencies
+- modal wizards with several steps
+- forms whose options come from a server and depend on other fields
+- editing lists whose entries are records of their own
+- internal tools that need a data-driven UI without a framework dependency
+
+## Where it does not fit
+
+Plainly, so you can rule it out fast:
+
+- **It is not a general-purpose form library.** It renders one fixed layout. If
+  you need control over the markup — a product signup page, a marketing form —
+  use a state library and write the markup yourself.
+- **There is no validation framework.** `isActive` hides fields, and
+  `isValidRecord` and a button's `isActive` gate submission, but there are no
+  validation rules, no error messages, and no schema validation.
+- **Accessibility is unfinished.** Labels, ids, focusable buttons and
+  keyboard-reachable checkboxes are correct. Dialog semantics, a focus trap, and
+  combobox ARIA are not. Read
+  [Accessibility](https://wolfoo2931.github.io/declarative-forms/accessibility)
+  in full before using it where conformance is required.
+- **The rendered DOM is a frozen contract.** Class names, ids and structure are
+  stable across the v1 → v2 rewrite, so existing stylesheets keep working. See
+  the [DOM contract](https://wolfoo2931.github.io/declarative-forms/dom-contract).
 
 ## Documentation
 
-Full documentation is at **[wolfoo2931.github.io/declarative-forms](https://wolfoo2931.github.io/declarative-forms/)**:
-
+- [Asking for data](https://wolfoo2931.github.io/declarative-forms/guide/asking-for-data) — the model, and the `ask` helper
 - [Getting started](https://wolfoo2931.github.io/declarative-forms/guide/getting-started)
-- [Field kinds](https://wolfoo2931.github.io/declarative-forms/guide/fields/) — the ten built-in kinds
+- [Field kinds](https://wolfoo2931.github.io/declarative-forms/guide/fields/)
 - [Reactivity](https://wolfoo2931.github.io/declarative-forms/guide/reactivity) — `isActive`, `reloadOnChangeOf`, computed fields
+- [Modals & stacking](https://wolfoo2931.github.io/declarative-forms/guide/modals)
 - [API reference](https://wolfoo2931.github.io/declarative-forms/reference/api)
 - [Migrating from v1](https://wolfoo2931.github.io/declarative-forms/migration-v1)
 
-## Status and limitations
+## License
 
-Worth knowing before you adopt it:
-
-- **Accessibility is a work in progress.** Labels, ids, focusable buttons and — under the default stylesheet — keyboard-reachable checkboxes are correct; dialog semantics and combobox ARIA are not there yet. The [accessibility page](https://wolfoo2931.github.io/declarative-forms/accessibility) lists every known gap.
-- **There is no validation framework.** `isActive` handles conditional fields and button predicates gate submission, but there is no rule engine or error-message system.
-- **The rendered DOM is a frozen contract.** Class names, ids and structure are stable across the v1 → v2 rewrite, so existing stylesheets keep working. See the [DOM contract](https://wolfoo2931.github.io/declarative-forms/dom-contract).
-
-## Summary
-
-`declarative-forms` is best thought of as a declarative form runtime for web dialogs and tool-like workflows.
-
-It is for the cases where the main job is not “build another UI component,” but “ask the user for structured data.” You define what needs to be collected, and the library handles the front-end work to gather it: field rendering, behavior, defaults, dynamic changes, nested records, modal stacking, and workflow handling.
-
-That is the core difference: instead of writing front-end code for every form interaction, you describe the data and rules, and the runtime takes care of the responsibilities that usually consume most of the work in form-heavy interfaces.
+MIT © Oliver Wolf

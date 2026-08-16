@@ -73,13 +73,23 @@ function compile(): void {
  * first form built on each run to the panels below the demo. Dialogs the
  * snippet opens on top of that one are left alone, so the panels keep tracking
  * the root dialog while you work through the stack.
+ *
+ * The snippet is compiled as an **async** function, so it may use top-level
+ * `await`. That is what lets the `await ask(…)` demos be written the way an
+ * application would actually write them, rather than wrapped in an IIFE that
+ * exists only to satisfy the runner.
  */
 function compileProgram(): void {
   const body = source().replace(/^\s*import .*$/gm, '');
-  const program = new Function('DeclarativeForm', 'html', `"use strict";\n${body}`) as (
-    form: typeof DeclarativeForm,
-    h: typeof html,
-  ) => void;
+  const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor as new (
+    ...args: string[]
+  ) => (form: typeof DeclarativeForm, h: typeof html) => Promise<void>;
+
+  const program = new AsyncFunction(
+    'DeclarativeForm',
+    'html',
+    `"use strict";\n${body}`,
+  );
 
   run = () => {
     let isRoot = true;
@@ -100,7 +110,11 @@ function compileProgram(): void {
       }
     }
 
-    program(DemoForm, html);
+    // The snippet is async now, so a failure inside it surfaces as a rejection
+    // rather than a throw the caller's try/catch would see.
+    void program(DemoForm, html).catch((cause) => {
+      error.value = cause instanceof Error ? cause.message : String(cause);
+    });
   };
 }
 

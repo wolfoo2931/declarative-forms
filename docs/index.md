@@ -1,26 +1,50 @@
 # declarative-forms
 
-**`window.prompt()` on steroids** — the same idea, without the one-string limit.
+**Ask the user for an object, the way `prompt()` asks for a string.**
 
-`prompt()` is the one form API the browser gives you for free: you ask for a
-value, the browser draws the dialog, and you get the answer back. No markup, no
-state, no layout. But it can only ask for a single string.
+Every other form library gives you a _component to mount_. This one gives you a
+_function to call_:
 
-`declarative-forms` keeps that simplicity and removes the limit. You describe the
-**record** you want — its fields, their kinds, and the rules between them — in a
-descriptor that reads like JSON Schema, and you get a plain object back. In
-between, the library draws the dialog, keeps every field up to date, loads
-options from your API, manages nested records, tabs and stacked dialogs, and
-re-evaluates everything as the values change. You never write a `<div>`, a piece
-of form state, an `onChange` handler, or a line of layout.
+```ts
+const release = await ask([
+  { name: 'title', displayName: 'Release title' },
+  { name: 'notes', kind: 'textarea', displayName: 'What changed' },
+  {
+    name: 'reviewers',
+    kind: 'select',
+    multiple: true,
+    displayName: 'Sign-off from',
+    options: () => fetchReviewers(),
+  },
+]);
 
-Press the button below and try it: three tabs, an option list that reloads when
-the team changes, a credits list, and a _Schedule…_ dialog that opens on top of
-the first, with a third on top of that. **Values** shows the object you would
-receive, updated as you type. Below the panel is the code that produces all of
-it: the imports, the descriptors, and the call that opens the dialog, with
-nothing left out. The button runs exactly that code, and none of it describes
-rendering.
+// { title: 'Sunrise 2.0', notes: '…', reviewers: ['Ada', 'Grace'] }
+```
+
+That is the whole integration. There is no component, no form state, no mount
+point, and no place in your tree where the form has to live. You ask a question
+from wherever you happen to be standing in your code, and the answer arrives
+where you asked. The dialog draws itself, loads its own options, keeps every
+field in sync, and resolves.
+
+`prompt()` is the one form API the browser gives you for free, and the shape
+everybody finds obvious: you ask, the browser draws the dialog, you get the
+answer. Its only flaw is that it asks for exactly one string.
+`declarative-forms` keeps that shape and removes the limit — you describe the
+**record** you want, and you get a plain object back.
+
+[**Asking for data →**](/guide/asking-for-data) is the two-minute version of
+this idea, including the nine-line `ask` helper. Everything below follows from
+it.
+
+## Try it {#demo}
+
+Press the button: three tabs, an option list that reloads when the team changes,
+a credits list, and a _Schedule…_ dialog that opens on top of the first, with a
+third on top of that. **Values** shows the object you would receive, updated as
+you type. Below the panel is the code that produces all of it — imports,
+descriptors and the call that opens the dialog, with nothing left out. The
+button runs exactly that code, and none of it describes rendering.
 
 <LiveForm mode="program" stage="top" open="Open the release dialog">
 
@@ -235,6 +259,14 @@ that render anything you write.
 
 ## How it differs from other form libraries
 
+**The difference underneath all the others: a call, not a component.** React
+Hook Form, Formik, VeeValidate, react-jsonschema-form, JSONForms and Formily all
+hand you something to mount. The form becomes a node in your tree, and it needs
+a parent, an `open` flag, a close handler, a submit handler, and a route from
+the answer back to the code that wanted it. Here the form has no location. It is
+a question, asked and answered — so a dialog opened from inside a loop, a retry,
+or another dialog is just another call. [Read the full argument →](/guide/asking-for-data)
+
 **vs. React Hook Form, Formik, VeeValidate.** Those are _state_ libraries, and
 each one is tied to a single framework. You still write every input, label and
 layout yourself. `declarative-forms` renders the whole dialog and needs no
@@ -287,6 +319,8 @@ Said plainly, so you can rule it out quickly:
 
 ## Next
 
+- [Asking for data](/guide/asking-for-data) — **start here**: the model, and the
+  `ask` helper
 - [Getting started](/guide/getting-started) — install and build your first form
 - [Field kinds](/guide/fields/) — the ten built-in kinds
 - [Reactivity](/guide/reactivity) — the part that makes this library worth using

@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'declarative-forms',
   description:
-    'A declarative form runtime for the web. Zero dependencies, framework agnostic, with async options, cross-field reactivity, tabs and modal stacking.',
+    'Ask the user for an object, the way prompt() asks for a string. A form is a function you call, not a component you mount. Zero dependencies, framework agnostic, with async options, cross-field reactivity, tabs and stacked dialogs.',
 
   // Published to GitHub Pages under /declarative-forms/.
   base: process.env.DOCS_BASE ?? '/declarative-forms/',
@@ -14,6 +14,7 @@ export default defineConfig({
 
   themeConfig: {
     nav: [
+      { text: 'Asking for data', link: '/guide/asking-for-data' },
       { text: 'Guide', link: '/guide/getting-started' },
       { text: 'Fields', link: '/guide/fields/' },
       { text: 'Reference', link: '/reference/api' },
@@ -25,6 +26,7 @@ export default defineConfig({
         text: 'Introduction',
         items: [
           { text: 'What it is', link: '/' },
+          { text: 'Asking for data', link: '/guide/asking-for-data' },
           { text: 'Getting started', link: '/guide/getting-started' },
         ],
       },

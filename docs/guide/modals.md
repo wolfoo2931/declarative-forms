@@ -108,6 +108,13 @@ offer that possibility at all.
 
 ## Stacking
 
+This is the part of the library that a component-based form library cannot give
+you cheaply, and it falls out of the
+[call model](/guide/asking-for-data) for free: because a form is a call and not
+a node in your tree, **opening one from inside another is just calling it**.
+There is no parent to mount it under, no state to lift, and no context provider
+to thread through.
+
 If you open a dialog while another one is open, the two are **stacked**. The
 dialog underneath is hidden — it gets the class `dl-modal-hidden` and is not
 removed — and becomes visible again when the dialog above it closes.
@@ -150,7 +157,8 @@ child.openInModal();
 
 ### Reading outward
 
-A stacked dialog can read the values of the dialogs below it:
+A stacked dialog can read the values of the dialogs below it — with no lifted
+state and no prop drilling, because there is no tree to lift through:
 
 ```ts
 {
