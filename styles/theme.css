@@ -1245,6 +1245,13 @@
 /* The popup is portalled to <body>, so it cannot be scoped to `.dl-form`. */
 .options-wrapper.options-wrapper {
   box-sizing: border-box;
+  /*
+   * It is a sibling of `.dl-modal`, which this theme raises to z-index 1000 —
+   * the component's own `z-index: 100` would leave the option list behind the
+   * backdrop. The default stylesheet gives the dialog no z-index at all, so it
+   * never had this problem.
+   */
+  z-index: 1100;
   padding: 0.25rem;
   border: 1px solid var(--dl-line-color);
   border-radius: var(--dl-radius);
