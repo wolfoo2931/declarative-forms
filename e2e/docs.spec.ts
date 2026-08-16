@@ -69,6 +69,41 @@ test.describe('every demo compiles and mounts', () => {
 });
 
 test.describe('demos are genuinely interactive', () => {
+  test('the home page program runs a three-level stack', async ({ page }) => {
+    // A `program` demo evaluates its snippet on click, not on mount, so the
+    // generic "every demo compiles" sweep above cannot reach this one.
+    const errors = await open(page, '/');
+
+    await page.click('.live-form__open');
+    await expect(page.locator('.dl-modal .dl-tab-btn')).toHaveCount(3);
+    await page.fill('.dl-modal input[name=title]', 'Sunrise 2.0');
+
+    // `doNotCloseModal` keeps the release dialog open underneath this one.
+    await page.click('#schedule');
+    await expect(page.locator('.dl-modal')).toHaveCount(2);
+    await expect(page.locator('.dl-modal-stacked')).toHaveCount(1);
+
+    const top = page.locator('.dl-modal:not(.dl-modal-hidden)');
+    // The message field reads the title out of `stackData`.
+    await expect(top).toContainText('Sunrise 2.0');
+
+    // A third dialog, for one entry of the second one's list.
+    await top.locator('.dl-form-array-of-add-entry').click();
+    await expect(page.locator('.dl-modal')).toHaveCount(3);
+    await expect(page.locator('.dl-modal-stacked')).toHaveCount(2);
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.dl-modal')).toHaveCount(2);
+
+    // Applying writes back into the dialog underneath.
+    await page.click('#apply');
+    await expect(page.locator('.dl-modal input[name=publishAt]')).toHaveValue(
+      'Immediately',
+    );
+
+    expect(errors).toEqual([]);
+  });
+
   test('typing flows into the values panel', async ({ page }) => {
     const errors = await open(page, '/guide/fields/text');
 
