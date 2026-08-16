@@ -18,6 +18,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Under the modern theme, checkboxes are **keyboard-reachable**: the input is
   styled directly with `appearance: none` rather than hidden behind a
   pseudo-element. The default stylesheet keeps its existing behaviour.
+- Two wrapper classes for stacked dialogs: `dl-modal-stacked` on a dialog opened
+  on top of another, and `dl-modal-restored` on one revealed again after being
+  covered. Both mark a backdrop that is already on screen, so a theme can skip
+  its entrance animation.
+
+### Fixed
+
+- Opening or closing a stacked dialog no longer flashes the page under the
+  backdrop. The covered dialog was hidden in the same frame the new one started
+  fading in, leaving nothing over the page for the length of the animation; the
+  modern theme now skips that animation for stacked and restored dialogs. The
+  default stylesheet was never affected — it has no animations.
 
 ## [2.0.0-alpha.0]
 

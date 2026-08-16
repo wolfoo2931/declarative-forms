@@ -249,6 +249,17 @@
   display: none !important;
 }
 
+/* Stacked dialogs. The backdrop of a dialog opening over another one, and of
+   one revealed when the dialog above it closes, is continuous with the backdrop
+   that was already on screen — fading it in from nothing would flash the page
+   through the gap. A newly stacked dialog still rises; a restored one does not,
+   since it is not new. */
+.dl-modal.dl-modal-stacked,
+.dl-modal.dl-modal-restored,
+.dl-modal.dl-modal-restored .modal {
+  animation: none;
+}
+
 .dl-modal .modal {
   display: block;
   box-sizing: border-box;

@@ -110,6 +110,11 @@ Opening a dialog while another is open **stacks** them. The covered dialog is
 hidden (class `dl-modal-hidden`, not removed) and is revealed again when the top
 one closes. Escape and Enter always address the topmost dialog only.
 
+The dialog on top also carries `dl-modal-stacked`, and a dialog revealed again
+carries `dl-modal-restored`. Both mean "the backdrop was already on screen": a
+custom theme that animates `.dl-modal` in should skip the animation on these,
+or the page flashes through while one backdrop replaces the other.
+
 This is what makes [array entry dialogs](/guide/fields/array) work, and you can
 use it directly:
 

@@ -85,8 +85,11 @@ to reserve — or not reserve — the header strip.
 :::
 
 Other wrapper classes: `noModalDialog` when embedded, `dl-modal-hidden` when
-covered by another dialog. `openInModal()` returns this outer
-`div.dl-modal` element.
+covered by another dialog, `dl-modal-stacked` when opened on top of another one,
+and `dl-modal-restored` once revealed again after being covered. The last two
+exist so a theme can suppress the backdrop's entrance animation when the
+backdrop is already on screen. `openInModal()` returns this outer `div.dl-modal`
+element.
 
 ## Tab strip
 

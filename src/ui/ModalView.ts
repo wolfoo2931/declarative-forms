@@ -76,6 +76,22 @@ export class ModalView {
 
   show(): void {
     this.wrapper.classList.remove('dl-modal-hidden');
+    // Re-displaying an element restarts its CSS animations. This dialog was
+    // already on screen before it was covered, so replaying its entrance would
+    // fade the backdrop back in from nothing — a flash of the page underneath.
+    this.wrapper.classList.add('dl-modal-restored');
+  }
+
+  /**
+   * Mark the dialog as opened on top of another one.
+   *
+   * A stacked dialog inherits a backdrop that is already on screen: the dialog
+   * below is hidden in the same frame this one appears. Fading this backdrop in
+   * would leave the page uncovered for the length of the animation, so themes
+   * suppress it on this class.
+   */
+  setStacked(stacked: boolean): void {
+    this.wrapper.classList.toggle('dl-modal-stacked', stacked);
   }
 
   /** Mark the dialog as embedded rather than floating. */
