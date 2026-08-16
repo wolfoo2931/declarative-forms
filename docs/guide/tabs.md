@@ -3,16 +3,40 @@
 Give fields a `tab` and the dialog grows a tab strip. There is nothing else to
 configure — tabs are derived from the fields, not declared separately.
 
+Tabs only render in a dialog, so this demo opens one. Note the third tab
+appears only once you tick the box — a tab with no active fields is not shown.
+
+<LiveForm mode="modal" open="Open a tabbed dialog">
+
 ```ts
-new DeclarativeForm({
+{
   fields: [
-    { name: 'title', displayName: 'Title', tab: 'General' },
+    { name: 'title', displayName: 'Title', tab: 'General', defaultValue: 'Report' },
     { name: 'author', displayName: 'Author', tab: 'General' },
-    { name: 'template', kind: 'select', options: templates, tab: 'Export' },
+    {
+      name: 'expert',
+      kind: 'checkbox',
+      label: 'Show advanced options',
+      tab: 'General',
+    },
+    {
+      name: 'template',
+      kind: 'select',
+      displayName: 'Template',
+      options: ['Plain', 'Academic'],
+      tab: 'Export',
+    },
+    {
+      name: 'apiKey',
+      displayName: 'API key',
+      tab: 'Advanced',
+      isActive: ({ data }) => data['expert'] === true,
+    },
   ],
-  onCancel: () => {},
-}).openInModal();
+}
 ```
+
+</LiveForm>
 
 ## Ordering
 

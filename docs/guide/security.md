@@ -3,15 +3,26 @@
 Everything the library renders is treated as **plain text by default**. Markup
 is opt-in, one value at a time, through the `html()` marker.
 
+<LiveForm :values="false">
+
 ```ts
-import { html } from 'declarative-forms';
-
-// Rendered literally, tags and all:
-{ name: 'a', kind: 'checkbox', label: 'I accept the <b>terms</b>' }
-
-// Rendered as markup:
-{ name: 'b', kind: 'checkbox', label: html('I accept the <b>terms</b>') }
+{
+  fields: [
+    {
+      name: 'plain',
+      kind: 'checkbox',
+      label: 'Rendered literally, tags and all: <b>terms</b>',
+    },
+    {
+      name: 'marked',
+      kind: 'checkbox',
+      label: html('Rendered as markup: <b>terms</b>'),
+    },
+  ],
+}
 ```
+
+</LiveForm>
 
 ## Why it works this way
 

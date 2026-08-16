@@ -26,10 +26,10 @@ above.
 
 A form is an array of **field descriptors** plus what to do when it closes.
 
-```ts
-import { DeclarativeForm } from 'declarative-forms';
+<LiveForm>
 
-const form = new DeclarativeForm({
+```ts
+{
   fields: [
     { name: 'name', displayName: 'Name' },
     {
@@ -42,8 +42,17 @@ const form = new DeclarativeForm({
   ],
   onConfirm: (values) => console.log('submitted', values),
   onCancel: () => console.log('cancelled'),
-});
+}
+```
 
+</LiveForm>
+
+In your app, that object is the argument to the constructor:
+
+```ts
+import { DeclarativeForm } from 'declarative-forms';
+
+const form = new DeclarativeForm({/* … */});
 form.openInModal();
 ```
 

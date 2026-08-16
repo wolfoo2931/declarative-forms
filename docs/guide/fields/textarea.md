@@ -2,9 +2,23 @@
 
 A multi-line `<textarea>`.
 
+<LiveForm>
+
 ```ts
-{ name: 'summary', kind: 'textarea', displayName: 'Summary' }
+{
+  fields: [
+    {
+      name: 'summary',
+      kind: 'textarea',
+      displayName: 'Summary',
+      placeholder: 'Enter inserts a newline only when allowNewlines is set',
+      allowNewlines: true,
+    },
+  ],
+}
 ```
+
+</LiveForm>
 
 ## Options
 

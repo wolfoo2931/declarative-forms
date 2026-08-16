@@ -3,18 +3,31 @@
 A repeating list of sub-records. Each entry is edited in its own nested dialog,
 built from the field descriptors you supply.
 
+Press **Add Author** to open the nested entry dialog. The parent form stays
+open underneath, hidden until the entry dialog closes.
+
+<LiveForm>
+
 ```ts
 {
-  name: 'authors',
-  kind: 'array',
-  displayName: 'Authors',
-  newButtonLabel: 'Add Author',
-  of: [
-    { name: 'preName', displayName: 'First name' },
-    { name: 'lastName', displayName: 'Last name' },
+  fields: [
+    {
+      name: 'authors',
+      kind: 'array',
+      displayName: 'Authors',
+      newButtonLabel: 'Add Author',
+      of: [
+        { name: 'preName', displayName: 'First name' },
+        { name: 'lastName', displayName: 'Last name' },
+      ],
+      isValidRecord: (entry) => String(entry['lastName'] ?? '').trim() !== '',
+      suggested: [{ preName: 'Ada', lastName: 'Lovelace' }],
+    },
   ],
 }
 ```
+
+</LiveForm>
 
 ## Options
 

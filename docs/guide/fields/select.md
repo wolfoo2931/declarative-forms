@@ -4,18 +4,37 @@ A filterable combobox, rendered as the [`<dl-select>`](/reference/dl-select)
 web component. It exists because a native `<select>` cannot do async-loaded,
 type-to-filter, multi-select options.
 
+Click the field and type to filter. The value stored is the option's `value`,
+not its label.
+
+<LiveForm>
+
 ```ts
 {
-  name: 'language',
-  kind: 'select',
-  displayName: 'Language',
-  options: [
-    { value: 'en', label: 'English' },
-    { value: 'de', label: 'German' },
+  fields: [
+    {
+      name: 'language',
+      kind: 'select',
+      displayName: 'Language',
+      options: [
+        { value: 'en', label: 'English' },
+        { value: 'de', label: 'German' },
+        { value: 'fr', label: 'French' },
+      ],
+      defaultValue: 'en',
+    },
+    {
+      name: 'tags',
+      kind: 'select',
+      displayName: 'Tags (multiple)',
+      multiple: true,
+      options: ['docs', 'draft', 'internal'],
+    },
   ],
-  defaultValue: 'en',
 }
 ```
+
+</LiveForm>
 
 ## Options
 
@@ -73,16 +92,32 @@ make it feel deliberate rather than flickery:
 - Once shown it stays for a minimum time rather than blinking out.
 
 A value set while options are still loading is **replayed** once they arrive, so
-a `defaultValue` never races the fetch:
+a `defaultValue` never races the fetch. The demo below delays for a second, and
+still ends up on French:
+
+<LiveForm>
 
 ```ts
 {
-  name: 'lang',
-  kind: 'select',
-  options: async () => fetchLanguages(),
-  defaultValue: 'fr', // applied after the fetch resolves
+  fields: [
+    {
+      name: 'lang',
+      kind: 'select',
+      displayName: 'Language (loads slowly)',
+      options: async () => {
+        await new Promise((r) => setTimeout(r, 1000));
+        return [
+          { value: 'en', label: 'English' },
+          { value: 'fr', label: 'French' },
+        ];
+      },
+      defaultValue: 'fr',
+    },
+  ],
 }
 ```
+
+</LiveForm>
 
 ## Reloading when another field changes
 

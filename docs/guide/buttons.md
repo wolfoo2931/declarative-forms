@@ -58,18 +58,25 @@ Export: { isActive: ({ data }) => !!data['format'], action: save }
 
 `isActive` receives `{ data, parentData, stackData }` and may be async:
 
+<LiveForm mode="modal" open="Open a dialog with a gated button">
+
 ```ts
-buttons: {
-  Invite: {
-    id: 'inviteBtn',
-    isActive: async ({ data }) => {
-      const email = String(data['email'] ?? '');
-      return email.includes('@') && (await isRegistered(email));
+{
+  fields: [{ name: 'email', displayName: 'Email' }],
+  buttons: {
+    Cancel: { id: 'cancelBtn', class: 'secondary', action: () => {} },
+    Invite: {
+      id: 'inviteBtn',
+      isActive: ({ data }) => String(data['email'] ?? '').includes('@'),
+      action: (values) => console.log('invited', values['email']),
     },
-    action: (values) => invite(values['email']),
   },
 }
 ```
+
+</LiveForm>
+
+The Invite button stays disabled until the address contains an `@`.
 
 A disabled button gets the `disabled` class and the `disabled` attribute, and
 ignores clicks.

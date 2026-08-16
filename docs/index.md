@@ -5,11 +5,12 @@ the rules around it; the library renders the dialog, wires the updates, loads
 async option sets, manages nested records, tabs and modal stacks, and keeps
 everything in sync as values change.
 
-```ts
-import 'declarative-forms/styles.css';
-import { DeclarativeForm } from 'declarative-forms';
+Everything below is running live on this page — edit nothing, just try it.
 
-new DeclarativeForm({
+<LiveForm mode="modal" open="Open the dialog">
+
+```ts
+{
   fields: [
     { name: 'title', displayName: 'Title' },
     {
@@ -25,7 +26,18 @@ new DeclarativeForm({
   ],
   onConfirm: (values) => console.log(values),
   onCancel: () => {},
-}).openInModal();
+}
+```
+
+</LiveForm>
+
+In your app that descriptor is the argument to a constructor:
+
+```ts
+import 'declarative-forms/styles.css';
+import { DeclarativeForm } from 'declarative-forms';
+
+new DeclarativeForm({/* the object above */}).openInModal();
 ```
 
 That is the whole program. There is no markup to write, no state to hold, and
