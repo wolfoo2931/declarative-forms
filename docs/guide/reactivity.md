@@ -1,44 +1,45 @@
 # Reactivity
 
 This is the part that makes the library worth using. A descriptor is not a
-static schema: most of its options can be **functions of the current form
-data**, and the library re-evaluates them whenever anything changes.
+static schema. Most of its options can be **functions of the current form
+data**, and the library runs them again whenever something changes.
 
 There are four mechanisms, each for a different job:
 
-| Mechanism                                                    | Question it answers                             |
-| ------------------------------------------------------------ | ----------------------------------------------- |
-| [`isActive`](#isactive-conditional-fields)                   | Should this field exist right now?              |
-| [`reloadOnChangeOf`](#reloadonchangeof-dependent-async-data) | Which changes should re-fetch my options?       |
-| [`compute`](/guide/fields/computed)                          | What value is derived from the others?          |
-| [`onFormChange`](#onformchange-side-effects)                 | What side effect should run when things change? |
+| Mechanism                                                    | Question it answers                              |
+| ------------------------------------------------------------ | ------------------------------------------------ |
+| [`isActive`](#isactive-conditional-fields)                   | Should this field exist right now?               |
+| [`reloadOnChangeOf`](#reloadonchangeof-dependent-async-data) | Which changes should reload my options?          |
+| [`compute`](/guide/fields/computed)                          | Which value is calculated from the other values? |
+| [`onFormChange`](#onformchange-side-effects)                 | What should happen elsewhere when values change? |
 
-Plus the general [`Reactive<T>`](#reactive-options) options — `placeholder`,
-`message`, `tab`, `defaultValue`, `suggested`.
+On top of that, the general [`Reactive<T>`](#reactive-options) options accept a
+function as well: `placeholder`, `message`, `tab`, `defaultValue` and
+`suggested`.
 
 ## The update cycle
 
-When a user types, picks an option, or you call `requestUpdate()`, the form:
+When the user types, picks an option, or you call `requestUpdate()`, the form:
 
-1. reads current values;
-2. compares them with the previous snapshot — **if nothing changed, it stops
-   here**;
-3. re-evaluates every field's `isActive` and recomputes the set of non-empty
-   tabs;
+1. reads the current values;
+2. compares them with the previous ones — **if nothing changed, it stops here**;
+3. runs every field's `isActive` again, and works out which tabs still have
+   fields in them;
 4. calls each field's `onFormChange` and lets each field refresh itself
-   (reactive placeholders, re-rendered messages, dependent option loads);
-5. waits for any async work to settle;
-6. notifies `subscribeOnInput` subscribers;
-7. re-evaluates every button's `isActive` / `isVisible`.
+   (placeholders that are functions, messages that are re-rendered, options that
+   have to be reloaded);
+5. waits for all asynchronous work to finish;
+6. informs the `subscribeOnInput` subscribers;
+7. runs every button's `isActive` and `isVisible` again.
 
-The early exit in step 2 is why you can write expensive callbacks without
-worrying about keystroke-rate churn.
+Because of step 2, a callback that is expensive to run is not a problem: it does
+not run once per keystroke, only when a value really changed.
 
 ## `isActive`: conditional fields
 
-Return `false` and the field is hidden **and dropped from `getValues()`**.
-Switch the source below to GitLab and watch the token field appear — and the
-`token` key appear with it:
+If `isActive` returns `false`, the field is hidden **and left out of
+`getValues()`**. Change the source below to GitLab: the token field appears, and
+the `token` key appears with it.
 
 <LiveForm>
 
@@ -70,24 +71,25 @@ form.getValues();
 // source === 'GitLab'  →  { source: 'GitLab', token: '', activeTab: undefined }
 ```
 
-That omission is deliberate: a hidden field's value is almost never what you
-want to submit, and `'field' in values` becomes a reliable test for
-"did this apply?".
+Leaving the key out is intentional. The value of a hidden field is almost never
+what you want to submit, and it lets you use `'token' in values` as a reliable
+test for "did this field apply?".
 
-::: tip Hidden, not destroyed
-The field keeps its DOM and its value; it is marked `inactive` and hidden by
-CSS. Re-activating it restores what the user had typed.
+::: tip Hidden, not deleted
+The field keeps its DOM element and its value. It only gets the class `inactive`
+and is hidden by CSS. When it becomes active again, whatever the user typed is
+still there.
 :::
 
-`isActive` must be **synchronous** — it runs for every field on every update.
-For an async decision, compute a flag in a [`computed`](/guide/fields/computed)
-field and branch on that.
+`isActive` must be **synchronous**, because it runs for every field on every
+update. If the decision needs asynchronous work, calculate a flag in a
+[`computed`](/guide/fields/computed) field and let `isActive` read that flag.
 
 ## `reloadOnChangeOf`: dependent async data
 
-List the field names whose changes should re-run this field's async work.
-Edit the owner below and the repository list reloads — with a deliberate delay
-so you can see the loading state:
+List the names of the fields whose changes should re-run this field's
+asynchronous work. Edit the owner below and the repository list reloads. The
+example waits on purpose, so that you can see the loading state:
 
 <LiveForm>
 
@@ -112,25 +114,25 @@ so you can see the loading state:
 
 </LiveForm>
 
-Without `reloadOnChangeOf`, an options function runs **once** at construction.
-With it, the list reloads whenever a named dependency changes — and only then,
-so unrelated typing does not trigger fetches.
+Without `reloadOnChangeOf`, an options function runs **once**, when the form is
+built. With it, the list reloads whenever one of the named fields changes — and
+only then, so typing in an unrelated field starts no requests.
 
-### Stale responses are discarded
+### Out-of-date answers are thrown away
 
-Each load claims a generation token. If the user keeps typing while a request is
-in flight, the older response is **dropped** rather than overwriting the newer
+Every load is given a number. If the user keeps typing while a request is still
+running, the older answer is **thrown away** instead of overwriting the newer
 options:
 
 ```
 type "goo"  → request A starts (slow)
-type "goog" → request B starts (fast), A is now stale
-B resolves  → options shown
-A resolves  → discarded
+type "goog" → request B starts (fast); A is now out of date
+B answers   → its options are shown
+A answers   → thrown away
 ```
 
-This is handled for you; you do not need to debounce for correctness. (You may
-still want to debounce to spare your API.)
+The library does this for you, so you do not need a debounce to get correct
+results. You may still want one to reduce the load on your API.
 
 ### Handling failures
 
@@ -149,8 +151,8 @@ See [`select`](/guide/fields/select#handling-load-failures).
 
 ## `onFormChange`: side effects
 
-Called on every update, after values settle. Use it for effects outside the
-form — syncing a preview, persisting a draft:
+`onFormChange` is called on every update, once the values are final. Use it for
+things that happen outside the form: updating a preview, saving a draft.
 
 ```ts
 {
@@ -163,19 +165,20 @@ form — syncing a preview, persisting a draft:
 }
 ```
 
-`trigger` is the field whose input started the update, or `undefined` for a
-programmatic refresh. Guarding on it prevents an effect from running on every
-unrelated change.
+`trigger` is the field whose input started this update. It is `undefined` when
+the update was started from code. Checking it stops your effect from running on
+every unrelated change.
 
 ::: warning Do not set form values here
-Setting a value from `onFormChange` re-enters the update cycle. Use
-[`computed`](/guide/fields/computed) for derived values instead; the library
-guards against runaway loops but will throw if updates never settle.
+Setting a value inside `onFormChange` starts the update cycle again. Use a
+[`computed`](/guide/fields/computed) field for calculated values instead. The
+library protects itself against endless loops, but it throws an error if the
+updates never come to an end.
 :::
 
 ## Reactive options
 
-These accept a literal or a function of the context:
+These options accept either a fixed value or a function of the context:
 
 ```ts
 {
@@ -191,23 +194,23 @@ These accept a literal or a function of the context:
 
 ## Awaiting the form
 
-Because much of this is asynchronous, two methods let you wait:
+Much of this happens asynchronously, so two methods let you wait for it:
 
 ```ts
 await form.whenReady(); // initial options + defaults are applied
 await form.updateComputedFields(); // computed fields have re-run
 ```
 
-Button actions already await both, so you rarely need them outside tests or
-programmatic value reads.
+A button action already waits for both, so you rarely need these outside tests
+or when you read the values from code.
 
 ## Cross-form reactivity
 
-Nested dialogs can read outward:
+A nested dialog can read the values of the dialogs around it:
 
-- **`ctx.parentData`** — the enclosing form's values, when this form is an
-  [array entry](/guide/fields/array) or a sub-dialog.
-- **`ctx.stackData`** — every open dialog's values, outermost first.
+- **`ctx.parentData`** — the values of the surrounding form, when this form is
+  an [array entry](/guide/fields/array) or a sub-dialog.
+- **`ctx.stackData`** — the values of every open dialog, outermost first.
 
 ```ts
 {

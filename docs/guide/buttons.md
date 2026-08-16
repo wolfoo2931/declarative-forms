@@ -10,7 +10,8 @@ new DeclarativeForm({
 });
 ```
 
-For anything more, declare `buttons` — an object **keyed by the visible label**:
+If you need more than that, declare `buttons`. It is an object whose **keys are
+the visible labels**:
 
 ```ts
 buttons: {
@@ -19,12 +20,13 @@ buttons: {
 }
 ```
 
-Buttons render in declaration order into the dialog's lower bar.
+The buttons are rendered into the lower bar of the dialog, in the order in which
+you declare them.
 
 ::: tip `buttons` and `onConfirm` are independent
-In v1, a single-button `buttons` map silently replaced `onConfirm`. In v2 they
-are separate: if you declare `buttons`, `onConfirm` is not used. See
-[Migrating from v1](/migration-v1#behaviour-changes).
+In v1, a `buttons` object with exactly one button quietly replaced `onConfirm`.
+In v2 the two are separate: if you declare `buttons`, `onConfirm` is not used at
+all. See [Migrating from v1](/migration-v1#behaviour-changes).
 :::
 
 ## Button options
@@ -32,31 +34,31 @@ are separate: if you declare `buttons`, `onConfirm` is not used. See
 | Option            | Type                                   | Notes                                                     |
 | ----------------- | -------------------------------------- | --------------------------------------------------------- |
 | `action`          | `(values) => unknown`                  | Runs on click. May be async                               |
-| `id`              | `string`                               | DOM id — **required for `isActive`/`isVisible`**          |
-| `class`           | `string`                               | Extra classes. `'secondary'` is styled by the default CSS |
-| `isActive`        | `(ctx) => boolean \| Promise<boolean>` | Enable/disable                                            |
-| `isVisible`       | `(ctx) => boolean \| Promise<boolean>` | Show/hide                                                 |
-| `doNotCloseModal` | `boolean`                              | Run `action` without closing                              |
+| `id`              | `string`                               | DOM id — **required for `isActive` and `isVisible`**      |
+| `class`           | `string`                               | Extra classes. `'secondary'` is styled by the shipped CSS |
+| `isActive`        | `(ctx) => boolean \| Promise<boolean>` | Enables or disables the button                            |
+| `isVisible`       | `(ctx) => boolean \| Promise<boolean>` | Shows or hides the button                                 |
+| `doNotCloseModal` | `boolean`                              | Runs `action` and leaves the dialog open                  |
 
-## An `id` is what opts a button into state management
+## An `id` is what makes a button managed
 
-::: warning No `id`, no predicates
-`isActive` and `isVisible` are **skipped entirely** for a button without an
-`id`. The button still renders and still works — it is simply never
-state-managed. This is inherited v1 behaviour, kept deliberately.
+::: warning No `id`, no `isActive` and no `isVisible`
+For a button without an `id`, `isActive` and `isVisible` are **never called**.
+The button is still rendered and still works; the library simply does not manage
+its state. This comes from v1 and was kept on purpose.
 :::
 
 ```ts
-// Predicates run.
+// The functions are called.
 Export: { id: 'exportBtn', isActive: ({ data }) => !!data['format'], action: save }
 
-// Predicate silently ignored.
+// The function is ignored, without any warning.
 Export: { isActive: ({ data }) => !!data['format'], action: save }
 ```
 
 ## Enabling and disabling
 
-`isActive` receives `{ data, parentData, stackData }` and may be async:
+`isActive` receives `{ data, parentData, stackData }`, and may be asynchronous:
 
 <LiveForm mode="modal" open="Open a dialog with a gated button">
 
@@ -78,17 +80,17 @@ Export: { isActive: ({ data }) => !!data['format'], action: save }
 
 The Invite button stays disabled until the address contains an `@`.
 
-A disabled button gets the `disabled` class and the `disabled` attribute, and
+A disabled button gets the class `disabled` and the attribute `disabled`, and
 ignores clicks.
 
-Synchronous predicates are applied **immediately**, so buttons do not flicker as
-you type. Only genuinely async predicates leave the button briefly in its
-previous state while they resolve.
+A synchronous function is applied **immediately**, so buttons do not flicker
+while you type. Only a truly asynchronous function leaves the button in its
+previous state for a moment, until it returns.
 
 ## Showing and hiding
 
-`isVisible` receives the same context and toggles the `invisible` class. A
-common pattern is a pair of buttons that swap:
+`isVisible` receives the same context and adds or removes the class `invisible`.
+A common pattern is a pair of buttons that replace each other:
 
 ```ts
 buttons: {
@@ -107,14 +109,14 @@ buttons: {
 
 ## Async actions and the loading state
 
-An `action` returning a promise is awaited. While it runs the button gains a
-`loading-btn` class (a spinner in the default stylesheet) and further clicks are
-ignored. Before the action runs, the form:
+If an `action` returns a promise, the library waits for it. While it runs, the
+button gets the class `loading-btn` (a spinner in the shipped stylesheet) and
+further clicks are ignored. Before the action runs, the form:
 
-1. waits for any in-flight field work to settle;
-2. re-runs every [`computed`](/guide/fields/computed) field.
+1. waits until all work still running in the fields has finished;
+2. runs every [`computed`](/guide/fields/computed) field again.
 
-So the values your action receives are complete:
+The values your action receives are therefore complete:
 
 ```ts
 buttons: {
@@ -129,8 +131,8 @@ buttons: {
 
 ## Buttons that do not close
 
-For wizards and multi-step flows, `doNotCloseModal` runs the action and leaves
-the dialog open:
+For wizards and other multi-step flows, `doNotCloseModal` runs the action and
+keeps the dialog open:
 
 ```ts
 buttons: {
@@ -144,17 +146,18 @@ See [Tabs](/guide/tabs#wizards) for the `step` helper.
 
 ## The Enter key
 
-<kbd>Enter</kbd> confirms the topmost dialog **only when it has exactly one
-button**. With two or more, there is no unambiguous default, so Enter does
-nothing.
+<kbd>Enter</kbd> confirms the topmost dialog **only if that dialog has exactly
+one button**. With two or more buttons there is no obvious default, so
+<kbd>Enter</kbd> does nothing.
 
-It also does nothing when the confirm button is currently disabled, and it never
-confirms from inside a [`textarea`](/guide/fields/textarea#allownewlines-and-the-enter-key).
+It also does nothing while the confirm button is disabled, and it never confirms
+from inside a
+[`textarea`](/guide/fields/textarea#allownewlines-and-the-enter-key).
 
 ## Invoking an action yourself
 
-Buttons are your own objects, so you can call an action directly — useful for
-driving a dialog from a toolbar elsewhere in your app:
+The button objects are yours, so you can call an action directly. This is useful
+if you want to control a dialog from a toolbar somewhere else in your app:
 
 ```ts
 const buttons = {
@@ -167,8 +170,8 @@ const form = new DeclarativeForm({ fields, buttons });
 buttons['Export'].action?.(form.getValues());
 ```
 
-Note this bypasses the settle-and-recompute step that a real click performs. If
-your form has computed fields, await them first:
+Note that this skips the waiting and recalculation that a real click does. If
+your form has computed fields, wait for them first:
 
 ```ts
 await form.updateComputedFields();
@@ -177,7 +180,7 @@ buttons['Export'].action?.(form.getValues());
 
 ## Styling
 
-Buttons are real `<button type="button">` elements carrying `.btn`, so they are
-focusable and keyboard-operable. State classes: `.disabled`, `.invisible`,
-`.loading-btn`, plus `.secondary` for a muted style. The dismiss control is
-`.cancelBtn`.
+Buttons are real `<button type="button">` elements with the class `.btn`, so
+they can be focused and used with the keyboard. The state classes are
+`.disabled`, `.invisible` and `.loading-btn`; `.secondary` gives a quieter
+style. The close button is `.cancelBtn`.

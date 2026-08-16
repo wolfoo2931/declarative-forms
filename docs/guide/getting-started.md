@@ -12,19 +12,20 @@ Import the stylesheet once, anywhere in your app:
 import 'declarative-forms/styles.css';
 ```
 
-The package ships ESM and CJS builds with TypeScript declarations, and has
-**zero runtime dependencies**.
+The package contains an ESM build and a CJS build, both with TypeScript
+declarations, and it has **no runtime dependencies**.
 
-::: tip No build step
-You can also drop the ESM build straight into a page with
-`<script type="module">`. The `<dl-select>` component injects its own
-structural CSS on first use, so the only stylesheet you need to load is the one
-above.
+::: tip No build step needed
+You can also load the ESM build directly in a page with
+`<script type="module">`. The `<dl-select>` component adds its own structural
+CSS the first time it is used, so the stylesheet above is the only one you have
+to load.
 :::
 
 ## Your first form
 
-A form is an array of **field descriptors** plus what to do when it closes.
+A form is an array of **field descriptors**, plus what should happen when the
+form closes.
 
 <LiveForm>
 
@@ -47,7 +48,7 @@ A form is an array of **field descriptors** plus what to do when it closes.
 
 </LiveForm>
 
-In your app, that object is the argument to the constructor:
+In your own code, you pass that object to the constructor:
 
 ```ts
 import { DeclarativeForm } from 'declarative-forms';
@@ -58,13 +59,14 @@ form.openInModal();
 
 Three things are worth noticing:
 
-- **`name` is the key.** It is how the value appears in `getValues()`, and it
-  must be unique within a form.
-- **`kind` selects the field type.** Omit it and you get a single-line text
+- **`name` is the key.** The value appears under this name in `getValues()`, so
+  it must be unique within one form.
+- **`kind` chooses the field type.** Leave it out and you get a single-line text
   input. See [Field kinds](/guide/fields/).
-- **`onCancel` decides whether the dialog can be dismissed.** Provide it and
-  you get a close button and Escape handling; omit it and the dialog can only
-  be completed, not abandoned.
+- **`onCancel` decides whether the dialog can be closed without finishing it.**
+  If you pass it, the dialog gets a close button and reacts to
+  <kbd>Escape</kbd>. If you leave it out, the user can only complete the dialog,
+  not abandon it.
 
 ## Reading values
 
@@ -73,14 +75,15 @@ form.getValues();
 // { name: 'Ada', role: 'Editor', activeTab: undefined }
 ```
 
-`getValues()` returns a plain object keyed by field name. Two rules to know:
+`getValues()` returns a plain object whose keys are the field names. Two rules
+to remember:
 
-- Fields hidden by [`isActive`](/guide/reactivity) are **omitted entirely**,
-  not set to empty.
-- The key `activeTab` is always present, holding the currently selected
-  [tab](/guide/tabs) (or `undefined` when the form has no tabs).
+- A field hidden by [`isActive`](/guide/reactivity) is **left out completely**.
+  It is not set to an empty value.
+- The key `activeTab` is always there. It holds the currently selected
+  [tab](/guide/tabs), or `undefined` if the form has no tabs.
 
-To observe changes as the user types, subscribe:
+To follow the values as the user types, subscribe to them:
 
 ```ts
 const unsubscribe = form.subscribeOnInput((values) => {
@@ -90,9 +93,10 @@ const unsubscribe = form.subscribeOnInput((values) => {
 
 ## Waiting for setup
 
-Options and default values may be asynchronous, so the form is not fully
-populated the instant the constructor returns. `whenReady()` resolves once the
-initial options have loaded and defaults have been applied:
+Options and default values may be loaded asynchronously, so the form is not
+completely filled in at the moment the constructor returns. `whenReady()`
+resolves once the first options have loaded and the default values have been
+applied:
 
 ```ts
 const form = new DeclarativeForm({/* … */});
@@ -101,27 +105,28 @@ await form.whenReady();
 form.getValues(); // defaults are in place
 ```
 
-You do not need this to _display_ a form — `openInModal()` is safe to call
-immediately, and fields fill in as they resolve. You need it when you want to
-read values programmatically right after construction, or in tests.
+You do not need this in order to _show_ a form. You can call `openInModal()`
+straight away, and each field fills itself in as its data arrives. You need
+`whenReady()` when you want to read the values in code right after construction,
+or in a test.
 
 ## Embedding instead of a modal
 
-Not every form should be a dialog. `appendInElement` renders the same form
-inline:
+Not every form has to be a dialog. `appendInElement` renders the same form
+inside an element of your page:
 
 ```ts
 form.appendInElement(document.querySelector('#panel'));
 ```
 
-The outer wrapper gains a `noModalDialog` class, the backdrop is dropped, and
-confirming the form runs your callback **without** removing it from the page.
-See [Modals & stacking](/guide/modals).
+The outer wrapper gets a `noModalDialog` class and there is no backdrop.
+Confirming the form runs your callback but **does not** remove the form from the
+page. See [Modals & stacking](/guide/modals).
 
-## Reaching a field imperatively
+## Controlling a single field from code
 
-Sometimes you need to drive a field from outside — set a value after a lookup,
-or show a loading state while you fetch:
+Sometimes you need to control one field from outside the form: to set a value
+after a lookup, or to show a loading state while you fetch something.
 
 ```ts
 const field = form.field('role');
@@ -133,13 +138,13 @@ field?.setLoading(true);
 field?.element; // the underlying <input> / <dl-select> / …
 ```
 
-`form.field(name)` returns `undefined` for a name that does not exist, so use
-optional chaining or check first.
+`form.field(name)` returns `undefined` if no field has that name, so use
+optional chaining (`?.`) or check the result first.
 
 ## TypeScript
 
-Descriptors are a discriminated union on `kind`, so the compiler knows which
-options each kind accepts and will reject the rest:
+The descriptor types form a discriminated union on `kind`. The compiler
+therefore knows which options each kind accepts, and rejects the others:
 
 ```ts
 import type { FieldDescriptor } from 'declarative-forms';

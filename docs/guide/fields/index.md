@@ -1,8 +1,8 @@
 # Field kinds
 
-A field is a **plain object**. The `kind` property selects the behaviour;
-everything else configures it. Descriptors are never mutated by the library, so
-you can freeze them, share them between forms, or generate them from data.
+A field is a **plain object**. The `kind` property chooses the behaviour, and
+everything else configures it. The library never changes a descriptor, so you
+can freeze one, share it between forms, or generate it from data.
 
 ```ts
 { name: 'title', displayName: 'Title' }                        // text (default)
@@ -25,7 +25,7 @@ you can freeze them, share them between forms, or generate them from data.
 | [`custom`](/guide/fields/custom)         | whatever you render    | `render`                                               |
 | [`array`](/guide/fields/array)           | repeating sub-records  | `of`, `renderEntry`, `suggested`, …                    |
 
-You can also [register your own kinds](/guide/custom-fields).
+You can also [add kinds of your own](/guide/custom-fields).
 
 ## Options every kind accepts
 
@@ -45,32 +45,33 @@ interface BaseFieldDescriptor {
 
 ### `name`
 
-The key the value appears under in `getValues()`. Duplicate names throw at
-construction time rather than silently overwriting each other.
+The key that the value appears under in `getValues()`. Two fields with the same
+name raise an error while the form is being built, instead of quietly
+overwriting each other.
 
 ### `displayName`
 
-The label. Omitting it adds a `withoutLabel` class to the wrapper instead of
-rendering an empty `<label>`. The label is properly associated with its control
-via `for`/`id`.
+The label. If you leave it out, the wrapper gets a `withoutLabel` class instead
+of an empty `<label>`. The label is correctly connected to its control through
+`for` and `id`.
 
 ### `tooltip`
 
-Either a string, or `{ text, inInput }`. With `inInput: true` the `?` marker is
-positioned inside the input rather than beside the label.
+Either a string, or an object `{ text, inInput }`. With `inInput: true`, the `?`
+marker sits inside the input instead of next to the label.
 
 ```ts
 { name: 'url', displayName: 'URL', tooltip: 'Where the data comes from.' }
 { name: 'key', displayName: 'Key', tooltip: { text: 'Secret.', inInput: true } }
 ```
 
-Tooltip state can be driven at runtime — see
-[`setTooltipError` and friends](/reference/api#tooltips).
+You can also change a tooltip while the form is open — see
+[`setTooltipError` and the related methods](/reference/api#tooltips).
 
 ## `Reactive<T>`: literal or function
 
-Most options accept **either a value or a function of the form context**. This
-is what makes the descriptor live rather than static:
+Most options accept **either a fixed value or a function of the form context**.
+This is what makes a descriptor live instead of static:
 
 ```ts
 type Reactive<T> = T | ((ctx: FieldContext) => T);
@@ -92,8 +93,8 @@ type Reactive<T> = T | ((ctx: FieldContext) => T);
 
 ## The context object
 
-Every callback receives **one context object** — never a positional argument
-list:
+Every callback receives **a single context object**. There are never several
+positional arguments:
 
 ```ts
 interface FieldContext {
@@ -106,14 +107,14 @@ interface FieldContext {
 }
 ```
 
-Two callbacks extend it:
+Two callbacks get more than that:
 
-- `onFormChange` also gets **`trigger`** — the field whose input started the
+- `onFormChange` also gets **`trigger`**: the field whose input started the
   update, or `undefined`.
-- A `custom` field's `render` also gets **`element`**, **`requestUpdate()`**
-  and **`setValue()`**.
+- The `render` function of a `custom` field also gets **`element`**,
+  **`requestUpdate()`** and **`setValue()`**.
 
-Destructure what you need:
+Take only the properties you need:
 
 ```ts
 {
@@ -124,7 +125,8 @@ Destructure what you need:
 
 ## Values and types
 
-`getValues()` returns `Record<string, unknown>`. What each kind contributes:
+`getValues()` returns a `Record<string, unknown>`. This is what each kind puts
+into it:
 
 | Kind                     | Value type                    | Empty value           |
 | ------------------------ | ----------------------------- | --------------------- |
@@ -139,7 +141,8 @@ Destructure what you need:
 | `array`                  | `FormValues[]`                | `[]`                  |
 | `message`                | _(absent from `getValues()`)_ | —                     |
 
-::: warning `message` fields hold no value
-A `message` field is presentational. It does not appear in `getValues()` at
-all — not even as an empty string. This differs from v1, which emitted `''`.
+::: warning A `message` field has no value
+A `message` field only displays text. It does not appear in `getValues()` at
+all — not even as an empty string. This is different from v1, which returned
+`''` for it.
 :::

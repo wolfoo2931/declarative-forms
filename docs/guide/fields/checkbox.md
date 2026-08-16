@@ -19,8 +19,8 @@ A single checkbox with a caption.
 
 </LiveForm>
 
-Note the value is a real boolean, and the second caption is wrapped in
-[`html()`](/guide/security) so its link renders as markup.
+Note that the value is a real boolean, and that the second caption is wrapped in
+[`html()`](/guide/security) so that its link is rendered as markup.
 
 ## Options
 
@@ -32,10 +32,10 @@ Plus everything in [the shared options](/guide/fields/#options-every-kind-accept
 
 ## `label` vs. `displayName`
 
-They are different things and a checkbox can have both:
+These are two different things, and a checkbox can have both:
 
-- **`label`** is the caption _next to the box_ — the thing being agreed to.
-- **`displayName`** is the field label _above_ it, like any other field.
+- **`label`** is the caption _next to the box_: the thing the user agrees to.
+- **`displayName`** is the label _above_ the field, as on any other field.
 
 ```ts
 {
@@ -48,8 +48,8 @@ They are different things and a checkbox can have both:
 
 ## Links inside the caption
 
-Captions are rendered as **text** by default. For a caption containing a link,
-mark it as HTML explicitly:
+Captions are rendered as **plain text** by default. If a caption contains a
+link, mark it as HTML yourself:
 
 ```ts
 import { html } from 'declarative-forms';
@@ -61,7 +61,7 @@ import { html } from 'declarative-forms';
 }
 ```
 
-See [Text & HTML safety](/guide/security) for why this is opt-in.
+See [Text & HTML safety](/guide/security) for why you have to ask for HTML.
 
 ## Values
 
@@ -71,15 +71,18 @@ The value is a real **`boolean`**, not a string:
 form.getValues()['agree']; // false
 ```
 
-`defaultValue: true` starts it checked. Setting the string `'false'` is treated
-as unchecked, which makes round-tripping serialised values less surprising.
+With `defaultValue: true` the box starts out checked. The string `'false'` is
+treated as unchecked, which helps when values are stored as text and read back
+later.
 
 ## Accessibility note
 
-The caption is correctly associated with the input, so clicking it toggles the
-box. However, the input itself is currently `visibility: hidden` (the visible
-box is drawn by a CSS pseudo-element), which takes it **out of the keyboard tab
-order**. This is a known gap — see [Accessibility](/accessibility) — and is
-scheduled to be fixed. If keyboard operability matters for your use case today,
-prefer [`cards`](/guide/fields/cards) or a two-option
-[`select`](/guide/fields/select).
+The caption is correctly connected to the input, so clicking it checks and
+unchecks the box. But in the classic default stylesheet the input itself is
+`visibility: hidden` — the visible box is drawn by a CSS pseudo-element — which
+takes it **out of the keyboard tab order**. This is a known gap; see
+[Accessibility](/accessibility). It is fixed in
+[the modern theme](/guide/theme), which styles the input directly. If you must
+stay on the default stylesheet and need keyboard operation, use
+[`cards`](/guide/fields/cards) or a [`select`](/guide/fields/select) with two
+options instead.

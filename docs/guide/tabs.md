@@ -1,10 +1,11 @@
 # Tabs
 
-Give fields a `tab` and the dialog grows a tab strip. There is nothing else to
-configure — tabs are derived from the fields, not declared separately.
+Give your fields a `tab` and the dialog gets a tab bar. There is nothing else to
+configure: the tabs come from the fields, and are not declared separately.
 
-Tabs only render in a dialog, so this demo opens one. Note the third tab
-appears only once you tick the box — a tab with no active fields is not shown.
+Tabs are only rendered in a dialog, so this demo opens one. Note that the third
+tab appears only after you check the box: a tab whose fields are all inactive is
+not shown.
 
 <LiveForm mode="modal" open="Open a tabbed dialog">
 
@@ -40,15 +41,16 @@ appears only once you tick the box — a tab with no active fields is not shown.
 
 ## Ordering
 
-Tabs appear in **field declaration order**: the first field mentioning a tab
-fixes that tab's position. Reordering fields reorders the strip.
+Tabs appear **in the order in which the fields are declared**. The first field
+that names a tab decides that tab's position. If you reorder the fields, the tab
+bar changes with them.
 
 ## Empty tabs disappear
 
-A tab is only rendered if at least one of its fields is currently
+A tab is only rendered when at least one of its fields is currently
 [active](/guide/reactivity#isactive-conditional-fields). This is the main reason
-tabs are derived rather than declared — a conditional section vanishes from the
-strip instead of opening onto an empty panel.
+why tabs come from the fields instead of being declared: a conditional section
+disappears from the tab bar, instead of opening an empty page.
 
 ```ts
 {
@@ -59,7 +61,8 @@ strip instead of opening onto an empty panel.
 // The "Advanced" tab only exists while mode === 'expert'.
 ```
 
-If the active tab disappears, the form falls back to the first remaining tab.
+If the tab that is currently open disappears, the form switches to the first
+tab that is left.
 
 ## A field in several tabs
 
@@ -69,12 +72,12 @@ If the active tab disappears, the form falls back to the first remaining tab.
 { name: 'note', displayName: 'Note', tab: ['General', 'Export'] }
 ```
 
-The field is shown whenever either tab is active.
+The field is then shown in both tabs.
 
 ## Computed tabs
 
 `tab` is [reactive](/guide/fields/#reactive-t-literal-or-function), so a field
-can move between tabs:
+can move from one tab to another:
 
 ```ts
 {
@@ -83,18 +86,19 @@ can move between tabs:
 }
 ```
 
-::: tip Static tabs also become a CSS class
-A statically declared `tab` puts its name — whitespace stripped — on the field
-wrapper as a class, so `tab: 'Reference Sources'` yields
-`.ReferenceSources`. This is stamped at construction, so a _computed_ tab
-cannot contribute one. See the [DOM contract](/dom-contract).
+::: tip A fixed tab name also becomes a CSS class
+If `tab` is a fixed string, its name — with the spaces removed — is added to the
+field wrapper as a class. So `tab: 'Reference Sources'` gives you
+`.ReferenceSources`. The class is written when the form is built, so a tab that
+is _calculated_ by a function cannot add one. See the
+[DOM contract](/dom-contract).
 :::
 
 ## Fields with no tab
 
-A field without a `tab` is shown in **every** tab. That makes it the natural
-place for a title field or a summary message that should stay visible as the
-user moves around.
+A field without a `tab` is shown in **every** tab. This is the right choice for
+a title field, or for a summary message that should stay visible while the user
+moves between tabs.
 
 ## Reading and setting the active tab
 
@@ -110,20 +114,22 @@ Switch programmatically:
 form.setActiveTab('Export');
 ```
 
-Called with **no argument**, `setActiveTab()` re-applies the current tab. That
-is useful as a resync after you have changed things underneath the form:
+Called **without an argument**, `setActiveTab()` applies the current tab again.
+This is useful to bring the form back in sync after you have changed something
+behind its back:
 
 ```ts
 form.setActiveTab();
 ```
 
-Selecting a tab that is not currently rendered is a no-op rather than an error,
-so a stale tab name cannot break the dialog.
+Selecting a tab that is not currently rendered does nothing, and is not an
+error, so an old tab name cannot break the dialog.
 
 ## Wizards
 
-Because tab buttons are ordinary sibling elements in `.tabWrapper`, a
-Back/Next wizard is a few lines. This is the pattern used in `examples/main.ts`:
+The tab buttons are ordinary sibling elements inside `.tabWrapper`, so a
+Back/Next wizard takes only a few lines. This is the pattern used in
+`examples/main.ts`:
 
 ```ts
 const modal = form.openInModal();
@@ -135,7 +141,7 @@ function step(delta: number): void {
 }
 ```
 
-Wire it to buttons that do not close the dialog:
+Then connect it to buttons that do not close the dialog:
 
 ```ts
 buttons: {
@@ -149,8 +155,9 @@ See [Buttons](/guide/buttons).
 
 ## Styling
 
-Tab buttons carry `.dl-tab-btn`, the active one adds `.active`, and any tab the
-user has visited keeps `.seen` — handy for wizard progress indicators.
+Every tab button has the class `.dl-tab-btn`. The current one also has
+`.active`, and every tab the user has visited keeps `.seen`, which is useful for
+showing progress in a wizard.
 
 ```css
 .dl-tab-btn.seen:not(.active) {
