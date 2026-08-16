@@ -4,6 +4,12 @@
 import 'declarative-forms/styles.css';
 ```
 
+::: tip Two stylesheets
+This page documents the **classic default** stylesheet and the token set both
+themes share. For the modern light/dark redesign, see
+[Themes](/guide/theme) — the tokens below apply there too.
+:::
+
 The stylesheet is built on a `--dl-*` custom-property layer. Retheme by setting
 tokens rather than overriding rules.
 

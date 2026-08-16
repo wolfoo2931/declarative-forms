@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A second stylesheet, `declarative-forms/theme.css`: a modern redesign with
+  automatic light and dark mode (`prefers-color-scheme`, overridable with
+  `data-dl-theme`), focus rings, fluid widths and a fuller token set. It is a
+  standalone alternative to `styles.css`, renders the identical DOM, and mirrors
+  the default stylesheet's selectors and specificity so existing overrides keep
+  winning. The default stylesheet is unchanged.
+- Under the modern theme, checkboxes are **keyboard-reachable**: the input is
+  styled directly with `appearance: none` rather than hidden behind a
+  pseudo-element. The default stylesheet keeps its existing behaviour.
+
 ## [2.0.0-alpha.0]
 
 Complete rewrite in TypeScript with an object-oriented design.
