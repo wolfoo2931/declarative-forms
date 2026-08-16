@@ -106,15 +106,27 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="live-form__stage">
-      <p class="live-form__label">Live</p>
-
       <p v-if="error" class="live-form__error">{{ error }}</p>
 
-      <button v-if="mode === 'modal'" class="live-form__open" @click="openModal">
-        {{ open }}
-      </button>
+      <!--
+        The canvas is deliberately a different surface from both the docs page
+        and the code block above it, so the boundary of the rendered form is
+        never in doubt: everything inside the frame is the library's output.
+      -->
+      <div
+        class="live-form__canvas"
+        :class="{ 'live-form__canvas--trigger': mode === 'modal' }"
+      >
+        <span class="live-form__canvas-label">
+          {{ mode === 'modal' ? 'Opens a dialog' : 'Rendered form' }}
+        </span>
 
-      <div v-show="mode === 'inline'" ref="formHost" class="live-form__host" />
+        <button v-if="mode === 'modal'" class="live-form__open" @click="openModal">
+          {{ open }}
+        </button>
+
+        <div v-show="mode === 'inline'" ref="formHost" class="live-form__host" />
+      </div>
 
       <template v-if="values">
         <p class="live-form__label">Values</p>
@@ -122,7 +134,7 @@ onBeforeUnmount(() => {
       </template>
 
       <template v-if="submitted">
-        <p class="live-form__label">Submitted</p>
+        <p class="live-form__label">Submitted on confirm</p>
         <pre class="live-form__values live-form__values--ok">{{ submitted }}</pre>
       </template>
     </div>
