@@ -21,13 +21,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
           registry-url: 'https://registry.npmjs.org'
 
-      # Trusted Publishing needs npm >= 11.5.1; Node 20 ships an older npm.
+      # Trusted Publishing needs npm >= 11.5.1. Pin the major: `npm@latest` is
+      # npm 12, which refuses to install on anything below Node 22.22/24.15.
       - name: Upgrade npm
-        run: npm install -g npm@latest
+        run: npm install -g npm@^11.5.1
 
       - name: Install dependencies
         run: npm ci
