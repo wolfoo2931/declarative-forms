@@ -132,7 +132,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     for (const descriptor of this.options.fields) {
       if (this.fieldsByName.has(descriptor.name)) {
         throw new Error(
-          `declarativ-forms: duplicate field name "${descriptor.name}". ` +
+          `declarative-forms: duplicate field name "${descriptor.name}". ` +
             'Field names must be unique within a form.',
         );
       }
@@ -147,7 +147,9 @@ export class DeclarativeForm implements SubForm, StackableDialog {
 
   private async initialize(): Promise<void> {
     await Promise.allSettled(
-      this.fieldList.map((field) => this.scheduler.track(Promise.resolve(field.initialize()))),
+      this.fieldList.map((field) =>
+        this.scheduler.track(Promise.resolve(field.initialize())),
+      ),
     );
     await Promise.allSettled(
       this.fieldList.map((field) => this.scheduler.track(field.applyDefaultValue())),
@@ -213,7 +215,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     const persist = this.options.persistFile;
     if (!persist) {
       throw new Error(
-        'declarativ-forms: a file field needs a `persistFile` handler on the form ' +
+        'declarative-forms: a file field needs a `persistFile` handler on the form ' +
           'to turn the picked File into a storable URL.',
       );
     }
@@ -277,11 +279,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
    * @param force run even when nothing changed
    * @param includeTab treat a tab switch as a change
    */
-  async update(
-    source?: FieldHandle,
-    force = false,
-    includeTab = false,
-  ): Promise<void> {
+  async update(source?: FieldHandle, force = false, includeTab = false): Promise<void> {
     const values = this.getValues();
     const changed = this.model.hasChanged(values, includeTab);
     if (!changed && !force) return;

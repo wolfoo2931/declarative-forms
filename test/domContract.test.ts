@@ -89,7 +89,9 @@ describe('control elements per kind', () => {
     const form = await makeForm({
       fields: [{ name: 'f', kind: 'computed', compute: () => '' }],
     });
-    expect(form.field('f')!.wrapper.classList.contains('dl-form-hidden-field')).toBe(true);
+    expect(form.field('f')!.wrapper.classList.contains('dl-form-hidden-field')).toBe(
+      true,
+    );
   });
 });
 
@@ -231,9 +233,9 @@ describe('dl-select DOM', () => {
       ],
     });
 
-    expect(form.field('template')!.element.querySelector('.dl-option-tag')?.textContent).toBe(
-      'Offline',
-    );
+    expect(
+      form.field('template')!.element.querySelector('.dl-option-tag')?.textContent,
+    ).toBe('Offline');
   });
 });
 
@@ -256,7 +258,9 @@ describe('array field DOM', () => {
     expect(el.querySelector('.check.dl-form-array-of-suggestion')).not.toBeNull();
     expect(el.querySelector('.dl-form-array-of-entry')).not.toBeNull();
     expect(el.querySelector('.dl-form-array-of-entry .edit-array-of-btn')).not.toBeNull();
-    expect(el.querySelector('.dl-form-array-of-entry .delete-array-of-btn')).not.toBeNull();
+    expect(
+      el.querySelector('.dl-form-array-of-entry .delete-array-of-btn'),
+    ).not.toBeNull();
     expect(el.querySelector('.dl-form-array-of-add-entry')).not.toBeNull();
   });
 });
@@ -290,7 +294,10 @@ describe('tooltip DOM', () => {
       apply();
 
       expect(
-        form.field('a')!.wrapper.querySelector('.dl-tooltip')!.classList.contains(className),
+        form
+          .field('a')!
+          .wrapper.querySelector('.dl-tooltip')!
+          .classList.contains(className),
       ).toBe(true);
     },
   );

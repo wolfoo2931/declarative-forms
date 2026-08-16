@@ -5,7 +5,7 @@
  * does not work without them — the options popup is absolutely positioned and
  * toggled through these rules. Everything here is themable through the `--dl-*`
  * custom properties, and the form/modal chrome ships separately as
- * `declarativ-forms/styles.css`.
+ * `declarative-forms/styles.css`.
  *
  * v1 appended this on `window.load` as an import side effect, which broke SSR
  * and leaked between tests. It is now injected lazily, the first time a
@@ -188,7 +188,7 @@ export function injectStyles(): void {
   injected = true;
 
   const style = document.createElement('style');
-  style.setAttribute('data-declarativ-forms', 'dl-select');
+  style.setAttribute('data-declarative-forms', 'dl-select');
   style.textContent = DL_SELECT_STYLES;
   (document.head ?? document.documentElement).appendChild(style);
 }

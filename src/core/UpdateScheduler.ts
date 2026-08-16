@@ -37,7 +37,7 @@ export class UpdateScheduler {
     while (this.pending.size > 0) {
       if (++guard > 100) {
         throw new Error(
-          'declarativ-forms: form updates did not settle after 100 rounds — ' +
+          'declarative-forms: form updates did not settle after 100 rounds — ' +
             'a field callback is most likely scheduling work on every update.',
         );
       }

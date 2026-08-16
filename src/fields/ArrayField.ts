@@ -171,7 +171,9 @@ export class ArrayField extends Field<ArrayFieldDescriptor> {
     if (this.descriptor.renderEntry) return this.descriptor.renderEntry(entry);
 
     return Object.values(entry)
-      .filter((value): value is string => typeof value === 'string' && value.trim() !== '')
+      .filter(
+        (value): value is string => typeof value === 'string' && value.trim() !== '',
+      )
       .join(', ');
   }
 
