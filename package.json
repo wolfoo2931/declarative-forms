@@ -1,6 +1,6 @@
 {
   "name": "declarative-forms",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Declarative, data-driven form dialogs for the web. Zero dependencies, framework agnostic, with async options, cross-field reactivity, tabs and modal stacking.",
   "type": "module",
   "sideEffects": [
@@ -17,8 +17,9 @@
       "require": "./dist/index.cjs"
     },
     "./styles.css": "./styles/declarative-forms.css",
-    "./theme.css": "./styles/theme.css",
-    "./assets/default.css": "./styles/declarative-forms.css",
+    "./theme.css": "./styles/declarative-forms.css",
+    "./classic.css": "./styles/classic.css",
+    "./assets/default.css": "./styles/classic.css",
     "./package.json": "./package.json"
   },
   "files": [

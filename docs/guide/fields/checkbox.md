@@ -78,11 +78,12 @@ later.
 ## Accessibility note
 
 The caption is correctly connected to the input, so clicking it checks and
-unchecks the box. But in the classic default stylesheet the input itself is
-`visibility: hidden` — the visible box is drawn by a CSS pseudo-element — which
-takes it **out of the keyboard tab order**. This is a known gap; see
-[Accessibility](/accessibility). It is fixed in
-[the modern theme](/guide/theme), which styles the input directly. If you must
-stay on the default stylesheet and need keyboard operation, use
-[`cards`](/guide/fields/cards) or a [`select`](/guide/fields/select) with two
-options instead.
+unchecks the box, and under the default stylesheet the input is a real focusable
+control.
+
+In [`classic.css`](/guide/theme#staying-on-the-classic-look) it is not: the
+input is `visibility: hidden` and the visible box is drawn by a CSS
+pseudo-element, which takes it **out of the keyboard tab order**. See
+[Accessibility](/accessibility). If you are staying on the classic look and need
+keyboard operation, use [`cards`](/guide/fields/cards) or a
+[`select`](/guide/fields/select) with two options instead.

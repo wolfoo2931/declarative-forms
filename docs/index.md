@@ -25,7 +25,7 @@ rendering.
 <LiveForm mode="program" stage="top" open="Open the release dialog">
 
 ```ts
-import 'declarative-forms/theme.css';
+import 'declarative-forms/styles.css';
 import { DeclarativeForm, html } from 'declarative-forms';
 
 // Pretend this is your API. Any options function may be async.

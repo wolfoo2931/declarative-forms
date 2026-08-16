@@ -147,10 +147,10 @@ test.describe('demos are genuinely interactive', () => {
     );
   });
 
-  test('the modern theme makes checkboxes keyboard-reachable', async ({ page }) => {
-    // The docs are styled with `theme.css`, which styles the input directly
-    // instead of hiding it behind a pseudo-element. The default stylesheet
-    // still uses `visibility: hidden`, so this holds only for the new theme.
+  test('the default stylesheet makes checkboxes keyboard-reachable', async ({ page }) => {
+    // The docs are styled with the default stylesheet, which styles the input
+    // directly instead of hiding it behind a pseudo-element. `classic.css`
+    // still uses `visibility: hidden`, so this holds only for the default.
     // See docs/accessibility.md and docs/guide/theme.md.
     await open(page, '/guide/fields/checkbox');
 

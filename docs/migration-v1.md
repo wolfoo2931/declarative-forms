@@ -31,11 +31,18 @@ Stylesheet:
 
 ```diff
 - @import "declarativ_forms/assets/default.css";
-+ @import "declarative-forms/styles.css";
++ @import "declarative-forms/classic.css";
 ```
 
 `declarative-forms/assets/default.css` is still a valid export path mapped to
 the same file, so that import can stay if you prefer a one-word diff.
+
+::: warning `styles.css` is not the v1 look
+The v1 stylesheet is `classic.css`. `declarative-forms/styles.css` is the
+package's own default — a [modern light/dark theme](/guide/theme) that renders
+the identical DOM but looks different. Import it deliberately, not as part of
+the rename.
+:::
 
 ## Constructor
 

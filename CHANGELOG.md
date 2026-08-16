@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+The next release is a **major** one: the stylesheet you get by default changes.
+
+### Changed
+
+- **Breaking: `declarative-forms/styles.css` is now the modern theme.** It was
+  the v1 look; the modern light/dark redesign that 2.0 shipped as an opt-in
+  `theme.css` is what a plain `styles.css` import renders from now on. A first
+  install should look current without having to find a second import.
+- **The v1 look moved to `declarative-forms/classic.css`.** It is byte-for-byte
+  the same stylesheet, still tokenised, still shipped. Installations whose
+  overrides were written against it need a one-word import change.
+- `declarative-forms/assets/default.css` — the v1 export path — now maps to
+  `classic.css`, which is the file it always rendered. A migration that kept
+  that path sees no change at all.
+- `declarative-forms/theme.css` still resolves, now to the same file as
+  `styles.css`, so a 2.0 opt-in import keeps working. Prefer `styles.css`.
+- Consequently, **checkboxes are keyboard-reachable by default**: the input is
+  styled with `appearance: none` rather than hidden behind a pseudo-element.
+  `classic.css` keeps the old, unreachable markup.
+
+### Migration
+
+- Want the new look: change nothing.
+- Want the old look: `import 'declarative-forms/classic.css'` instead of
+  `styles.css`.
+- Overrides that assumed the classic geometry (400px fields, 416px dialogs) or
+  painted the checkbox pseudo-element need either `classic.css` or the
+  `--dl-field-width` / `--dl-modal-width` tokens. See
+  [Themes](https://wolfoo2931.github.io/declarative-forms/guide/theme).
+
+## [2.0.0] — 2026-08-16
+
 ### Added
 
 - A second stylesheet, `declarative-forms/theme.css`: a modern redesign with
@@ -111,5 +143,6 @@ keep working. See the [migration guide](https://wolfoo2931.github.io/declarative
 - Buttons flashed disabled on every keystroke, and a well-timed click could be
   dropped.
 
-[Unreleased]: https://github.com/wolfoo2931/declarative-forms/compare/v2.0.0-alpha.0...HEAD
+[Unreleased]: https://github.com/wolfoo2931/declarative-forms/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/wolfoo2931/declarative-forms/compare/v2.0.0-alpha.0...v2.0.0
 [2.0.0-alpha.0]: https://github.com/wolfoo2931/declarative-forms/releases/tag/v2.0.0-alpha.0

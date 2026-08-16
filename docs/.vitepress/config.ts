@@ -10,7 +10,7 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
 
-  head: [['meta', { name: 'theme-color', content: '#1ea6a3' }]],
+  head: [['meta', { name: 'theme-color', content: '#12968f' }]],
 
   themeConfig: {
     nav: [

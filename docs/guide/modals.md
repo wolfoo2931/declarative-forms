@@ -120,7 +120,7 @@ on the screen. If your own theme animates `.dl-modal` when it appears, skip that
 animation for these two classes. Otherwise the page flashes while one backdrop
 replaces the other.
 
-With [the modern theme](/guide/theme), a stacked dialog shows the dialogs below
+With [the default stylesheet](/guide/theme), a stacked dialog shows the dialogs below
 it as card edges that stick out above it: one edge when a single dialog is
 below, two edges when there are more. Change their size with `--dl-stack-peek`
 (how far they stick out, `8px`) and `--dl-stack-inset` (how much narrower each
@@ -133,7 +133,7 @@ edge is, `12px`), or remove them completely:
 }
 ```
 
-The classic default stylesheet does not draw these edges at all.
+`classic.css` does not draw these edges at all.
 
 Stacking is what makes [array entry dialogs](/guide/fields/array) work, and you
 can use it directly:

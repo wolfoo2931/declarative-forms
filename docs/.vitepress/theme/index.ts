@@ -3,9 +3,9 @@ import { useData } from 'vitepress';
 import { watchEffect } from 'vue';
 import type { Theme } from 'vitepress';
 
-// The modern theme, so the demos show what the library looks like out of the
-// box. Swap for `declarative-forms.css` to preview the classic default.
-import '../../../styles/theme.css';
+// The default stylesheet, so the demos show what the library looks like out of
+// the box. Swap for `classic.css` to preview the classic look.
+import '../../../styles/declarative-forms.css';
 import './demo.css';
 
 import LiveForm from './LiveForm.vue';

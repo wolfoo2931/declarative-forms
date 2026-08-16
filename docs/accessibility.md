@@ -54,28 +54,27 @@ tooltip content is reachable without a pointer. The bubble carries
 <kbd>↑</kbd> / <kbd>↓</kbd> / <kbd>Enter</kbd> work in `<dl-select>`, filtering
 as you type, with focus following the highlighted option.
 
+### Keyboard-reachable checkboxes
+
+Only under the **default** stylesheet, and the reason it became the default.
+
+The classic stylesheet hides `.dl-form form .check input` with
+`visibility: hidden` and paints the visible box with an
+`input[type=checkbox]:before` pseudo-element that re-asserts
+`visibility: visible`. A hidden input is removed from **both** the tab order and
+the accessibility tree: clicking the label works, but the field cannot be
+reached or toggled by keyboard, and a screen reader will not announce it.
+
+`declarative-forms/styles.css` styles the input directly with
+`appearance: none`, so the checkbox is a real focusable control. If you are
+[staying on the classic look](/guide/theme#staying-on-the-classic-look) this gap
+still applies; for a keyboard-critical yes/no there, use a two-option
+[`select`](/guide/fields/select) or [`cards`](/guide/fields/cards).
+
 ## Known gaps
 
 These are **not fixed**. They are scheduled as a dedicated accessibility
 milestone.
-
-### Checkboxes are not keyboard-reachable
-
-The most serious one. `.dl-form form .check input` is `visibility: hidden`, with
-the visible box painted by an `input[type=checkbox]:before` pseudo-element that
-re-asserts `visibility: visible`. A hidden input is removed from **both** the
-tab order and the accessibility tree.
-
-Clicking the label works — that is how the test suite drives it — but the field
-cannot be reached or toggled by keyboard, and a screen reader will not announce
-it.
-
-Fixing it means replacing the pseudo-element technique with `appearance: none`
-styling on the input itself, which changes [frozen CSS](/dom-contract), so it
-was deferred rather than slipped in.
-
-**Workaround:** for a keyboard-critical yes/no, use a two-option
-[`select`](/guide/fields/select) or [`cards`](/guide/fields/cards).
 
 ### Dialogs lack dialog semantics
 
@@ -118,8 +117,9 @@ Tooltip state changes (`setTooltipError`) are visual only and are not announced.
 
 ### Unaudited
 
-- Colour contrast of the default theme has not been formally checked.
-- No `prefers-reduced-motion` handling for the loading shimmer or spinner.
+- Colour contrast of neither stylesheet has been formally checked.
+- No `prefers-reduced-motion` handling for the loading shimmer or spinner. The
+  dialog animations of the default stylesheet do respect it.
 - No automated axe run in CI yet.
 
 ## What the milestone will do
@@ -129,16 +129,15 @@ Tooltip state changes (`setTooltipError`) are visual only and are not announced.
 2. `TabBar`: full tablist semantics, roving tabindex, arrow keys.
 3. `DlSelect` / `DlOption`: combobox and option roles plus the ARIA state
    attributes.
-4. Checkbox: keyboard-reachable input (a coordinated CSS change).
-5. Tooltip trigger as a focusable `<button>` with `aria-describedby`;
+4. Tooltip trigger as a focusable `<button>` with `aria-describedby`;
    `aria-invalid` and a live region for messages.
-6. Automated axe checks in the Playwright suite, plus keyboard-only
+5. Automated axe checks in the Playwright suite, plus keyboard-only
    walkthroughs.
 
-Most of this is **additive** — adding attributes does not break the
+All of this is **additive** — adding attributes does not break the
 [DOM contract](/dom-contract), which is why the v2 architecture was arranged to
-make it a wiring job rather than another rewrite. The checkbox fix is the one
-item that genuinely touches frozen CSS.
+make it a wiring job rather than another rewrite. The one item that genuinely
+touched frozen CSS, the checkbox, is why the modern stylesheet exists at all.
 
 ## Reporting
 

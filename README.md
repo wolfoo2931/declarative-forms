@@ -104,11 +104,16 @@ This is why the project feels more like a small “form engine” than a typical
 npm install declarative-forms
 ```
 
-And include the default CSS:
+And include the stylesheet:
 
 ```ts
 import 'declarative-forms/styles.css';
 ```
+
+That is the default look — a modern theme that follows the operating system's
+light/dark setting. The v1 look is still shipped as
+`declarative-forms/classic.css` for installations with overrides written
+against it.
 
 ## Example: modal form
 
@@ -186,7 +191,7 @@ Full documentation is at **[wolfoo2931.github.io/declarative-forms](https://wolf
 
 Worth knowing before you adopt it:
 
-- **Accessibility is a work in progress.** Labels, ids and focusable buttons are correct; dialog semantics, combobox ARIA and keyboard-reachable checkboxes are not there yet. The [accessibility page](https://wolfoo2931.github.io/declarative-forms/accessibility) lists every known gap.
+- **Accessibility is a work in progress.** Labels, ids, focusable buttons and — under the default stylesheet — keyboard-reachable checkboxes are correct; dialog semantics and combobox ARIA are not there yet. The [accessibility page](https://wolfoo2931.github.io/declarative-forms/accessibility) lists every known gap.
 - **There is no validation framework.** `isActive` handles conditional fields and button predicates gate submission, but there is no rule engine or error-message system.
 - **The rendered DOM is a frozen contract.** Class names, ids and structure are stable across the v1 → v2 rewrite, so existing stylesheets keep working. See the [DOM contract](https://wolfoo2931.github.io/declarative-forms/dom-contract).
 

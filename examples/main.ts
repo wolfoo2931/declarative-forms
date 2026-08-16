@@ -1,4 +1,5 @@
 // In your own app this is `import 'declarative-forms/styles.css'`.
+// Swap for `../styles/classic.css` to see the same demos in the classic look.
 import '../styles/declarative-forms.css';
 import { DeclarativeForm, html } from '../src/index.js';
 import type { FormValues } from '../src/index.js';

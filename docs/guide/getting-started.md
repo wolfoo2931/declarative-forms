@@ -12,6 +12,10 @@ Import the stylesheet once, anywhere in your app:
 import 'declarative-forms/styles.css';
 ```
 
+That is the default look, and it follows the operating system's light/dark
+setting on its own. The v1 look is still shipped as
+[`declarative-forms/classic.css`](/guide/theme#staying-on-the-classic-look).
+
 The package contains an ESM build and a CJS build, both with TypeScript
 declarations, and it has **no runtime dependencies**.
 
