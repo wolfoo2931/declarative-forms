@@ -112,6 +112,23 @@ test.describe('demos are genuinely interactive', () => {
     );
   });
 
+  test('the modern theme makes checkboxes keyboard-reachable', async ({ page }) => {
+    // The docs are styled with `theme.css`, which styles the input directly
+    // instead of hiding it behind a pseudo-element. The default stylesheet
+    // still uses `visibility: hidden`, so this holds only for the new theme.
+    // See docs/accessibility.md and docs/guide/theme.md.
+    await open(page, '/guide/fields/checkbox');
+
+    const box = page.locator('#dl-form-field-wrapper-for-agree input').first();
+    await expect(box).toBeVisible();
+
+    await box.focus();
+    await expect(box).toBeFocused();
+
+    await page.keyboard.press('Space');
+    await expect(box).toBeChecked();
+  });
+
   test('html() renders markup while a plain string does not', async ({ page }) => {
     await open(page, '/guide/security');
 

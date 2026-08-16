@@ -51,8 +51,10 @@ function instrument(options: DeclarativeFormOptions): DeclarativeFormOptions {
 
   return {
     ...options,
-    // Every demo dialog stays dismissable, even if the snippet omits it.
-    onCancel: options.onCancel ?? (() => undefined),
+    // A modal demo stays dismissable even if the snippet omits `onCancel`;
+    // an embedded one has nothing to dismiss, so it must not grow a ✕.
+    onCancel:
+      props.mode === 'modal' ? (options.onCancel ?? (() => undefined)) : undefined,
     onConfirm: (values) => {
       submitted.value = show(values);
       return userConfirm?.(values);
