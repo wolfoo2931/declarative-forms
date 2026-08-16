@@ -1,11 +1,35 @@
 {
-  // Change this to match your project
-  "include": ["src/**/*.js"],
   "compilerOptions": {
-    "allowJs": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["vitest/globals"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "useUnknownInCatchVariables": true,
+
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "outFile": "types/main.d.ts",
-    "declarationMap": true
-  }
+    "declarationMap": true,
+    "sourceMap": true,
+    "noEmit": true,
+
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "e2e/**/*.ts",
+    "examples/**/*.ts",
+    "*.config.ts"
+  ],
+  "exclude": ["node_modules", "dist", "docs/.vitepress/cache"]
 }
