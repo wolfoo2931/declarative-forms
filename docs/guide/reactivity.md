@@ -4,7 +4,7 @@ This is the part that makes the library worth using. A descriptor is not a
 static schema. Most of its options can be **functions of the current form
 data**, and the library runs them again whenever something changes.
 
-There are four mechanisms, each for a different job:
+There are five mechanisms, each for a different job:
 
 | Mechanism                                                    | Question it answers                              |
 | ------------------------------------------------------------ | ------------------------------------------------ |
@@ -12,6 +12,7 @@ There are four mechanisms, each for a different job:
 | [`reloadOnChangeOf`](#reloadonchangeof-dependent-async-data) | Which changes should reload my options?          |
 | [`compute`](/guide/fields/computed)                          | Which value is calculated from the other values? |
 | [`onFormChange`](#onformchange-side-effects)                 | What should happen elsewhere when values change? |
+| [`setTooltipError`](/guide/validation)                       | What is wrong with what the user just typed?     |
 
 On top of that, the general [`Reactive<T>`](#reactive-options) options accept a
 function as well: `placeholder`, `message`, `tab`, `defaultValue` and
@@ -169,12 +170,27 @@ things that happen outside the form: updating a preview, saving a draft.
 the update was started from code. Checking it stops your effect from running on
 every unrelated change.
 
-::: warning Do not set form values here
-Setting a value inside `onFormChange` starts the update cycle again. Use a
-[`computed`](/guide/fields/computed) field for calculated values instead. The
-library protects itself against endless loops, but it throws an error if the
-updates never come to an end.
+::: warning Guard any value you write from here
+Setting a value inside `onFormChange` starts the update cycle again, which calls
+`onFormChange` again. That is fine for the case it exists for — filling fields
+in from a lookup — as long as you write only what actually changed:
+
+```ts
+if (data[name] !== value) form.field(name)?.setValue(value);
+```
+
+Without that guard it is an endless loop, and the library throws rather than
+hangs. For a value derived purely from other values, do not write it at all —
+use a [`computed`](/guide/fields/computed) field. See
+[Validation](/guide/validation#filling-fields-in-from-a-lookup).
 :::
+
+## Validation
+
+`onFormChange` plus `trigger` is also where per-field validation goes: run the
+check, then report it with `form.setTooltipError(name, …)`. Because the message
+and the submit gate are separate, this has a page of its own —
+see [Validation](/guide/validation).
 
 ## Reactive options
 

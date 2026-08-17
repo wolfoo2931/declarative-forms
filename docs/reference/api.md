@@ -160,6 +160,10 @@ restores the original text and the `?` icon.
 
 Scoped to the form, so two forms with a same-named field do not collide.
 
+These are the library's error-reporting channel: call them from a field's
+`onFormChange` to validate input. They only display — they do not disable the
+confirm button. See [Validation](/guide/validation).
+
 ## Buttons
 
 ```ts
