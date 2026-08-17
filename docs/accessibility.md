@@ -113,7 +113,10 @@ no accessible name.
 ### No validation semantics
 
 There is no `aria-invalid`, no error-message association, and no live region.
-Tooltip state changes (`setTooltipError`) are visual only and are not announced.
+Tooltip state changes (`setTooltipError`) are visual only and are not announced,
+so a screen-reader user gets no notice that a field they just left is in an
+error state. This is the main accessibility caveat on
+[Validation](/guide/validation).
 
 ### Unaudited
 

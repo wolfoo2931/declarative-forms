@@ -2,8 +2,8 @@
 
 **Ask the user for an object, the way `prompt()` asks for a string.**
 
-Every other form library gives you a *component to mount*. This one gives you a
-*function to call*. There is no component, no form state, no mount point, and no
+Every other form library gives you a _component to mount_. This one gives you a
+_function to call_. There is no component, no form state, no mount point, and no
 place in your tree where the form has to live. You ask a question from wherever
 you happen to be standing in your code, and you get the answer back.
 
@@ -48,14 +48,13 @@ const { register, handleSubmit } = useForm();
 return (
   <Modal open={open} onClose={() => setOpen(false)}>
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('title')} />
-      …
+      <input {...register('title')} />…
     </form>
   </Modal>
 );
 ```
 
-Now the form has a *location*. It needs a parent, a piece of `open` state, a
+Now the form has a _location_. It needs a parent, a piece of `open` state, a
 close handler, a submit handler, and a route from the answer back to the code
 that wanted it. For a product's signup page, that is fine — you were going to
 lay that page out anyway. For the two hundredth settings dialog in an internal
@@ -100,8 +99,8 @@ main-window script, or a `<script type="module">` tag in a static page. It never
 touches your render tree, so there is nothing to integrate.
 
 **The descriptor is live, not static.** `options`, `isActive`, `defaultValue`,
-`placeholder`, `message`, `tab` and `compute` may each be a *function of the
-current values*, and `reloadOnChangeOf` declares which field depends on which.
+`placeholder`, `message`, `tab` and `compute` may each be a _function of the
+current values_, and `reloadOnChangeOf` declares which field depends on which.
 Options loaded from your API that change when another field changes are the
 core feature, not an extension point.
 
@@ -171,9 +170,12 @@ Plainly, so you can rule it out fast:
 - **It is not a general-purpose form library.** It renders one fixed layout. If
   you need control over the markup — a product signup page, a marketing form —
   use a state library and write the markup yourself.
-- **There is no validation framework.** `isActive` hides fields, and
-  `isValidRecord` and a button's `isActive` gate submission, but there are no
-  validation rules, no error messages, and no schema validation.
+- **There is no validation framework.** No `required`, no rule objects, no
+  schema. There _are_ per-field error, warning and loading messages
+  (`setTooltipError` and friends), and `isValidRecord` and a button's `isActive`
+  gate submission — but you write each check yourself, and the message and the
+  gate are separate things you wire up separately. See
+  [Validation](https://wolfoo2931.github.io/declarative-forms/guide/validation).
 - **Accessibility is unfinished.** Labels, ids, focusable buttons and
   keyboard-reachable checkboxes are correct. Dialog semantics, a focus trap, and
   combobox ARIA are not. Read
@@ -189,6 +191,7 @@ Plainly, so you can rule it out fast:
 - [Getting started](https://wolfoo2931.github.io/declarative-forms/guide/getting-started)
 - [Field kinds](https://wolfoo2931.github.io/declarative-forms/guide/fields/)
 - [Reactivity](https://wolfoo2931.github.io/declarative-forms/guide/reactivity) — `isActive`, `reloadOnChangeOf`, computed fields
+- [Validation](https://wolfoo2931.github.io/declarative-forms/guide/validation) — checks, tooltip messages, gating submit
 - [Modals & stacking](https://wolfoo2931.github.io/declarative-forms/guide/modals)
 - [API reference](https://wolfoo2931.github.io/declarative-forms/reference/api)
 - [Migrating from v1](https://wolfoo2931.github.io/declarative-forms/migration-v1)

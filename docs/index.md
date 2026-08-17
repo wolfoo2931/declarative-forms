@@ -308,10 +308,12 @@ Said plainly, so you can rule it out quickly:
 
 - It is **not a general-purpose form library**. It renders one fixed layout. If
   you need full control over the markup, use a state library instead.
-- It has **no validation framework**. `isActive` hides fields, and
-  `isValidRecord` and a button's `isActive` control when the form can be
-  submitted — but there are no validation rules, no error messages, and no
-  schema validation.
+- It has **no validation framework**. There is no `required`, no rule objects
+  and no schema. Per-field error, warning and loading messages do exist
+  (`setTooltipError` and friends), and `isValidRecord` and a button's `isActive`
+  control when the form can be submitted — but every check is code you write,
+  and showing the message is separate from blocking the submit. See
+  [Validation](/guide/validation).
 - **Accessibility is not finished.** Labels, ids and focusable buttons are
   correct. Dialog semantics, ARIA for the combobox, and checkboxes you can reach
   with the keyboard are still missing. Read [Accessibility](/accessibility) for
@@ -324,5 +326,6 @@ Said plainly, so you can rule it out quickly:
 - [Getting started](/guide/getting-started) — install and build your first form
 - [Field kinds](/guide/fields/) — the ten built-in kinds
 - [Reactivity](/guide/reactivity) — the part that makes this library worth using
+- [Validation](/guide/validation) — checks, tooltip messages, gating the submit
 - [Migrating from v1](/migration-v1) — if you still use the pre-TypeScript
   version

@@ -171,6 +171,42 @@ v2 never writes back onto your descriptor objects, so they can be shared,
 frozen or generated. `form.field(name)` returns a typed handle with
 `getValue`, `setValue`, `focus`, `setLoading`, `element` and `wrapper`.
 
+## The validation pattern carries over unchanged
+
+The v1 idiom — one throttled `onFormChange` that switches on the trigger's name
+and writes the verdict onto a tooltip — works in v2 as written, apart from the
+context and `domElement` renames above:
+
+```diff
+- onFormChange: throttle(100, (formData, dFrom, triggerElement) => {
+-   if (!triggerElement) return;
+-   if (triggerElement.name === 'author') checkAuthor(formData, dFrom);
+- })
++ onFormChange: throttle(100, ({ data, form, trigger }) => {
++   if (!trigger) return;
++   if (trigger.name === 'author') checkAuthor(data, form);
++ })
+```
+
+`setTooltip`, `setTooltipSuccess`, `setTooltipWarning`, `setTooltipError`,
+`resetTooltip` and `setActiveTab` keep their names and signatures, and the class
+names they apply (`tooltip-error`, `tooltip-warning`, `tooltip-success`,
+`tooltip-loading`) are unchanged, so custom tooltip CSS keeps working.
+`setTooltip(name, text, '', 'tooltip-loading')` now has a shorthand:
+`setTooltipLoading(name, text)`.
+
+Two things did change:
+
+- Tooltips are **scoped per form**. v1 resolved the marker with
+  `document.querySelector`, so a nested dialog could overwrite the message of a
+  same-named field in the dialog underneath it. It no longer can.
+- Values written from inside `onFormChange` — the "paste a DOI and the form
+  fills itself in" flow — must keep their `formData[name] !== value` guard. v1
+  tolerated a redundant write; v2 throws
+  `form updates did not settle after 100 rounds` instead of looping forever.
+
+See [Validation](/guide/validation) for the whole pattern written out.
+
 ## Behaviour changes
 
 Five differences that are not just renames.

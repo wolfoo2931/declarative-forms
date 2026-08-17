@@ -65,8 +65,17 @@ marker sits inside the input instead of next to the label.
 { name: 'key', displayName: 'Key', tooltip: { text: 'Secret.', inInput: true } }
 ```
 
-You can also change a tooltip while the form is open — see
-[`setTooltipError` and the related methods](/reference/api#tooltips).
+You can also change a tooltip while the form is open — this is how a field
+reports an error, a warning or a pending check. See
+[Validation](/guide/validation) for the pattern, and
+[`setTooltipError` and the related methods](/reference/api#tooltips) for the
+signatures.
+
+::: tip A field with no `tooltip` cannot show a message
+`setTooltipError` and friends are silent no-ops when the descriptor declares no
+`tooltip`, because there is no marker to write on. Declare one for any field you
+intend to validate.
+:::
 
 ## `Reactive<T>`: literal or function
 

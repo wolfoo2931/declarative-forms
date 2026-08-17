@@ -51,6 +51,7 @@ export default defineConfig({
         text: 'Guide',
         items: [
           { text: 'Reactivity', link: '/guide/reactivity' },
+          { text: 'Validation', link: '/guide/validation' },
           { text: 'Tabs', link: '/guide/tabs' },
           { text: 'Modals & stacking', link: '/guide/modals' },
           { text: 'Buttons', link: '/guide/buttons' },
