@@ -49,7 +49,11 @@ write once, on top of the public API, and then never think about again:
 
 ```ts
 import { DeclarativeForm } from 'declarative-forms';
-import type { DeclarativeFormOptions, FieldDescriptor, FormValues } from 'declarative-forms';
+import type {
+  DeclarativeFormOptions,
+  FieldDescriptor,
+  FormValues,
+} from 'declarative-forms';
 
 /** Open a dialog and resolve with its values, or `undefined` if dismissed. */
 export function ask(
@@ -150,7 +154,7 @@ it plain control flow:
 ```ts
 async function setUpProject() {
   const project = await ask(projectFields);
-  if (!project) return;                                  // user dismissed
+  if (!project) return; // user dismissed
 
   while (!(await isNameFree(project['name']))) {
     const retry = await ask(nameFields, { confirmLabel: 'Try again' });
@@ -206,14 +210,14 @@ See [Modals & stacking](/guide/modals) for the full behaviour, including how
 `ask` throws away the form object, which is the right trade for a dialog you
 open and forget. Keep the object when you need any of this:
 
-| You need                             | Use                                        |
-| ------------------------------------ | ------------------------------------------ |
-| A form embedded in a page, not a dialog | [`appendInElement`](/guide/modals#embedded-in-the-page) |
-| Live values as the user types        | [`subscribeOnInput`](/guide/getting-started#reading-values) |
-| To set or read one field from code   | [`form.field(name)`](/guide/getting-started#controlling-a-single-field-from-code) |
-| To close the form from elsewhere     | [`close` / `cancel` / `remove`](/guide/modals#closing) |
-| Several buttons, or wizard steps     | [Buttons](/guide/buttons)                  |
-| Values before the user does anything | [`whenReady`](/guide/getting-started#waiting-for-setup) |
+| You need                                | Use                                                                               |
+| --------------------------------------- | --------------------------------------------------------------------------------- |
+| A form embedded in a page, not a dialog | [`appendInElement`](/guide/modals#embedded-in-the-page)                           |
+| Live values as the user types           | [`subscribeOnInput`](/guide/getting-started#reading-values)                       |
+| To set or read one field from code      | [`form.field(name)`](/guide/getting-started#controlling-a-single-field-from-code) |
+| To close the form from elsewhere        | [`close` / `cancel` / `remove`](/guide/modals#closing)                            |
+| Several buttons, or wizard steps        | [Buttons](/guide/buttons)                                                         |
+| Values before the user does anything    | [`whenReady`](/guide/getting-started#waiting-for-setup)                           |
 
 ```ts
 const form = new DeclarativeForm({ fields, onConfirm, onCancel });

@@ -85,11 +85,7 @@ function compileProgram(): void {
     ...args: string[]
   ) => (form: typeof DeclarativeForm, h: typeof html) => Promise<void>;
 
-  const program = new AsyncFunction(
-    'DeclarativeForm',
-    'html',
-    `"use strict";\n${body}`,
-  );
+  const program = new AsyncFunction('DeclarativeForm', 'html', `"use strict";\n${body}`);
 
   run = () => {
     let isRoot = true;
