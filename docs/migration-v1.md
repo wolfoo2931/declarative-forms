@@ -69,6 +69,43 @@ new DeclarativeForm({
 `parentForm` is gone — nesting is handled internally, and child forms read
 outward via `ctx.parentData` / `ctx.stackData`.
 
+## Prefilling from an object
+
+The v1 idiom for editing a record was to walk the descriptors and write the
+object onto them before constructing:
+
+```js
+fields.forEach((field) => {
+  field.defaultValue = ref[field.name] || field.defaultValue;
+});
+```
+
+**This still works unchanged in v2.** `defaultValue` is read from the descriptor
+you pass in, so seeding it yourself has the same effect it always had — and
+because v2 never writes back onto your descriptors, doing it on a copy is now
+the safer spelling:
+
+```js
+const seeded = fields.map((field) => ({
+  ...field,
+  defaultValue: ref[field.name] ?? field.defaultValue,
+}));
+```
+
+v2 also makes it a first-class option, so the loop is no longer needed at all:
+
+```js
+new DeclarativeForm({ fields, defaultValues: ref, onConfirm: save });
+await ask(fields, { defaultValues: ref });
+```
+
+Extra keys on `ref` are ignored, so the whole record can go in as-is. See
+[Editing an object](/guide/editing).
+
+`mapFieldsOnEdit` on an `array` field is untouched: entry dialogs are still
+seeded by copying the entry onto the entry fields' `defaultValue` before your
+hook runs, exactly as in v1.
+
 ## Field descriptors gain `kind`
 
 v1 inferred the field type from _which optional key happened to be present_.

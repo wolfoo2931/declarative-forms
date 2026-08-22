@@ -44,6 +44,7 @@ dialog open. With `dismissable: false`, make sure some button closes the dialog
 ```ts
 interface DeclarativeFormOptions {
   fields: readonly FieldDescriptor[];
+  defaultValues?: FormValues;
   buttons?: ButtonMap;
   confirmLabel?: string;
   onConfirm?: (values: FormValues) => unknown;
@@ -57,6 +58,7 @@ interface DeclarativeFormOptions {
 | Option            | Notes                                                       |
 | ----------------- | ----------------------------------------------------------- |
 | `fields`          | Required. See [Field kinds](/guide/fields/)                 |
+| `defaultValues`   | The record to edit. See [Editing an object](/guide/editing) |
 | `buttons`         | Keyed by visible label. Replaces the default OK button      |
 | `confirmLabel`    | Renames the default button. Ignored when `buttons` is given |
 | `onConfirm`       | Run on confirm. May be async                                |

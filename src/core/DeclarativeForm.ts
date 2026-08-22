@@ -140,6 +140,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
 
       const field = this.registry.create(descriptor, context);
       field.applyStaticDefaultValue();
+      this.applySeedValue(field);
       this.fieldList.push(field);
       this.fieldsByName.set(descriptor.name, field);
       this.tooltips.register(descriptor.name, field.tooltipMarker);
@@ -188,7 +189,25 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     await Promise.allSettled(
       this.fieldList.map((field) => this.scheduler.track(field.applyDefaultValue())),
     );
+    for (const field of this.fieldList) this.applySeedValue(field);
     await this.update();
+  }
+
+  /**
+   * Seed one field from {@link DeclarativeFormOptions.defaultValues}.
+   *
+   * Run twice: once at build time so the first paint and the `isActive`
+   * predicates behind it already see the record being edited, and once after
+   * the `defaultValue` pass — which is async, and would otherwise overwrite the
+   * seeded value with the field's own default for the create case.
+   */
+  private applySeedValue(field: Field): void {
+    const values = this.options.defaultValues;
+    if (!values) return;
+    if (!Object.prototype.hasOwnProperty.call(values, field.name)) return;
+
+    const value = values[field.name];
+    if (value !== undefined) field.setValue(value);
   }
 
   /** Resolves once initial options and default values have been applied. */

@@ -116,6 +116,19 @@ Nothing in that snippet describes rendering, layout, or state. The `options`
 function is called for you, the dialog shows a loading state while it runs, and
 the whole thing collapses to one `await`.
 
+## Asking for a record you already have
+
+Half the dialogs in an application are not asking for a new record but for a
+changed one. `prompt()` took a second argument for exactly that, and so does
+`ask`:
+
+```ts
+const updated = await ask(userFields, { defaultValues: user });
+```
+
+One field list serves both directions — see [Editing an object](/guide/editing)
+for what gets seeded, and how to merge the answer back.
+
 ## Variations worth keeping
 
 Once a form is a call, the useful shapes are just ordinary functions:
