@@ -31,8 +31,8 @@ to load.
 ::: tip Read [Asking for data](/guide/asking-for-data) first
 It is two minutes, and it explains the one thing that makes this library
 different from every other form library: **a form here is a function you call,
-not a component you mount.** Most applications only ever need the nine-line
-`ask` helper on that page. This page is the object API underneath it.
+not a component you mount.** Most applications only ever need the `ask`
+function described there. This page is the object API underneath it.
 :::
 
 A form is an array of **field descriptors**, plus what should happen when the

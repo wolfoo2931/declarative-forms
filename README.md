@@ -8,6 +8,8 @@ place in your tree where the form has to live. You ask a question from wherever
 you happen to be standing in your code, and you get the answer back.
 
 ```ts
+import { ask } from 'declarative-forms';
+
 const release = await ask([
   { name: 'title', displayName: 'Release title' },
   { name: 'notes', kind: 'textarea', displayName: 'What changed' },
@@ -27,8 +29,8 @@ That is the whole integration. No `<Form>`, no `useForm`, no `onChange`, no
 `useState`, no layout, no `<div>`. The dialog draws itself, loads its own
 options, keeps every field in sync, and resolves.
 
-`ask` is nine lines you write once on top of the public API —
-[here it is](https://wolfoo2931.github.io/declarative-forms/guide/asking-for-data#the-ask-helper).
+`ask` ships with the library —
+[what it takes and what it resolves with](https://wolfoo2931.github.io/declarative-forms/guide/asking-for-data#the-ask-function).
 
 📖 **[Read the documentation](https://wolfoo2931.github.io/declarative-forms/)** ·
 🎛 **[Try the live demo](https://wolfoo2931.github.io/declarative-forms/#demo)**
@@ -121,7 +123,7 @@ No build step is required — the ESM build loads directly in a `<script type="m
 
 ## The full API, if you want the object instead of the promise
 
-`ask` is a convenience you own. Underneath, a form is a normal object you can
+`ask` is a thin wrapper over the object underneath — a normal object you can
 hold on to, embed in a page instead of a dialog, subscribe to, and drive from
 code:
 
@@ -187,7 +189,7 @@ Plainly, so you can rule it out fast:
 
 ## Documentation
 
-- [Asking for data](https://wolfoo2931.github.io/declarative-forms/guide/asking-for-data) — the model, and the `ask` helper
+- [Asking for data](https://wolfoo2931.github.io/declarative-forms/guide/asking-for-data) — the model, and `ask`
 - [Getting started](https://wolfoo2931.github.io/declarative-forms/guide/getting-started)
 - [Field kinds](https://wolfoo2931.github.io/declarative-forms/guide/fields/)
 - [Reactivity](https://wolfoo2931.github.io/declarative-forms/guide/reactivity) — `isActive`, `reloadOnChangeOf`, computed fields

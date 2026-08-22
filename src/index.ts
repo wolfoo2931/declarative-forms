@@ -1,4 +1,6 @@
 export { DeclarativeForm } from './core/DeclarativeForm.js';
+export { ask } from './core/ask.js';
+export type { AskOptions } from './core/ask.js';
 export { FieldRegistry, defaultFieldRegistry } from './core/FieldRegistry.js';
 export type { FieldConstructor } from './core/FieldRegistry.js';
 export { FormModel } from './core/FormModel.js';

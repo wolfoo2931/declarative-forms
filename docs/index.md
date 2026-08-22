@@ -6,6 +6,8 @@ Every other form library gives you a _component to mount_. This one gives you a
 _function to call_:
 
 ```ts
+import { ask } from 'declarative-forms';
+
 const release = await ask([
   { name: 'title', displayName: 'Release title' },
   { name: 'notes', kind: 'textarea', displayName: 'What changed' },
@@ -34,8 +36,7 @@ answer. Its only flaw is that it asks for exactly one string.
 **record** you want, and you get a plain object back.
 
 [**Asking for data →**](/guide/asking-for-data) is the two-minute version of
-this idea, including the nine-line `ask` helper. Everything below follows from
-it.
+this idea, and the full story on `ask`. Everything below follows from it.
 
 ## Try it {#demo}
 
@@ -321,8 +322,8 @@ Said plainly, so you can rule it out quickly:
 
 ## Next
 
-- [Asking for data](/guide/asking-for-data) — **start here**: the model, and the
-  `ask` helper
+- [Asking for data](/guide/asking-for-data) — **start here**: the model, and
+  `ask`
 - [Getting started](/guide/getting-started) — install and build your first form
 - [Field kinds](/guide/fields/) — the ten built-in kinds
 - [Reactivity](/guide/reactivity) — the part that makes this library worth using

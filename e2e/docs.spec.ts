@@ -14,6 +14,7 @@ const BASE = `${DOCS_ORIGIN}/declarative-forms`;
 
 const PAGES = [
   '/',
+  '/guide/asking-for-data',
   '/guide/getting-started',
   '/guide/fields/text',
   '/guide/fields/textarea',
@@ -100,6 +101,20 @@ test.describe('demos are genuinely interactive', () => {
     await expect(page.locator('.dl-modal input[name=publishAt]')).toHaveValue(
       'Immediately',
     );
+
+    expect(errors).toEqual([]);
+  });
+
+  test('ask() closes its dialog and resolves with the values', async ({ page }) => {
+    const errors = await open(page, '/guide/asking-for-data');
+
+    await page.click('.live-form__open');
+    await page.fill('.dl-modal input[name=title]', 'Sunrise 2.0');
+    await page.click('.dl-modal .low-bar .btn');
+
+    // The promise settles only once the dialog is gone.
+    await expect(page.locator('.dl-modal')).toHaveCount(0);
+    await expect(page.locator('.live-form__values--ok')).toContainText('Sunrise 2.0');
 
     expect(errors).toEqual([]);
   });

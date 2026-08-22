@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { DeclarativeForm, html } from '../../../src/index.js';
+import { ask, DeclarativeForm, html } from '../../../src/index.js';
+import { askWith } from '../../../src/core/ask.js';
 import type { DeclarativeFormOptions, FormValues } from '../../../src/index.js';
 
 const props = withDefaults(
@@ -65,7 +66,7 @@ function compile(): void {
 /**
  * Compile a program snippet: statements that construct forms and open them.
  *
- * `import` lines are stripped and the two bindings they bring in are injected
+ * `import` lines are stripped and the bindings they bring in are injected
  * instead, so the snippet can be written the way it would be in an application
  * — including the `openInModal()` call — and still run in the page.
  *
@@ -83,9 +84,14 @@ function compileProgram(): void {
   const body = source().replace(/^\s*import .*$/gm, '');
   const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor as new (
     ...args: string[]
-  ) => (form: typeof DeclarativeForm, h: typeof html) => Promise<void>;
+  ) => (form: typeof DeclarativeForm, askFn: typeof ask, h: typeof html) => Promise<void>;
 
-  const program = new AsyncFunction('DeclarativeForm', 'html', `"use strict";\n${body}`);
+  const program = new AsyncFunction(
+    'DeclarativeForm',
+    'ask',
+    'html',
+    `"use strict";\n${body}`,
+  );
 
   run = () => {
     let isRoot = true;
@@ -106,9 +112,15 @@ function compileProgram(): void {
       }
     }
 
+    // `ask` builds a `DeclarativeForm` of its own, which the panels below the
+    // demo would never see. This is the shipped `ask` with the one line that
+    // constructs the form pointed at the instrumented subclass instead.
+    const demoAsk: typeof ask = (fields, options = {}) =>
+      askWith(DemoForm, fields, options);
+
     // The snippet is async now, so a failure inside it surfaces as a rejection
     // rather than a throw the caller's try/catch would see.
-    void program(DemoForm, html).catch((cause) => {
+    void program(DemoForm, demoAsk, html).catch((cause) => {
       error.value = cause instanceof Error ? cause.message : String(cause);
     });
   };
