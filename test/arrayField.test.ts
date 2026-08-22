@@ -145,6 +145,28 @@ describe('array field', () => {
     ]);
   });
 
+  it('edits an entry that came in through defaultValues', async () => {
+    const form = await makeAuthorsForm({
+      defaultValues: { authors: [{ preName: 'Ada', lastName: 'Lovelace' }] },
+    });
+
+    click(form.field('authors')!.element.querySelector('.edit-array-of-btn'));
+    await flush();
+
+    const dialog = entryDialog();
+    expect((dialog.querySelector('[name=preName]') as HTMLInputElement).value).toBe(
+      'Ada',
+    );
+
+    type(dialog.querySelector('[name=preName]') as HTMLElement, 'Augusta');
+    click(dialog.querySelector('.low-bar .btn'));
+    await flush();
+
+    expect(form.getValues()['authors']).toEqual([
+      expect.objectContaining({ preName: 'Augusta', lastName: 'Lovelace' }),
+    ]);
+  });
+
   it('applies mapFieldsOnEdit when editing', async () => {
     const mapFieldsOnEdit = vi.fn((fields: readonly { name: string }[]) =>
       fields.filter((f) => f.name === 'preName'),

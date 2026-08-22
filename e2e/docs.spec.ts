@@ -16,6 +16,7 @@ const PAGES = [
   '/',
   '/guide/asking-for-data',
   '/guide/getting-started',
+  '/guide/editing',
   '/guide/fields/text',
   '/guide/fields/textarea',
   '/guide/fields/select',

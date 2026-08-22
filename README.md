@@ -95,6 +95,14 @@ provider, and no prop drilling, because there is no tree to lift through.
 dialog per entry, which is the natural shape for a record, and awkward to do
 inline.
 
+**Editing is the same call with the object in it.** `prompt()` takes a starting
+value; so does this. One field list serves both directions — extra keys on the
+object you pass are ignored, so the record you already have goes in as-is.
+
+```ts
+const updated = await ask(userFields, { defaultValues: user });
+```
+
 **Works anywhere, because it needs nothing.** Plain DOM plus one web component,
 no runtime dependencies. Call it from React, Vue, Svelte, Angular, an Electron
 main-window script, or a `<script type="module">` tag in a static page. It never

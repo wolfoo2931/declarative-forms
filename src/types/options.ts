@@ -34,6 +34,21 @@ export type ButtonMap = Record<string, ButtonDescriptor>;
 export interface DeclarativeFormOptions {
   fields: readonly FieldDescriptor[];
   /**
+   * The record to open the form with, keyed by field name — how you edit an
+   * existing object rather than asking for a new one.
+   *
+   * ```ts
+   * const updated = await ask(userFields, { defaultValues: user });
+   * ```
+   *
+   * Each entry wins over that field's own `defaultValue`, so the same field
+   * list serves both the "create" and the "edit" call. Keys naming no field are
+   * ignored — pass a whole domain object without filtering it first — as are
+   * keys whose value is `undefined`, which fall back to the field's
+   * `defaultValue`. An `array` field takes its list of records here directly.
+   */
+  defaultValues?: FormValues;
+  /**
    * Buttons for the dialog's lower bar, keyed by label.
    * Defaults to a single `OK` button running {@link onConfirm}.
    */

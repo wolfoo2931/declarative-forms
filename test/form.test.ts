@@ -54,6 +54,121 @@ describe('values', () => {
   });
 });
 
+describe('defaultValues', () => {
+  it('opens the form with the record being edited', async () => {
+    const form = await makeForm({
+      fields: [
+        { name: 'title' },
+        { name: 'notes', kind: 'textarea' },
+        { name: 'lang', kind: 'select', options: ['en', 'de'] },
+        { name: 'draft', kind: 'checkbox', label: 'Draft' },
+      ],
+      defaultValues: { title: 'Sunrise', notes: 'ship it', lang: 'de', draft: true },
+    });
+
+    expect(form.getValues()).toMatchObject({
+      title: 'Sunrise',
+      notes: 'ship it',
+      lang: 'de',
+      draft: true,
+    });
+  });
+
+  it('wins over a defaultValue declared on the field', async () => {
+    const form = await makeForm({
+      fields: [
+        { name: 'lang', kind: 'select', options: ['en', 'de'], defaultValue: 'en' },
+        { name: 'year', defaultValue: () => '2026' },
+      ],
+      defaultValues: { lang: 'de', year: '1999' },
+    });
+
+    expect(form.getValues()).toMatchObject({ lang: 'de', year: '1999' });
+  });
+
+  it('wins over a default that resolves asynchronously', async () => {
+    const form = await makeForm({
+      fields: [
+        {
+          name: 'lang',
+          kind: 'select',
+          options: async () => ['en', 'de'],
+          defaultValue: async () => 'en',
+        },
+      ],
+      defaultValues: { lang: 'de' },
+    });
+
+    expect(form.getValues()['lang']).toBe('de');
+  });
+
+  it('ignores keys that name no field, so a whole object can be passed', async () => {
+    const form = await makeForm({
+      fields: [{ name: 'title' }],
+      defaultValues: { title: 'Sunrise', id: 42, createdAt: 'yesterday' },
+    });
+
+    expect(form.getValues()).toEqual({ title: 'Sunrise', activeTab: undefined });
+  });
+
+  it('falls back to the field default when the key holds undefined', async () => {
+    const form = await makeForm({
+      fields: [{ name: 'title', defaultValue: 'Untitled' }],
+      defaultValues: { title: undefined },
+    });
+
+    expect(form.getValues()['title']).toBe('Untitled');
+  });
+
+  it('seeds an array field with its list of records', async () => {
+    const form = await makeForm({
+      fields: [
+        { name: 'authors', kind: 'array', of: [{ name: 'first' }, { name: 'last' }] },
+      ],
+      defaultValues: { authors: [{ first: 'Ada', last: 'Lovelace' }] },
+    });
+
+    expect(form.getValues()['authors']).toEqual([{ first: 'Ada', last: 'Lovelace' }]);
+    expect(form.dom.querySelectorAll('.dl-form-array-of-entry')).toHaveLength(1);
+  });
+
+  it('is visible to isActive before the first async pass lands', () => {
+    const form = trackForm(
+      new DeclarativeForm(
+        {
+          fields: [
+            { name: 'kind' },
+            {
+              name: 'journal',
+              isActive: ({ data }) => data['kind'] === 'article',
+            },
+          ],
+          defaultValues: { kind: 'article' },
+        },
+        { stack: new ModalStack() },
+      ),
+    );
+
+    // Synchronously after construction: no update cycle has run yet.
+    expect(form.field('journal')!.wrapper.classList.contains('inactive')).toBe(false);
+  });
+
+  it('supports the v1 pattern of seeding the descriptors by hand', async () => {
+    const record = { title: 'Sunrise', lang: 'de' };
+    const fields = [
+      { name: 'title' },
+      { name: 'lang', kind: 'select' as const, options: ['en', 'de'] },
+    ].map((field) => ({
+      ...field,
+      defaultValue: record[field.name as keyof typeof record],
+    }));
+
+    const form = await makeForm({ fields });
+
+    expect(form.getValues()).toMatchObject({ title: 'Sunrise', lang: 'de' });
+  });
+});
+
 describe('isActive', () => {
   it('hides the field and drops it from getValues', async () => {
     const form = await makeForm({

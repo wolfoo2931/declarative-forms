@@ -32,6 +32,23 @@ describe('ask', () => {
     expect(await answer).toMatchObject({ title: 'Sunrise 2.0', notes: '' });
   });
 
+  it('edits an object passed as defaultValues', async () => {
+    const user = { id: 7, name: 'Ada', role: 'admin' };
+
+    const answer = ask(
+      [{ name: 'name' }, { name: 'role', kind: 'select', options: ['admin', 'guest'] }],
+      { defaultValues: user },
+    );
+    await flush();
+
+    expect((input('name') as HTMLInputElement).value).toBe('Ada');
+
+    type(input('name'), 'Ada Lovelace');
+    click(buttons()[0]);
+
+    expect(await answer).toMatchObject({ name: 'Ada Lovelace', role: 'admin' });
+  });
+
   it('resolves with undefined when the dialog is dismissed', async () => {
     const answer = ask([{ name: 'title' }]);
     await flush();

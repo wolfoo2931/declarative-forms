@@ -31,6 +31,10 @@ export default defineConfig({
         ],
       },
       {
+        text: 'Editing',
+        items: [{ text: 'Editing an object', link: '/guide/editing' }],
+      },
+      {
         text: 'Fields',
         collapsed: false,
         items: [
