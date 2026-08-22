@@ -147,10 +147,18 @@ test.describe('reactivity', () => {
 
   test('shows the loading skeleton while options resolve', async ({ page }) => {
     await page.fill('.dl-form input[name=owner]', 'torvalds');
-    await expect(page.locator('dl-select[name=repo].dl-select-loading')).toBeVisible();
-    await expect(page.locator('dl-select[name=repo].dl-select-loading')).toBeHidden({
-      timeout: 5000,
-    });
+
+    const skeleton = page.locator('dl-select[name=repo].dl-select-loading');
+    await expect(skeleton).toBeVisible();
+
+    // The class alone proves nothing: the theme paints `.input-wrapper` from a
+    // more specific selector, which once won outright and left the skeleton
+    // animating a flat colour — a blank field rather than a shimmering one.
+    const wrapper = skeleton.locator('.input-wrapper');
+    await expect(wrapper).toHaveCSS('animation-name', 'dl-placeholder-shimmer');
+    await expect(wrapper).toHaveCSS('background-image', /linear-gradient/);
+
+    await expect(skeleton).toBeHidden({ timeout: 5000 });
   });
 
   test('reloads dependent options when the owner changes', async ({ page }) => {

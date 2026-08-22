@@ -1238,10 +1238,24 @@
   fill: var(--dl-accent);
 }
 
+/*
+ * The shimmer itself lives in the component's injected styles, but this theme
+ * paints `.input-wrapper` from a more specific selector (`.dl-form dl-select
+ * .input-wrapper`), which would otherwise win and leave the skeleton animating
+ * a flat colour — a blank field instead of a loading one. Repeat the gradient
+ * here so the theme's own background does not swallow it.
+ */
 .dl-form dl-select.dl-select-loading .input-wrapper,
 .dl-modal dl-select.dl-select-loading .input-wrapper {
   width: 100%;
   border-radius: var(--dl-radius-sm);
+  background-image: linear-gradient(
+    to right,
+    var(--dl-select-loading-col1) 10%,
+    var(--dl-select-loading-col2) 18%,
+    var(--dl-select-loading-col1) 33%
+  );
+  background-size: 800px 104px;
 }
 
 /* The popup is portalled to <body>, so it cannot be scoped to `.dl-form`. */
