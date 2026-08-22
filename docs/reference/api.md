@@ -1,8 +1,43 @@
 # API reference
 
 ```ts
-import { DeclarativeForm } from 'declarative-forms';
+import { ask, DeclarativeForm } from 'declarative-forms';
 ```
+
+## `ask(fields, options?)`
+
+```ts
+function ask(
+  fields: readonly FieldDescriptor[],
+  options?: AskOptions,
+): Promise<FormValues | undefined>;
+
+interface AskOptions extends Omit<
+  DeclarativeFormOptions,
+  'fields' | 'onConfirm' | 'onCancel'
+> {
+  modal?: OpenInModalOptions;
+  dismissable?: boolean; // default true
+}
+```
+
+Opens the fields as a modal dialog and resolves with its values, or with
+`undefined` when the user dismisses it. See
+[Asking for data](/guide/asking-for-data).
+
+| Option          | Notes                                                               |
+| --------------- | ------------------------------------------------------------------- |
+| `modal`         | Class names for the dialog chrome, as passed to `openInModal`       |
+| `dismissable`   | `false` removes the ✕ and makes Escape a no-op                      |
+| `buttons`       | Resolves after any button that closes the dialog has run its action |
+| everything else | As on [`DeclarativeFormOptions`](#new-declarativeform-options)      |
+
+The promise settles _after_ the dialog is torn down and popped off the modal
+stack, so asking again immediately opens a clean, unstacked dialog.
+
+A `doNotCloseModal` button leaves the promise pending, because it leaves the
+dialog open. With `dismissable: false`, make sure some button closes the dialog
+— nothing else will.
 
 ## `new DeclarativeForm(options)`
 

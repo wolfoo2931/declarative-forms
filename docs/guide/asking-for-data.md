@@ -42,60 +42,48 @@ const name    = prompt('Your name?');                     // one string
 const release = await ask([...]);                         // a whole record
 ```
 
-## The `ask` helper
+## The `ask` function
 
-The library ships the form object, not the promise. `ask` is nine lines you
-write once, on top of the public API, and then never think about again:
+`ask` ships with the library. Import it and call it:
 
 ```ts
-import { DeclarativeForm } from 'declarative-forms';
-import type {
-  DeclarativeFormOptions,
-  FieldDescriptor,
-  FormValues,
-} from 'declarative-forms';
+import { ask } from 'declarative-forms';
 
-/** Open a dialog and resolve with its values, or `undefined` if dismissed. */
-export function ask(
-  fields: readonly FieldDescriptor[],
-  options: Omit<DeclarativeFormOptions, 'fields' | 'onConfirm' | 'onCancel'> = {},
-): Promise<FormValues | undefined> {
-  return new Promise((resolve) => {
-    new DeclarativeForm({
-      ...options,
-      fields,
-      onConfirm: (values) => resolve(values),
-      onCancel: () => resolve(undefined),
-    }).openInModal();
-  });
-}
+const values = await ask(fields);
 ```
 
-::: tip Why is this not in the package?
-Because the object API underneath does strictly more — it can be embedded in a
-page, held, subscribed to, driven from code, and closed by something other than
-its own buttons. `ask` is the ninety-percent case expressed in the language of
-promises, and it is short enough that you should own it and adapt it. See
-[the full API](#when-to-use-the-object-api-instead).
-:::
+```ts
+function ask(
+  fields: readonly FieldDescriptor[],
+  options?: AskOptions,
+): Promise<FormValues | undefined>;
+```
 
-Try it. This runs the exact code shown, `ask` helper and all:
+It opens the fields as a dialog and resolves with the values, or with
+`undefined` if the user dismissed it. `options` is everything
+[`DeclarativeForm`](/reference/api#new-declarativeform-options) accepts, minus
+the three keys `ask` owns — `fields`, `onConfirm` and `onCancel` — plus two of
+its own:
+
+| Option        | Notes                                                         |
+| ------------- | ------------------------------------------------------------- |
+| `modal`       | Class names for the dialog chrome, as passed to `openInModal` |
+| `dismissable` | `false` removes the ✕ and makes Escape a no-op                |
+
+The promise settles only after the dialog is torn down and off the modal stack,
+so the loop further down — ask, check, ask again — opens each new dialog on a
+clean stack rather than stacking it on the one that just closed.
+
+Declare your own `buttons` and the promise resolves once any button that closes
+the dialog has finished its action. A `doNotCloseModal` button (a wizard's
+"Next") leaves it pending, because it leaves the dialog open.
+
+Try it. This runs the exact code shown:
 
 <LiveForm mode="program" stage="top" open="Ask for a release">
 
 ```ts
-import { DeclarativeForm } from 'declarative-forms';
-
-// The nine lines, once, in your own codebase.
-const ask = (fields, options = {}) =>
-  new Promise((resolve) => {
-    new DeclarativeForm({
-      ...options,
-      fields,
-      onConfirm: (values) => resolve(values),
-      onCancel: () => resolve(undefined),
-    }).openInModal();
-  });
+import { ask } from 'declarative-forms';
 
 // Pretend this is your API.
 const fetchReviewers = async () => {
