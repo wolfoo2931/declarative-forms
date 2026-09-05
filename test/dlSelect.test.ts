@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  defineDlSelect,
-  type DlOption,
-  type DlSelect,
-} from '../src/components/DlSelect.js';
+import { defineDlSelect, DlSelect, type DlOption } from '../src/components/DlSelect.js';
 import { press } from './helpers.js';
 
 defineDlSelect();
@@ -302,6 +298,25 @@ describe('dl-select', () => {
         select.setLoadingStatus();
         select.unsetLoadingStatus();
       }).not.toThrow();
+    });
+
+    it('honours the timing statics, so a test suite can turn the pauses off', async () => {
+      const defaults = [DlSelect.showLoadingAfterMs, DlSelect.minLoadingMs] as const;
+      DlSelect.showLoadingAfterMs = 0;
+      DlSelect.minLoadingMs = 0;
+
+      try {
+        select.setLoadingStatus();
+        expect(select.isLoading).toBe(true);
+        await new Promise((r) => setTimeout(r, 0));
+        expect(select.classList.contains('dl-select-loading')).toBe(true);
+
+        select.unsetLoadingStatus();
+        expect(select.classList.contains('dl-select-loading')).toBe(false);
+        expect(select.isLoading).toBe(false);
+      } finally {
+        [DlSelect.showLoadingAfterMs, DlSelect.minLoadingMs] = defaults;
+      }
     });
 
     it('replays a value that was set while loading', async () => {

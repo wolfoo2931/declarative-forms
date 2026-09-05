@@ -9,11 +9,6 @@ const ARROW_PATH =
   '4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-' +
   '4.695-4.502s-0.436-1.17 0-1.615z';
 
-/** Minimum time the loading skeleton stays up, so it does not flash. */
-const MIN_LOADING_MS = 1500;
-/** Delay before the skeleton appears, so fast loads never show it at all. */
-const LOADING_DELAY_MS = 100;
-
 /**
  * Base class for the custom elements.
  *
@@ -55,6 +50,24 @@ export class DlOption extends CustomElementBase {
  * `document.body` while open so it can escape a scrolling container.
  */
 export class DlSelect extends CustomElementBase {
+  /**
+   * How long a load may run before the skeleton is shown at all. A load that
+   * finishes inside this window never flashes one.
+   */
+  static showLoadingAfterMs = 100;
+
+  /**
+   * Once the skeleton *has* been shown, it is held for at least this long, so
+   * it cannot appear and vanish in the same instant.
+   *
+   * Both are statics so a test suite can set them to 0. They are deliberate
+   * pauses for human eyes; to a test they are pure latency, and they are why
+   * suites end up sleeping around these selects instead of waiting on a
+   * condition. Wait on `isLoading` rather than the `dl-select-loading` class:
+   * `isLoading` flips synchronously, the class lags by `showLoadingAfterMs`.
+   */
+  static minLoadingMs = 1500;
+
   readonly optionsWrapper: HTMLDivElement;
   readonly inputWrapper: HTMLSpanElement;
   readonly noMatchesHint: HTMLSpanElement;
@@ -184,7 +197,7 @@ export class DlSelect extends CustomElementBase {
         this.classList.add('dl-select-loading');
         this.optionsWrapper.remove();
         this.loadingStartedAt = Date.now();
-      }, LOADING_DELAY_MS),
+      }, DlSelect.showLoadingAfterMs),
     );
   }
 
@@ -193,7 +206,9 @@ export class DlSelect extends CustomElementBase {
     this.loadingTimeouts = [];
 
     const elapsed = this.loadingStartedAt ? Date.now() - this.loadingStartedAt : 0;
-    const delay = this.loadingStartedAt ? Math.max(0, MIN_LOADING_MS - elapsed) : 0;
+    const delay = this.loadingStartedAt
+      ? Math.max(0, DlSelect.minLoadingMs - elapsed)
+      : 0;
 
     const finish = (): void => {
       this.appendChild(this.optionsWrapper);
