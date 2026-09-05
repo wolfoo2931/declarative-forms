@@ -92,6 +92,23 @@ Two timing details keep it from flickering:
 A value set while loading is stored and replayed when loading ends, so a
 default never races the fetch. Repeated `setLoadingStatus()` calls are safe.
 
+Both timings are static properties, so an end-to-end suite can turn the pauses
+off — they are deliberate waits for human eyes, but pure latency to a test:
+
+```ts
+DlSelect.showLoadingAfterMs = 0; // always enter the loading state
+DlSelect.minLoadingMs = 0; // and leave it as soon as the load ends
+```
+
+In a browser context without the import, reach the class through the registry:
+`customElements.get('dl-select')`. Set **both** — with the default 100 ms, a
+fast load cancels the timer and the minimum never applies, so zeroing only the
+minimum changes nothing.
+
+When waiting on the loading state, wait on `select.isLoading`, not on the
+`dl-select-loading` class: `isLoading` flips synchronously inside
+`setLoadingStatus()`, while the class lags by `showLoadingAfterMs`.
+
 ## Filtering
 
 Typing filters options by substring, case-insensitively, requiring **every
