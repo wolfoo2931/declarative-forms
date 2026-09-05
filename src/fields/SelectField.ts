@@ -79,16 +79,22 @@ export class SelectField extends Field<SelectFieldDescriptor> {
     const isCurrent = this.context.scheduler.claim(`options:${this.descriptor.name}`);
     const source = this.descriptor.options;
 
-    const requested =
-      typeof source === 'function'
-        ? source(this.context.contextFor(this.descriptor))
-        : source;
-
-    // A plain array needs no loading state at all.
-    const isAsync = requested instanceof Promise;
-    if (isAsync) this.select.setLoadingStatus();
+    // Declared out here so the catch can still clear the loading state, but the
+    // call itself must be inside the try: a synchronous `options` function that
+    // throws is as much an options failure as a rejected promise, and hoisting
+    // the call above the try let it escape past onOptionsError entirely.
+    let isAsync = false;
 
     try {
+      const requested =
+        typeof source === 'function'
+          ? source(this.context.contextFor(this.descriptor))
+          : source;
+
+      // A plain array needs no loading state at all.
+      isAsync = requested instanceof Promise;
+      if (isAsync) this.select.setLoadingStatus();
+
       const options = (await requested) ?? [];
       if (!isCurrent()) return;
 

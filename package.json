@@ -1,6 +1,6 @@
 {
   "name": "declarative-forms",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Declarative, data-driven form dialogs for the web. Zero dependencies, framework agnostic, with async options, cross-field reactivity, tabs and modal stacking.",
   "type": "module",
   "sideEffects": [
@@ -12,9 +12,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./styles.css": "./styles/declarative-forms.css",
     "./theme.css": "./styles/declarative-forms.css",
@@ -31,6 +36,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "prepare": "npm run build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

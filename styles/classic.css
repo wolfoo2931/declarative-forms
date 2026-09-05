@@ -265,18 +265,29 @@
   background: currentColor;
 }
 
+/*
+ * Both axes are anchored explicitly. v1 set only one axis per bar and let the
+ * other resolve to the static position, which was 0 because .cancelBtn was a
+ * <div>. v2 renders it as a <button>, which centres its content, so the unset
+ * axis resolved to 6px/8px and the two bars crossed at a corner -- the X
+ * rendered as a chevron.
+ */
 .cancelBtn:before {
-  left: 6px;
+  top: 50%;
+  left: 50%;
   width: 2px;
-  margin-left: -1px;
   height: 12px;
+  margin-top: -6px;
+  margin-left: -1px;
 }
 
 .cancelBtn:after {
-  top: 6px;
+  top: 50%;
+  left: 50%;
+  width: 12px;
   height: 2px;
   margin-top: -1px;
-  width: 12px;
+  margin-left: -6px;
 }
 
 /* -------------------------------------------------------------------- form */

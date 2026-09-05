@@ -953,6 +953,30 @@ describe('reloadOnChangeOf', () => {
     expect(marker.className).toContain('tooltip-error');
     expect(marker.getAttribute('data-tippy-content')).toBe('Failed: offline');
   });
+
+  it('surfaces a synchronously thrown options failure through onOptionsError', async () => {
+    const form = await makeForm({
+      fields: [
+        {
+          name: 'repo',
+          displayName: 'Repo',
+          tooltip: 'Pick a repo',
+          kind: 'select',
+          options: () => {
+            throw new Error('bad config');
+          },
+          onOptionsError: ({ error }) => ({
+            level: 'error',
+            text: `Failed: ${(error as Error).message}`,
+          }),
+        },
+      ],
+    });
+
+    const marker = form.field('repo')!.wrapper.querySelector('.dl-tooltip')!;
+    expect(marker.className).toContain('tooltip-error');
+    expect(marker.getAttribute('data-tippy-content')).toBe('Failed: bad config');
+  });
 });
 
 describe('onFormChange', () => {
