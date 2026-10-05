@@ -70,6 +70,52 @@ describe('UpdateScheduler', () => {
     expect(secondDone).toBe(true);
   });
 
+  it('waits for an update pass, not just the field work it consumes', async () => {
+    const scheduler = new UpdateScheduler();
+    let updateFinished = false;
+
+    // An update pass waits for field work as part of running, so it cannot be
+    // tracked in the same set as that work -- it would wait for itself.
+    const pass = (async () => {
+      await scheduler.whenFieldWorkSettled();
+      updateFinished = true;
+    })();
+
+    void scheduler.trackUpdate(pass);
+
+    await scheduler.whenSettled();
+
+    // Before update passes were tracked, `whenSettled` resolved here with the
+    // pass still running. `ButtonBar.activate` awaits this and then re-reads
+    // the primary button's `disabled` class to decide whether to accept a
+    // confirm, so resolving early let an invalid record through on a class the
+    // pass had not yet written.
+    expect(updateFinished).toBe(true);
+  });
+
+  it('does not deadlock when an update pass waits for field work', async () => {
+    const scheduler = new UpdateScheduler();
+    let fieldWorkDone = false;
+
+    const pass = (async () => {
+      void scheduler.track(
+        new Promise<void>((resolve) =>
+          setTimeout(() => {
+            fieldWorkDone = true;
+            resolve();
+          }, 5),
+        ),
+      );
+      await scheduler.whenFieldWorkSettled();
+    })();
+
+    void scheduler.trackUpdate(pass);
+
+    await scheduler.whenSettled();
+    expect(fieldWorkDone).toBe(true);
+    expect(scheduler.pendingCount).toBe(0);
+  });
+
   it('still settles when tracked work rejects', async () => {
     const scheduler = new UpdateScheduler();
     void scheduler.track(Promise.reject(new Error('nope')));

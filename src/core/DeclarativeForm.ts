@@ -104,6 +104,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     this.tabBar = new TabBar((tab) => this.setActiveTab(tab));
     this.buttonBar = new ButtonBar(this.resolveButtons(), {
       whenSettled: () => this.scheduler.whenSettled(),
+      claim: (key) => this.scheduler.claim(key),
       updateComputedFields: () => this.updateComputedFields(),
       getValues: () => this.getValues(),
       closeWith: (action) => this.close(action),
@@ -333,6 +334,20 @@ export class DeclarativeForm implements SubForm, StackableDialog {
    * @param includeTab treat a tab switch as a change
    */
   async update(source?: FieldHandle, force = false, includeTab = false): Promise<void> {
+    // Tracked here rather than at the call sites, so the two fire-and-forget
+    // callers (`requestUpdate` and `setActiveTab`) are covered without relying
+    // on either of them to remember. `whenSettled()` is the contract
+    // `ButtonBar.activate` leans on before it re-reads the primary button's
+    // `disabled` class; an untracked pass made that contract untrue, and the
+    // confirm of an invalid record went through on a stale class.
+    return this.scheduler.trackUpdate(this.runUpdate(source, force, includeTab));
+  }
+
+  private async runUpdate(
+    source?: FieldHandle,
+    force = false,
+    includeTab = false,
+  ): Promise<void> {
     const values = this.getValues();
     const changed = this.model.hasChanged(values, includeTab);
     if (!changed && !force) return;
@@ -362,7 +377,9 @@ export class DeclarativeForm implements SubForm, StackableDialog {
 
     this.renderTabs(activeTabs);
 
-    await this.scheduler.whenSettled();
+    // Field work only: this pass is itself registered as an update, so waiting
+    // on `whenSettled()` here would be waiting on itself.
+    await this.scheduler.whenFieldWorkSettled();
 
     if (changed) this.model.notify(this.getValues());
 

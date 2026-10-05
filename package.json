@@ -1,6 +1,6 @@
 {
   "name": "declarative-forms",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Declarative, data-driven form dialogs for the web. Zero dependencies, framework agnostic, with async options, cross-field reactivity, tabs and modal stacking.",
   "type": "module",
   "sideEffects": [

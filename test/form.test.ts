@@ -415,6 +415,90 @@ describe('buttons', () => {
     expect(action).toHaveBeenCalledWith(expect.objectContaining({ note: 'A text' }));
   });
 
+  it('ignores a stale async button predicate that resolves after a newer one', async () => {
+    const form = await makeForm({
+      fields: [{ name: 'mode' }],
+      buttons: {
+        Go: {
+          id: 'goBtn',
+          isActive: async ({ data }) => {
+            // 'slow' reports valid but takes longer -- like a check that has
+            // to hit the network. 'fast' reports invalid and returns first.
+            if (data['mode'] === 'slow') {
+              await new Promise((resolve) => setTimeout(resolve, 40));
+              return true;
+            }
+            await new Promise((resolve) => setTimeout(resolve, 5));
+            return false;
+          },
+          action: () => {},
+        },
+      },
+    });
+    form.openInModal();
+    await form.whenReady();
+
+    const button = document.getElementById('goBtn')!;
+    const input = document.querySelector('input[name="mode"]')!;
+
+    type(input, 'slow');
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    type(input, 'fast');
+
+    await new Promise((resolve) => setTimeout(resolve, 120));
+
+    // The newest request said invalid, so that must be what shows. Without a
+    // generation guard the slow `true` lands last and re-enables the button.
+    expect(button.className).toContain('disabled');
+  });
+
+  it('does not confirm while an async button predicate is still resolving', async () => {
+    const action = vi.fn();
+
+    const form = await makeForm({
+      fields: [{ name: 'email' }],
+      buttons: {
+        Invite: {
+          id: 'inviteBtn',
+          // Async, like a predicate that has to ask a server whether the
+          // record is acceptable.
+          isActive: async ({ data }) => {
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            return String(data['email']).includes('@');
+          },
+          action,
+        },
+      },
+    });
+    const modal = form.openInModal();
+    await form.whenReady();
+
+    // Reach a genuinely enabled state. Waited out in real time rather than via
+    // `whenReady()`, so the starting point is the same with or without update
+    // tracking and this test turns only on the confirm below.
+    type(modal.querySelector('input[name="email"]')!, 'someone@example.com');
+    await new Promise((resolve) => setTimeout(resolve, 60));
+
+    const button = document.getElementById('inviteBtn')!;
+    expect(button.className).not.toContain('disabled');
+
+    // Now make it invalid and confirm immediately, inside the window where the
+    // predicate has not resolved. `applyPredicate` deliberately does not
+    // pre-disable an async button (that made every button flash on each
+    // keystroke), so the class still says enabled here.
+    type(modal.querySelector('input[name="email"]')!, 'not-an-email');
+    click(button);
+
+    await new Promise((resolve) => setTimeout(resolve, 80));
+
+    // `activate` awaits `whenSettled()` before re-reading the class precisely
+    // so this cannot happen. While update passes went untracked that wait
+    // resolved early, the re-read saw a stale class, and the invalid record
+    // was confirmed.
+    expect(action).not.toHaveBeenCalled();
+    expect(button.className).toContain('disabled');
+  });
+
   it('applies id and class to the button element', async () => {
     const form = await makeForm({
       fields: [{ name: 'a' }],
