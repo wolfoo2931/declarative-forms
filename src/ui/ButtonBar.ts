@@ -4,6 +4,12 @@ import type { ButtonContext, ButtonDescriptor, ButtonMap } from '../types/option
 export interface ButtonBarCallbacks {
   /** Resolve once all pending form work has settled. */
   whenSettled(): Promise<void>;
+  /**
+   * Claim the newest generation for `key`; the returned predicate reports
+   * whether that claim is still current. Used to discard a stale async
+   * predicate result -- see `refresh`.
+   */
+  claim(key: string): () => boolean;
   /** Recompute `computed` fields before an action runs. */
   updateComputedFields(): Promise<void>;
   getValues(): Record<string, unknown>;
@@ -109,8 +115,21 @@ export class ButtonBar {
       if (!descriptor.id) continue;
 
       if (descriptor.isActive) {
+        // An async predicate's result is applied only if it is still the
+        // newest for this button. Without the guard the results land in
+        // resolution order, not request order, so a slow predicate from an
+        // earlier keystroke overwrites a newer one -- the same hazard
+        // `claim` already guards for select options loads.
+        //
+        // Observed: a reference-source form whose "user library" check hits
+        // the network resolved `true` *after* the newer "group with no group
+        // selected" check had correctly resolved `false`, leaving the confirm
+        // button enabled on an invalid record.
+        const isCurrent = this.callbacks.claim(`button:isActive:${descriptor.id}`);
+
         work.push(
           this.applyPredicate(descriptor.isActive(ctx), (active) => {
+            if (!isCurrent()) return;
             element.classList.toggle('disabled', !active);
             element.toggleAttribute('disabled', !active);
           }),
@@ -118,8 +137,11 @@ export class ButtonBar {
       }
 
       if (descriptor.isVisible) {
+        const isCurrent = this.callbacks.claim(`button:isVisible:${descriptor.id}`);
+
         work.push(
           this.applyPredicate(descriptor.isVisible(ctx), (visible) => {
+            if (!isCurrent()) return;
             element.classList.toggle('invisible', !visible);
           }),
         );
