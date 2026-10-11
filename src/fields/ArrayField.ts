@@ -231,7 +231,10 @@ export class ArrayField extends Field<ArrayFieldDescriptor> {
    * form was a silent no-op. The rest of the context still describes the outer
    * field.
    */
-  private validateEntry(entry: FormValues, dialog: DeclarativeForm): boolean | Promise<boolean> {
+  private validateEntry(
+    entry: FormValues,
+    dialog: DeclarativeForm,
+  ): boolean | Promise<boolean> {
     if (!this.descriptor.isValidRecord) return true;
     return this.descriptor.isValidRecord(entry, {
       ...this.context.contextFor(this.descriptor),

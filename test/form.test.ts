@@ -1069,7 +1069,8 @@ describe('reloadOnChangeOf', () => {
           name: 'owner',
           defaultValue: 'ada',
           onFormChange: ({ data, form: f }) => {
-            if (data['owner'] === 'linus') f.setTooltipWarning('repo', 'Pick a repo of linus');
+            if (data['owner'] === 'linus')
+              f.setTooltipWarning('repo', 'Pick a repo of linus');
           },
         },
         {
