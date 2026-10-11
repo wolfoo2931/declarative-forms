@@ -4,6 +4,7 @@ import type { IdGenerator } from './IdGenerator.js';
 import type { TooltipController } from '../ui/tooltip/TooltipController.js';
 import type { UpdateScheduler } from './UpdateScheduler.js';
 import type { FieldHandle } from '../fields/Field.js';
+import type { DeclarativeForm } from './DeclarativeForm.js';
 
 /**
  * The slice of the owning form a field is allowed to see.
@@ -32,10 +33,12 @@ export interface FormContext {
   /**
    * Build a nested form that knows this form as its parent.
    *
-   * Lets `ArrayField` open entry dialogs without importing `DeclarativeForm`,
-   * keeping the field layer free of a cycle back into the core.
+   * Lets `ArrayField` open entry dialogs without importing `DeclarativeForm` at
+   * runtime, keeping the field layer free of a cycle back into the core. The
+   * return type is the full form so the dialog can be handed to descriptor
+   * callbacks as `ctx.form`.
    */
-  createSubForm(options: SubFormOptions): SubForm;
+  createSubForm(options: SubFormOptions): DeclarativeForm;
 }
 
 export interface SubFormOptions {

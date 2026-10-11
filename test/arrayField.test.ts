@@ -233,6 +233,30 @@ describe('array field', () => {
     expect(confirm.className).not.toContain('disabled');
   });
 
+  it('hands isValidRecord the entry dialog so it can set tooltips on entry fields', async () => {
+    const form = await makeForm({
+      fields: [
+        {
+          name: 'authors',
+          kind: 'array',
+          of: [{ name: 'lastName', displayName: 'Last Name', tooltip: 'Family name' }],
+          isValidRecord: (entry: FormValues, { form: dialog }) => {
+            if (String(entry['lastName']).trim() !== '') return true;
+            dialog.setTooltipWarning('lastName', 'A last name is required');
+            return false;
+          },
+        },
+      ],
+    });
+
+    click(form.field('authors')!.element.querySelector('.dl-form-array-of-add-entry'));
+    await flush();
+
+    const marker = entryDialog().querySelector('.dl-tooltip') as HTMLElement;
+    expect(marker.className).toContain('tooltip-warning');
+    expect(marker.getAttribute('data-tippy-content')).toBe('A last name is required');
+  });
+
   it('notifies onChange after an entry is added', async () => {
     const onChange = vi.fn();
     const form = await makeAuthorsForm({}, { onChange });

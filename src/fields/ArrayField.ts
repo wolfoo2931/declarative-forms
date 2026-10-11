@@ -7,6 +7,7 @@ import type {
   FormValues,
 } from '../types/descriptors.js';
 import type { TextOrHtml } from '../util/html.js';
+import type { DeclarativeForm } from '../core/DeclarativeForm.js';
 
 /**
  * A repeating list of sub-records, each edited in its own nested dialog.
@@ -195,7 +196,7 @@ export class ArrayField extends Field<ArrayFieldDescriptor> {
       buttons: {
         OK: {
           id: confirmId,
-          isActive: ({ data }) => this.validateEntry(data),
+          isActive: ({ data }) => this.validateEntry(data, form),
           action: (values) => {
             if (editing && index !== undefined) this.entries[index] = values;
             else this.entries.push(values);
@@ -221,9 +222,24 @@ export class ArrayField extends Field<ArrayFieldDescriptor> {
     return this.descriptor.mapFieldsOnEdit?.(seeded, entry) ?? seeded;
   }
 
-  private validateEntry(entry: FormValues): boolean | Promise<boolean> {
+  /**
+   * Run `isValidRecord` against the entry dialog.
+   *
+   * `ctx.form` is the entry dialog rather than the form owning the array field:
+   * the entry's fields — and their tooltip markers — live in the dialog, and
+   * tooltips are scoped per form, so `ctx.form.setTooltipError(…)` on the outer
+   * form was a silent no-op. The rest of the context still describes the outer
+   * field.
+   */
+  private validateEntry(
+    entry: FormValues,
+    dialog: DeclarativeForm,
+  ): boolean | Promise<boolean> {
     if (!this.descriptor.isValidRecord) return true;
-    return this.descriptor.isValidRecord(entry, this.context.contextFor(this.descriptor));
+    return this.descriptor.isValidRecord(entry, {
+      ...this.context.contextFor(this.descriptor),
+      form: dialog,
+    });
   }
 
   private notifyChange(): void {
