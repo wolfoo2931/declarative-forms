@@ -439,7 +439,7 @@ describe('buttons', () => {
     await form.whenReady();
 
     const button = document.getElementById('goBtn')!;
-    const input = document.querySelector('input[name="mode"]')!;
+    const input = document.querySelector<HTMLInputElement>('input[name="mode"]')!;
 
     type(input, 'slow');
     await new Promise((resolve) => setTimeout(resolve, 5));
