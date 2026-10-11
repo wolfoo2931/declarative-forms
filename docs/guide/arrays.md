@@ -114,7 +114,16 @@ isValidRecord: async (entry) => {
 ```
 
 It also receives the outer field context as a second argument, if you need the
-parent form's data to decide.
+parent form's data to decide. The one exception is `ctx.form`: it is the entry
+dialog, so you can report problems on the entry's fields:
+
+```ts
+isValidRecord: (entry, { form }) => {
+  if (String(entry['email'] ?? '').includes('@')) return true;
+  form.setTooltipError('email', 'Enter a valid email address');
+  return false;
+},
+```
 
 ## Suggestions
 

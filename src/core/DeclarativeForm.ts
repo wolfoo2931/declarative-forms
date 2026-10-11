@@ -246,7 +246,7 @@ export class DeclarativeForm implements SubForm, StackableDialog {
     };
   }
 
-  private createSubForm(options: SubFormOptions): SubForm {
+  private createSubForm(options: SubFormOptions): DeclarativeForm {
     return new DeclarativeForm(
       {
         fields: options.fields,
