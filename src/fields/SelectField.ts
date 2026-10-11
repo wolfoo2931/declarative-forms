@@ -10,6 +10,8 @@ import type {
 /** A `<dl-select>` combobox, single or multiple. */
 export class SelectField extends Field<SelectFieldDescriptor> {
   private select!: DlSelect;
+  /** True while the tooltip shows a message from {@link reportOptionsError}. */
+  private showsOptionsError = false;
 
   protected override get wrapperExtraClass(): string {
     return 'dl-select-wrapper';
@@ -63,7 +65,7 @@ export class SelectField extends Field<SelectFieldDescriptor> {
       this.descriptor.reloadOnChangeOf?.includes(triggerName) === true;
 
     if (dependsOnTrigger && typeof this.descriptor.options === 'function') {
-      void this.loadOptions({ reload: true });
+      void this.loadOptions();
     }
   }
 
@@ -75,7 +77,7 @@ export class SelectField extends Field<SelectFieldDescriptor> {
    * fresher options. v1 had no such guard, so a slow response from an earlier
    * keystroke could repopulate the select with outdated values.
    */
-  private async loadOptions(opts: { reload?: boolean } = {}): Promise<void> {
+  private async loadOptions(): Promise<void> {
     const isCurrent = this.context.scheduler.claim(`options:${this.descriptor.name}`);
     const source = this.descriptor.options;
 
@@ -98,7 +100,14 @@ export class SelectField extends Field<SelectFieldDescriptor> {
       const options = (await requested) ?? [];
       if (!isCurrent()) return;
 
-      if (opts.reload) this.context.tooltips.reset(this.descriptor.name);
+      // Only clear what a failed load put there. Resetting unconditionally wiped
+      // any message set from onFormChange or isValidRecord while the options
+      // were in flight, and a reload is usually triggered by the very change
+      // that validation is reacting to.
+      if (this.showsOptionsError) {
+        this.context.tooltips.reset(this.descriptor.name);
+        this.showsOptionsError = false;
+      }
 
       const previous = this.select.getValue();
       this.select.removeAllOptions();
@@ -141,6 +150,7 @@ export class SelectField extends Field<SelectFieldDescriptor> {
 
     if (message) {
       this.context.tooltips.setMessage(this.descriptor.name, message.level, message.text);
+      this.showsOptionsError = true;
     }
   }
 }

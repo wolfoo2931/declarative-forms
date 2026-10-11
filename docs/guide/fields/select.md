@@ -166,7 +166,8 @@ say what should happen. `onOptionsError` turns the error into a tooltip:
 
 `level` is `'info'`, `'warning'` or `'error'`; the first two render as a warning
 marker, the third as an error marker. The tooltip resets automatically on the
-next successful reload.
+next successful reload. A reload clears only this message: one you set yourself
+from `onFormChange` or `isValidRecord` stays until you reset it.
 
 ::: warning Needs a tooltip to show in
 The message is displayed on the field's `?` marker, so the field must declare a

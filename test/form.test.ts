@@ -1061,6 +1061,73 @@ describe('reloadOnChangeOf', () => {
     expect(marker.className).toContain('tooltip-error');
     expect(marker.getAttribute('data-tippy-content')).toBe('Failed: bad config');
   });
+
+  it('keeps a validation message set while the options were reloading', async () => {
+    const form = await makeForm({
+      fields: [
+        {
+          name: 'owner',
+          defaultValue: 'ada',
+          onFormChange: ({ data, form: f }) => {
+            if (data['owner'] === 'linus') f.setTooltipWarning('repo', 'Pick a repo of linus');
+          },
+        },
+        {
+          name: 'repo',
+          displayName: 'Repo',
+          tooltip: 'Pick a repo',
+          kind: 'select',
+          reloadOnChangeOf: ['owner'],
+          options: async ({ data }) => {
+            await new Promise((r) => setTimeout(r, 20));
+            return [{ value: '1', label: `for ${String(data['owner'])}` }];
+          },
+        },
+      ],
+    });
+
+    type(form.field('owner')!.element, 'linus');
+    await form.whenReady();
+    await new Promise((r) => setTimeout(r, 40));
+
+    const marker = form.field('repo')!.wrapper.querySelector('.dl-tooltip')!;
+    expect(form.field('repo')!.element.textContent).toContain('for linus');
+    expect(marker.className).toContain('tooltip-warning');
+    expect(marker.getAttribute('data-tippy-content')).toBe('Pick a repo of linus');
+  });
+
+  it('clears an options failure once a reload succeeds', async () => {
+    const form = await makeForm({
+      fields: [
+        { name: 'owner', defaultValue: 'offline' },
+        {
+          name: 'repo',
+          displayName: 'Repo',
+          tooltip: 'Pick a repo',
+          kind: 'select',
+          reloadOnChangeOf: ['owner'],
+          options: async ({ data }) => {
+            if (data['owner'] === 'offline') throw new Error('offline');
+            return [{ value: '1', label: 'One' }];
+          },
+          onOptionsError: ({ error }) => ({
+            level: 'error',
+            text: `Failed: ${(error as Error).message}`,
+          }),
+        },
+      ],
+    });
+
+    const marker = form.field('repo')!.wrapper.querySelector('.dl-tooltip')!;
+    expect(marker.className).toContain('tooltip-error');
+
+    type(form.field('owner')!.element, 'ada');
+    await form.whenReady();
+    await flush();
+
+    expect(marker.className).not.toContain('tooltip-error');
+    expect(marker.getAttribute('data-tippy-content')).toBe('Pick a repo');
+  });
 });
 
 describe('onFormChange', () => {
