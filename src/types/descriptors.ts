@@ -28,6 +28,15 @@ export interface FieldContext {
   readonly isEditingArrayEntry: boolean;
 }
 
+/** Context for an array field's `isValidRecord`. */
+export interface RecordContext extends FieldContext {
+  /**
+   * The entry as it was before the edit dialog opened; undefined in the add
+   * dialog. Lets a uniqueness check skip the entry being edited.
+   */
+  readonly editedEntry: FormValues | undefined;
+}
+
 /** Context for `onFormChange`, which also knows what triggered the update. */
 export interface FormChangeContext extends FieldContext {
   /** The field whose input triggered this update, if any. */
@@ -178,7 +187,7 @@ export interface ArrayFieldDescriptor extends BaseFieldDescriptor {
   /** One-line summary of an entry. Defaults to joining its non-empty string values. */
   renderEntry?: (entry: FormValues) => TextOrHtml;
   /** Gate the entry dialog's confirm button. */
-  isValidRecord?: (entry: FormValues, ctx: FieldContext) => boolean | Promise<boolean>;
+  isValidRecord?: (entry: FormValues, ctx: RecordContext) => boolean | Promise<boolean>;
   /** Adjust the entry fields when editing an existing entry rather than adding one. */
   mapFieldsOnEdit?: (
     fields: readonly FieldDescriptor[],

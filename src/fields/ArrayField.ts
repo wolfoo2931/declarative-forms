@@ -196,7 +196,7 @@ export class ArrayField extends Field<ArrayFieldDescriptor> {
       buttons: {
         OK: {
           id: confirmId,
-          isActive: ({ data }) => this.validateEntry(data, form),
+          isActive: ({ data }) => this.validateEntry(data, form, existing),
           action: (values) => {
             if (editing && index !== undefined) this.entries[index] = values;
             else this.entries.push(values);
@@ -234,11 +234,13 @@ export class ArrayField extends Field<ArrayFieldDescriptor> {
   private validateEntry(
     entry: FormValues,
     dialog: DeclarativeForm,
+    editedEntry: FormValues | undefined,
   ): boolean | Promise<boolean> {
     if (!this.descriptor.isValidRecord) return true;
     return this.descriptor.isValidRecord(entry, {
       ...this.context.contextFor(this.descriptor),
       form: dialog,
+      editedEntry,
     });
   }
 

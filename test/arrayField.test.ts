@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { click, flush, makeForm, type } from './helpers.js';
 import type { DeclarativeForm } from '../src/core/DeclarativeForm.js';
-import type { FormValues } from '../src/types/descriptors.js';
+import type { FormValues, RecordContext } from '../src/types/descriptors.js';
 
 const authorFields = [
   { name: 'preName', displayName: 'First Name' },
@@ -255,6 +255,37 @@ describe('array field', () => {
     const marker = entryDialog().querySelector('.dl-tooltip') as HTMLElement;
     expect(marker.className).toContain('tooltip-warning');
     expect(marker.getAttribute('data-tippy-content')).toBe('A last name is required');
+  });
+
+  it('hands isValidRecord the entry being edited, and nothing when adding', async () => {
+    const seen: Array<FormValues | undefined> = [];
+    const form = await makeAuthorsForm(
+      {},
+      {
+        isValidRecord: (_entry: FormValues, { editedEntry }: RecordContext) => {
+          seen.push(editedEntry);
+          return true;
+        },
+      },
+    );
+
+    await addAuthor(form, 'Ada', 'Lovelace');
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen.every((entry) => entry === undefined)).toBe(true);
+
+    seen.length = 0;
+    click(form.field('authors')!.element.querySelector('.edit-array-of-btn'));
+    await flush();
+
+    type(entryDialog().querySelector('[name=preName]') as HTMLElement, 'Augusta');
+    await flush();
+
+    expect(seen.length).toBeGreaterThan(0);
+    expect(
+      seen.every(
+        (entry) => entry?.['preName'] === 'Ada' && entry['lastName'] === 'Lovelace',
+      ),
+    ).toBe(true);
   });
 
   it('notifies onChange after an entry is added', async () => {

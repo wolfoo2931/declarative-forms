@@ -125,6 +125,17 @@ isValidRecord: (entry, { form }) => {
 },
 ```
 
+`ctx.editedEntry` is the entry as it was when the edit dialog opened, and
+`undefined` in the add dialog. A uniqueness check needs it to skip the entry
+being edited, which is still in the list:
+
+```ts
+isValidRecord: (entry, { data, editedEntry }) =>
+  !(data['invites'] as FormValues[]).some(
+    (other) => other !== editedEntry && other['email'] === entry['email'],
+  ),
+```
+
 ## Suggestions
 
 Suggestions are pre-filled entries offered as checkboxes above the list. They

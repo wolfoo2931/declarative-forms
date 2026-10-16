@@ -50,6 +50,7 @@ export type {
   FieldMessage,
   FileFieldDescriptor,
   FormChangeContext,
+  RecordContext,
   FormValues,
   MessageFieldDescriptor,
   OptionsErrorContext,
